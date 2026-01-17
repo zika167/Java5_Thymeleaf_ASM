@@ -15,6 +15,7 @@ services:
       - "3307:3306" # Map cổng 3307 của máy thật vào cổng 3306 của container
     volumes:
       - ./mariadb_data:/var/lib/mysql # Lưu dữ liệu vào máy thật để không bị mất khi tắt container
+      - ./mariadb_init:/docker-entrypoint-initdb.d # Auto-run SQL scripts on first start
 
 networks:
   default:
