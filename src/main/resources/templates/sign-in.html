@@ -51,16 +51,27 @@
             Welcome back to sign in . As a returning customer , you have access
             to your previously saved all information.
           </p>
-          <form action="./index-logined.html" class="form auth__form" onsubmit="return handleLogin(event)">
+
+          <!-- Alert messages -->
+          <div th:if="${param.error}" class="alert alert--error" style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            Tên đăng nhập hoặc mật khẩu không đúng!
+          </div>
+          <div th:if="${param.logout}" class="alert alert--success" style="color: #155724; background: #d4edda; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            Đăng xuất thành công!
+          </div>
+          <div th:if="${success}" class="alert alert--success" style="color: #155724; background: #d4edda; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            <span th:text="${success}"></span>
+          </div>
+
+          <form th:action="@{/auth/login}" method="post" class="form auth__form">
             <div class="form__group">
               <div class="form__text-input">
                 <input
-                  type="email"
-                  name=""
-                  id=""
+                  type="text"
+                  name="username"
+                  id="username"
                   class="form__input"
-                  placeholder="Email"
-                  value="admin@grocerystore.com"
+                  placeholder="Username hoặc Email"
                   required
                   autofocus
                 />
@@ -75,17 +86,16 @@
                   class="form__input-icon-error"
                 />
               </div>
-              <p class="form__error">Email chưa đúng định dạng</p>
+              <p class="form__error">Username không được để trống</p>
             </div>
             <div class="form__group">
               <div class="form__text-input">
                 <input
                   type="password"
-                  name=""
-                  id=""
+                  name="password"
+                  id="password"
                   class="form__input"
                   placeholder="Password"
-                  value="123123123"
                   required
                   minlength="6"
                 />
@@ -104,8 +114,8 @@
             </div>
             <div class="form__group form__group--inline">
               <label class="form__checkbox">
-                <input type="checkbox" name="" class="form__checkbox-input" />
-                <span class="form__checkbox-label">Set as default card</span>
+                <input type="checkbox" name="remember-me" class="form__checkbox-input" />
+                <span class="form__checkbox-label">Ghi nhớ đăng nhập</span>
               </label>
               <a
                 th:href="@{/reset-password}"
@@ -114,10 +124,10 @@
               >
             </div>
             <div class="form__group auth__btn-group">
-              <button class="btn btn--primary auth__btn form__submit-btn">
+              <button type="submit" class="btn btn--primary auth__btn form__submit-btn">
                 Login
               </button>
-              <button class="btn btn--outline auth__btn btn--no-margin">
+              <button type="button" class="btn btn--outline auth__btn btn--no-margin">
                 <img
                   th:src="@{/assets/icon/google.svg}"
                   alt=""
@@ -137,24 +147,6 @@
     </main>
     <script>
       window.dispatchEvent(new Event("template-loaded"));
-      function handleLogin(e){
-        const form = document.querySelector('.auth__form');
-        const email = form.querySelector('input[type="email"]').value.trim();
-        const password = form.querySelector('input[type="password"]').value.trim();
-        const validEmail = 'admin@grocerystore.com';
-        const validPass = '123123123';
-        if(email !== validEmail){
-          alert('Email không hợp lệ');
-          e.preventDefault();
-          return false;
-        }
-        if(password !== validPass){
-          alert('Mật khẩu không đúng');
-          e.preventDefault();
-          return false;
-        }
-        return true;
-      }
     </script>
   </body>
 </html>

@@ -9,6 +9,13 @@
     <!-- MAIN -->
     <main class="profile">
       <div class="container">
+        <!-- Success message -->
+        <div th:if="${successMessage}" class="profile-container">
+          <div style="background-color: #d4edda; color: #155724; padding: 12px 20px; border-radius: 8px; margin-bottom: 16px;">
+            <span th:text="${successMessage}"></span>
+          </div>
+        </div>
+        
         <!-- Search bar -->
         <div class="profile-container">
           <div class="search-bar d-none d-md-flex">
@@ -37,12 +44,12 @@
                 <!-- User -->
                 <div class="profile-user">
                   <img
-                    th:src="@{/assets/img/avatar.jpg}"
+                    th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar.jpg'}"
                     alt=""
                     class="profile-user__avatar"
                   />
-                  <h1 class="profile-user__name">Imran Khan</h1>
-                  <p class="profile-user__desc">Registered: 17th May 2022</p>
+                  <h1 class="profile-user__name" th:text="${user.fullName != null ? user.fullName : user.username}">User Name</h1>
+                  <p class="profile-user__desc" th:text="'Registered: ' + ${#temporals.format(user.registeredDate, 'dd MMM yyyy')}">Registered: 17th May 2022</p>
                 </div>
 
                 <!-- Menu 1 -->
@@ -293,8 +300,8 @@
                             </div>
                             <div>
                               <h3 class="account-info__title">Email Address</h3>
-                              <p class="account-info__desc">
-                                tarek97.ta@gmail.com
+                              <p class="account-info__desc" th:text="${user.email}">
+                                email@example.com
                               </p>
                             </div>
                           </article>
@@ -314,7 +321,7 @@
                             </div>
                             <div>
                               <h3 class="account-info__title">Phone number</h3>
-                              <p class="account-info__desc">
+                              <p class="account-info__desc" th:text="${user.phone != null ? user.phone : 'Chưa cập nhật'}">
                                 +000 11122 2345 657
                               </p>
                             </div>
@@ -338,7 +345,7 @@
                                 Add an address
                               </h3>
                               <p class="account-info__desc">
-                                Bangladesh Embassy, Washington, DC 20008
+                                Chưa có địa chỉ
                               </p>
                             </div>
                           </article>
