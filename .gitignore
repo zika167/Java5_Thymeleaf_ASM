@@ -167,3 +167,6 @@ src/main/resources/templates/F8-project-08-main/
 # Reports
 1.REFACTOR_REPORT.md
 2.INTERFACE_FIX_REPORT.md
+
+# Backup folders
+backup_*/
