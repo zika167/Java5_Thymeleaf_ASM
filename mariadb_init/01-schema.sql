@@ -6,20 +6,17 @@
 USE java5_asm;
 
 -- Drop tables if exists (for development)
+DROP TABLE IF EXISTS user_activity_logs;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS cart_items;
 DROP TABLE IF EXISTS carts;
 DROP TABLE IF EXISTS wishlists;
 DROP TABLE IF EXISTS reviews;
-DROP TABLE IF EXISTS product_variants;
-DROP TABLE IF EXISTS product_images;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS brands;
 DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS payment_methods;
 DROP TABLE IF EXISTS addresses;
-DROP TABLE IF EXISTS banners;
 DROP TABLE IF EXISTS users;
 
 -- ============================================
@@ -38,8 +35,12 @@ CREATE TABLE users (
     role ENUM('USER', 'ADMIN') DEFAULT 'USER',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login_at TIMESTAMP NULL,
+    login_count INT DEFAULT 0,
+    theme_preference ENUM('LIGHT', 'DARK', 'AUTO') DEFAULT 'LIGHT',
     INDEX idx_email (email),
-    INDEX idx_username (username)
+    INDEX idx_username (username),
+    INDEX idx_theme (theme_preference)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
@@ -63,22 +64,10 @@ CREATE TABLE addresses (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 3. PAYMENT METHODS TABLE
+-- 3. PAYMENT METHODS TABLE - REMOVED
 -- ============================================
-CREATE TABLE payment_methods (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    card_type ENUM('VISA', 'MASTERCARD', 'AMEX', 'DISCOVER') NOT NULL,
-    card_number VARCHAR(20) NOT NULL,
-    card_holder_name VARCHAR(100) NOT NULL,
-    expiry_month INT NOT NULL,
-    expiry_year INT NOT NULL,
-    cvv VARCHAR(4) NOT NULL,
-    is_default BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Payment will be handled by payment gateway (VNPay, Momo, etc.)
+-- Payment info stored in orders table
 
 -- ============================================
 -- 4. CATEGORIES TABLE
@@ -127,6 +116,11 @@ CREATE TABLE products (
     category_id BIGINT,
     brand_id BIGINT,
     stock_quantity INT DEFAULT 0,
+    low_stock_threshold INT DEFAULT 10,
+    is_out_of_stock BOOLEAN DEFAULT FALSE,
+    image_url VARCHAR(255) DEFAULT '/assets/img/products/default.jpg',
+    search_keywords TEXT,
+    tags VARCHAR(500),
     sku VARCHAR(50) UNIQUE,
     weight VARCHAR(50),
     is_featured BOOLEAN DEFAULT FALSE,
@@ -140,41 +134,25 @@ CREATE TABLE products (
     INDEX idx_brand (brand_id),
     INDEX idx_slug (slug),
     INDEX idx_featured (is_featured, is_active),
-    INDEX idx_price (price)
+    INDEX idx_price (price),
+    INDEX idx_stock_status (is_out_of_stock, is_active),
+    FULLTEXT INDEX idx_search (name, description)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 7. PRODUCT IMAGES TABLE
+-- 7. PRODUCT IMAGES TABLE - REMOVED
 -- ============================================
-CREATE TABLE product_images (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    product_id BIGINT NOT NULL,
-    image_url VARCHAR(255) NOT NULL,
-    is_primary BOOLEAN DEFAULT FALSE,
-    display_order INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    INDEX idx_product (product_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Images merged into products table (image_url column)
+-- Each product has only one image
 
 -- ============================================
--- 8. PRODUCT VARIANTS TABLE
+-- 8. PRODUCT VARIANTS TABLE - REMOVED
 -- ============================================
-CREATE TABLE product_variants (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    product_id BIGINT NOT NULL,
-    variant_name VARCHAR(100) NOT NULL,
-    variant_value VARCHAR(100) NOT NULL,
-    price_adjustment DECIMAL(10,2) DEFAULT 0,
-    stock_quantity INT DEFAULT 0,
-    sku VARCHAR(50) UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    INDEX idx_product (product_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Products sold as single units (1 bag/1 package)
+-- No variants needed
 
 -- ============================================
--- 9. REVIEWS TABLE
+-- 7. REVIEWS TABLE
 -- ============================================
 CREATE TABLE reviews (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -195,7 +173,7 @@ CREATE TABLE reviews (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 10. CARTS TABLE
+-- 8. CARTS TABLE
 -- ============================================
 CREATE TABLE carts (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -209,26 +187,24 @@ CREATE TABLE carts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 11. CART ITEMS TABLE
+-- 9. CART ITEMS TABLE
 -- ============================================
 CREATE TABLE cart_items (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     cart_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
-    variant_id BIGINT,
     quantity INT NOT NULL DEFAULT 1,
     price DECIMAL(10,2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL,
     INDEX idx_cart (cart_id),
     INDEX idx_product (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 12. ORDERS TABLE
+-- 10. ORDERS TABLE
 -- ============================================
 CREATE TABLE orders (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -240,8 +216,10 @@ CREATE TABLE orders (
     shipping_method VARCHAR(100),
     shipping_fee DECIMAL(10,2) DEFAULT 0,
     
-    -- Payment info
-    payment_method_id BIGINT,
+    -- Payment info (using payment gateway)
+    payment_method VARCHAR(50) DEFAULT 'COD',
+    payment_transaction_id VARCHAR(255),
+    payment_gateway_response TEXT,
     payment_status ENUM('PENDING', 'PAID', 'FAILED', 'REFUNDED') DEFAULT 'PENDING',
     
     -- Order totals
@@ -268,36 +246,33 @@ CREATE TABLE orders (
     
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
     FOREIGN KEY (shipping_address_id) REFERENCES addresses(id) ON DELETE SET NULL,
-    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id) ON DELETE SET NULL,
     INDEX idx_user (user_id),
     INDEX idx_status (status),
     INDEX idx_order_number (order_number),
-    INDEX idx_ordered_at (ordered_at)
+    INDEX idx_ordered_at (ordered_at),
+    INDEX idx_payment_status (payment_status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 13. ORDER ITEMS TABLE
+-- 11. ORDER ITEMS TABLE
 -- ============================================
 CREATE TABLE order_items (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     order_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
-    variant_id BIGINT,
     product_name VARCHAR(255) NOT NULL,
-    variant_name VARCHAR(100),
     quantity INT NOT NULL,
     unit_price DECIMAL(10,2) NOT NULL,
     subtotal DECIMAL(10,2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT,
-    FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL,
     INDEX idx_order (order_id),
     INDEX idx_product (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 14. WISHLISTS TABLE
+-- 12. WISHLISTS TABLE
 -- ============================================
 CREATE TABLE wishlists (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -312,24 +287,30 @@ CREATE TABLE wishlists (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- 15. BANNERS TABLE
+-- 13. USER ACTIVITY LOGS TABLE
 -- ============================================
-CREATE TABLE banners (
+CREATE TABLE user_activity_logs (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(200),
-    image_url VARCHAR(255) NOT NULL,
-    image_mobile_url VARCHAR(255),
-    link_url VARCHAR(255),
-    display_order INT DEFAULT 0,
-    is_active BOOLEAN DEFAULT TRUE,
-    start_date DATE,
-    end_date DATE,
+    user_id BIGINT,
+    session_id VARCHAR(255),
+    activity_type ENUM('LOGIN', 'LOGOUT', 'PAGE_VIEW', 'PRODUCT_VIEW', 'SEARCH', 'ADD_TO_CART', 'CHECKOUT') NOT NULL,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    page_url VARCHAR(500),
+    metadata JSON,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_active (is_active),
-    INDEX idx_dates (start_date, end_date)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_user (user_id),
+    INDEX idx_session (session_id),
+    INDEX idx_activity (activity_type),
+    INDEX idx_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
--- COMPLETED
+-- COMPLETED - OPTIMIZED SCHEMA
+-- ============================================
+-- Total tables: 13 (reduced from 15)
+-- Removed: payment_methods, product_variants, banners, product_images
+-- Added: user_activity_logs
+-- Enhanced: users, products, orders with new columns
 -- ============================================

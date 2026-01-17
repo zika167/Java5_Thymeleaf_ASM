@@ -2,6 +2,16 @@
 
 🛒 **Website bán cafe/grocery store** được xây dựng bằng Spring Boot + Thymeleaf
 
+---
+
+## 📚 TÀI LIỆU DỰ ÁN
+
+> **🎯 BẮT ĐẦU TẠI ĐÂY:**
+> - **[📖 PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md)** - Tài liệu tổng hợp đầy đủ ⭐
+> - **[📑 DOCS_INDEX.md](DOCS_INDEX.md)** - Chỉ mục tất cả tài liệu
+
+---
+
 ## 📋 Mô tả dự án
 
 Dự án Java 5 Assignment - Website thương mại điện tử bán cafe và grocery với giao diện hiện đại, responsive và đầy đủ tính năng.
