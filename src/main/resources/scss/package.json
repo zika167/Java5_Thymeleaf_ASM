@@ -1,0 +1,13 @@
+{
+  "name": "grocery-mart-scss",
+  "version": "1.0.0",
+  "description": "SASS compiler for Grocery Store project",
+  "scripts": {
+    "sass": "sass main.scss:../static/assets/css/main.css --style=compressed",
+    "sass:watch": "sass main.scss:../static/assets/css/main.css --watch",
+    "sass:dev": "sass main.scss:../static/assets/css/main.css --watch --style=expanded --source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.77.0"
+  }
+}

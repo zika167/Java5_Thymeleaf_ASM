@@ -1,0 +1,21 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: coffee_shop_db
+    restart: always
+    environment:
+      # Mật khẩu cho tài khoản root
+      MARIADB_ROOT_PASSWORD: rootpassword
+      # Tên Database sẽ tự động khởi tạo khi chạy
+      MARIADB_DATABASE: java5_asm
+      # Tạo một user riêng để Spring Boot sử dụng (an toàn hơn root)
+      MARIADB_USER: java5_user
+      MARIADB_PASSWORD: java5_password
+    ports:
+      - "3307:3306" # Map cổng 3307 của máy thật vào cổng 3306 của container
+    volumes:
+      - ./mariadb_data:/var/lib/mysql # Lưu dữ liệu vào máy thật để không bị mất khi tắt container
+
+networks:
+  default:
+    name: coffee_network

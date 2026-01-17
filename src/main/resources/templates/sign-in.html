@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/head :: head('Sign In - Grocery Store')}"></head>
+
+  <body>
+    <!-- main -->
+    <main class="auth">
+      <!-- auth intro -->
+      <div class="auth__intro d-md-none">
+        <!-- logo -->
+        <a th:href="@{/}" class="logo d-none d-md-flex">
+          <img
+            th:src="@{/assets/icon/logo.svg"
+            alt="grocerystore"
+            class="logo__img"
+          />
+          <h1 class="logo__title">grocerystore</h1>
+        </a>
+
+        <div class="auth__intro-main">
+          <img
+            th:src="@{/assets/img/auth/intro.svg"
+            alt=""
+            class="auth__intro-img"
+          />
+          <p class="auth__intro-text">
+            The best of luxury brand values, high quality products and
+            innovative services.
+          </p>
+        </div>
+
+        <button class="auth__intro-next d-none d-md-block">
+          <img th:src="@{/assets/icon/next.svg" alt="" />
+        </button>
+      </div>
+
+      <!-- auth content -->
+      <div class="auth__content">
+        <div class="auth__content-inner">
+          <!-- logo -->
+          <a th:href="@{/}" class="logo">
+            <img
+              th:src="@{/assets/icon/logo.svg"
+              alt="grocerystore"
+              class="logo__img"
+            />
+            <h1 class="logo__title">grocerystore</h1>
+          </a>
+          <h1 class="auth__heading">Hello Again!</h1>
+          <p class="auth__desc">
+            Welcome back to sign in . As a returning customer , you have access
+            to your previously saved all information.
+          </p>
+          <form action="./index-logined.html" class="form auth__form" onsubmit="return handleLogin(event)">
+            <div class="form__group">
+              <div class="form__text-input">
+                <input
+                  type="email"
+                  name=""
+                  id=""
+                  class="form__input"
+                  placeholder="Email"
+                  value="admin@grocerystore.com"
+                  required
+                  autofocus
+                />
+                <img
+                  th:src="@{/assets/icon/email.svg"
+                  alt=""
+                  class="form__input-icon"
+                />
+                <img
+                  th:src="@{/assets/icon/error.svg"
+                  alt=""
+                  class="form__input-icon-error"
+                />
+              </div>
+              <p class="form__error">Email chưa đúng định dạng</p>
+            </div>
+            <div class="form__group">
+              <div class="form__text-input">
+                <input
+                  type="password"
+                  name=""
+                  id=""
+                  class="form__input"
+                  placeholder="Password"
+                  value="123123123"
+                  required
+                  minlength="6"
+                />
+                <img
+                  th:src="@{/assets/icon/lock.svg"
+                  alt=""
+                  class="form__input-icon"
+                />
+                <img
+                  th:src="@{/assets/icon/error.svg"
+                  alt=""
+                  class="form__input-icon-error"
+                />
+              </div>
+              <p class="form__error">Mật khẩu ít nhất 6 ký tự</p>
+            </div>
+            <div class="form__group form__group--inline">
+              <label class="form__checkbox">
+                <input type="checkbox" name="" class="form__checkbox-input" />
+                <span class="form__checkbox-label">Set as default card</span>
+              </label>
+              <a
+                th:href="@{/reset-password}"
+                class="auth__link form__pull-right"
+                >Forgot Password?</a
+              >
+            </div>
+            <div class="form__group auth__btn-group">
+              <button class="btn btn--primary auth__btn form__submit-btn">
+                Login
+              </button>
+              <button class="btn btn--outline auth__btn btn--no-margin">
+                <img
+                  th:src="@{/assets/icon/google.svg"
+                  alt=""
+                  class="btn-icon icon"
+                />
+                Sign in with Google
+              </button>
+            </div>
+          </form>
+
+          <p class="auth__text">
+            Don’t have an account yet?
+            <a th:href="@{/sign-up}" class="auth__link">Sign Up</a>
+          </p>
+        </div>
+      </div>
+    </main>
+    <script>
+      window.dispatchEvent(new Event("template-loaded"));
+      function handleLogin(e){
+        const form = document.querySelector('.auth__form');
+        const email = form.querySelector('input[type="email"]').value.trim();
+        const password = form.querySelector('input[type="password"]').value.trim();
+        const validEmail = 'admin@grocerystore.com';
+        const validPass = '123123123';
+        if(email !== validEmail){
+          alert('Email không hợp lệ');
+          e.preventDefault();
+          return false;
+        }
+        if(password !== validPass){
+          alert('Mật khẩu không đúng');
+          e.preventDefault();
+          return false;
+        }
+        return true;
+      }
+    </script>
+  </body>
+</html>

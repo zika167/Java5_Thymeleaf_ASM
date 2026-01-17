@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/head :: head('Checkout - Grocery Store')}"></head>
+  <body>
+    <!-- Header -->
+    <header th:replace="~{fragments/header :: header}"></header>
+    
+
+    <!-- MAIN -->
+    <main class="checkout-page">
+      <div class="container">
+        <!-- Search bar -->
+        <div class="checkout-container">
+          <div class="search-bar d-none d-md-flex">
+            <input
+              type="text"
+              name=""
+              id=""
+              placeholder="Search for item"
+              class="search-bar__input"
+            />
+            <button class="search-bar__submit">
+              <img
+                th:src="@{/assets/icon/search.svg"
+                alt=""
+                class="search-bar__icon icon"
+              />
+            </button>
+          </div>
+        </div>
+
+        <!-- Breadcrumbs -->
+        <div class="checkout-container">
+          <ul class="breadcrumbs checkout-page__breadcrumbs">
+            <li>
+              <a th:href="@{/index-logined}" class="breadcrumbs__link">
+                Home
+                <img th:src="@{/assets/icon/arrow-right.svg" alt="" />
+              </a>
+            </li>
+            <li>
+              <a href="#!" class="breadcrumbs__link breadcrumbs__link--current"
+                >Checkout</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Checkout content -->
+        <div class="checkout-container">
+          <div class="row gy-xl-3">
+            <div class="col-8 col-xl-12">
+              <div class="cart-info">
+                <div class="cart-info__list">
+                  <!-- Filled by JS -->
+                </div>
+                <div class="cart-info__bottom d-md-none">
+                  <div class="cart-info__continue" style="padding-top: 12px;">
+                    <a th:href="@{/index-logined}" class="btn btn--primary btn--rounded">Continue Shopping</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-4 col-xl-12">
+              <div class="cart-info">
+                <div class="cart-info__row">
+                  <span>Subtotal</span>
+                  <span class="cart-summary__items-count"></span>
+                </div>
+                <div class="cart-info__row">
+                  <span>Price</span>
+                  <span class="cart-summary__price"></span>
+                </div>
+                <div class="cart-info__row">
+                  <span>Shipping</span>
+                  <span class="cart-summary__shipping"></span>
+                </div>
+                <div class="cart-info__separate"></div>
+                <div class="cart-info__row">
+                  <span>Estimated Total</span>
+                  <span class="cart-summary__estimated"></span>
+                </div>
+                <a
+                  th:href="@{/shipping}"
+                  class="cart-info__next-btn btn btn--primary btn--rounded"
+                >
+                  Continue to checkout
+                </a>
+              </div>
+              <div class="cart-info">
+                <a href="#!">
+                  <article class="gift-item">
+                    <div class="gift-item__icon-wrap">
+                      <img
+                        th:src="@{/assets/icon/gift.svg"
+                        alt=""
+                        class="gift-item__icon"
+                      />
+                    </div>
+                    <div class="gift-item__content">
+                      <h3 class="gift-item__title">
+                        Send this order as a gift.
+                      </h3>
+                      <p class="gift-item__desc">
+                        Available items will be shipped to your gift recipient.
+                      </p>
+                    </div>
+                  </article>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <!-- Modal: confirm remove shopping cart item -->
+    <div id="delete-confirm" class="modal hide">
+      <div class="modal__content">
+        <p class="modal__text">
+          Do you want to remove this item from shopping cart?
+        </p>
+        <div class="modal__bottom">
+          <button
+            class="btn btn--small btn--outline modal__btn js-toggle"
+            toggle-target="#delete-confirm"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn--small btn--danger btn--primary modal__btn btn--no-margin js-toggle"
+            toggle-target="#delete-confirm"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+      <div
+        class="modal__overlay js-toggle"
+        toggle-target="#delete-confirm"
+      ></div>
+    </div>
+  </body>
+</html>
