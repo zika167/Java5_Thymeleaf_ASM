@@ -37,12 +37,12 @@
                 <!-- User -->
                 <div class="profile-user">
                   <img
-                    th:src="@{/assets/img/avatar/avatar-3.png}"
+                    th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar/avatar-3.png'}"
                     alt=""
                     class="profile-user__avatar"
                   />
-                  <h1 class="profile-user__name">Imran Khan</h1>
-                  <p class="profile-user__desc">Registered: 17th May 2022</p>
+                  <h1 class="profile-user__name" th:text="${user.fullName != null ? user.fullName : user.username}">User Name</h1>
+                  <p class="profile-user__desc" th:text="'Registered: ' + ${#temporals.format(user.registeredDate, 'dd MMM yyyy')}">Registered: 17th May 2022</p>
                 </div>
 
                 <!-- Menu 1 -->
@@ -197,7 +197,12 @@
                       Personal info
                     </h2>
 
-                    <form action="./profile.html" class="form form-card">
+                    <form th:action="@{/profile/update}" th:object="${profileRequest}" method="post" class="form form-card">
+                      <!-- Thông báo lỗi -->
+                      <div th:if="${errorMessage}" class="form__error-message" style="color: #dc3545; margin-bottom: 16px;">
+                        <span th:text="${errorMessage}"></span>
+                      </div>
+                      
                       <!-- Form row 1 -->
                       <div class="form__row">
                         <div class="form__group">
@@ -207,23 +212,22 @@
                           >
                             Full name
                           </label>
-                          <div class="form__text-input">
+                          <div class="form__text-input" th:classappend="${#fields.hasErrors('fullName')} ? 'form__text-input--error' : ''">
                             <input
                               type="text"
-                              name=""
+                              th:field="*{fullName}"
                               id="full-name"
                               placeholder="Full name"
                               class="form__input"
-                              required
                               autofocus
                             />
                             <img
-                              th:src="@{/assets/icons/form-error.svg}"
+                              th:src="@{/assets/icon/form-error.svg}"
                               alt=""
                               class="form__input-icon-error"
                             />
                           </div>
-                          <p class="form__error">Please enter your full name</p>
+                          <p class="form__error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Please enter your full name</p>
                         </div>
                         <div class="form__group">
                           <label
@@ -232,22 +236,21 @@
                           >
                             Email address
                           </label>
-                          <div class="form__text-input">
+                          <div class="form__text-input" th:classappend="${#fields.hasErrors('email')} ? 'form__text-input--error' : ''">
                             <input
-                              type="text"
-                              name=""
+                              type="email"
+                              th:field="*{email}"
                               id="email-address"
                               placeholder="Email address"
                               class="form__input"
-                              required
                             />
                             <img
-                              th:src="@{/assets/icons/form-error.svg}"
+                              th:src="@{/assets/icon/form-error.svg}"
                               alt=""
                               class="form__input-icon-error"
                             />
                           </div>
-                          <p class="form__error">
+                          <p class="form__error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
                             Please enter a valid email address
                           </p>
                         </div>
@@ -262,48 +265,75 @@
                           >
                             Phone Number
                           </label>
-                          <div class="form__text-input">
+                          <div class="form__text-input" th:classappend="${#fields.hasErrors('phone')} ? 'form__text-input--error' : ''">
                             <input
                               type="text"
-                              name=""
+                              th:field="*{phone}"
                               id="phone-number"
                               placeholder="Phone Number"
                               class="form__input"
-                              required
                             />
                             <img
-                              th:src="@{/assets/icons/form-error.svg}"
+                              th:src="@{/assets/icon/form-error.svg}"
                               alt=""
                               class="form__input-icon-error"
                             />
                           </div>
-                          <p class="form__error">
+                          <p class="form__error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
                             Please enter a valid phone number
                           </p>
                         </div>
                         <div class="form__group">
                           <label
-                            for="passowrd"
+                            for="new-password"
                             class="form__label form-card__label"
                           >
-                            Password
+                            New Password (để trống nếu không đổi)
                           </label>
-                          <div class="form__text-input">
+                          <div class="form__text-input" th:classappend="${#fields.hasErrors('newPassword')} ? 'form__text-input--error' : ''">
                             <input
                               type="password"
-                              name=""
-                              id="passowrd"
-                              placeholder="Password"
+                              th:field="*{newPassword}"
+                              id="new-password"
+                              placeholder="New Password"
                               class="form__input"
-                              required
                             />
                             <img
-                              th:src="@{/assets/icons/form-error.svg}"
+                              th:src="@{/assets/icon/form-error.svg}"
                               alt=""
                               class="form__input-icon-error"
                             />
                           </div>
-                          <p class="form__error">Please enter new password</p>
+                          <p class="form__error" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}">Please enter new password</p>
+                        </div>
+                      </div>
+
+                      <!-- Form row 3: Confirm Password -->
+                      <div class="form__row">
+                        <div class="form__group">
+                          <!-- Empty for alignment -->
+                        </div>
+                        <div class="form__group">
+                          <label
+                            for="confirm-password"
+                            class="form__label form-card__label"
+                          >
+                            Confirm Password
+                          </label>
+                          <div class="form__text-input">
+                            <input
+                              type="password"
+                              th:field="*{confirmPassword}"
+                              id="confirm-password"
+                              placeholder="Confirm Password"
+                              class="form__input"
+                            />
+                            <img
+                              th:src="@{/assets/icon/form-error.svg}"
+                              alt=""
+                              class="form__input-icon-error"
+                            />
+                          </div>
                         </div>
                       </div>
 
@@ -311,7 +341,7 @@
                         <a class="btn btn--text" th:href="@{/profile}"
                           >Cancel</a
                         >
-                        <button class="btn btn--primary btn--rounded">
+                        <button type="submit" class="btn btn--primary btn--rounded">
                           Save
                         </button>
                       </div>

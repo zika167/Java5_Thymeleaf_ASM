@@ -13,16 +13,6 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/sign-in")
-    public String signIn() {
-        return "sign-in";
-    }
-
-    @GetMapping("/sign-up")
-    public String signUp() {
-        return "sign-up";
-    }
-
     @GetMapping("/category")
     public String category(Model model) {
         return "category";
@@ -47,16 +37,6 @@ public class HomeController {
     @GetMapping("/payment")
     public String payment(Model model) {
         return "payment";
-    }
-
-    @GetMapping("/profile")
-    public String profile(Model model) {
-        return "profile";
-    }
-
-    @GetMapping("/edit-personal-info")
-    public String editPersonalInfo(Model model) {
-        return "edit-personal-info";
     }
 
     @GetMapping("/favourite")
