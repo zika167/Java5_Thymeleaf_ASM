@@ -68,11 +68,6 @@ public class User {
     @Column(name = "login_count")
     private Integer loginCount = 0; // Số lần đăng nhập
 
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    @Column(name = "theme_preference", length = 10)
-    private Theme themePreference = Theme.LIGHT; // Giao diện (LIGHT/DARK/AUTO)
-
     // Quan hệ: 1 user có nhiều địa chỉ
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -115,10 +110,5 @@ public class User {
     // Enum cho Role
     public enum Role {
         USER, ADMIN
-    }
-
-    // Enum cho Theme
-    public enum Theme {
-        LIGHT, DARK, AUTO
     }
 }
