@@ -282,6 +282,9 @@
         <!-- footer -->
         <footer th:replace="~{fragments/footer :: footer}"></footer>
 
+        <!-- Cart API Service -->
+        <script th:src="@{/assets/js/cart-api.js}"></script>
+
         <script>
             function updatePrice(value) {
                 document.getElementById("price-value").innerText = `$${value}.00`;
@@ -320,8 +323,5 @@
             }
             window.onload = updatePrice;
         </script>
-
-        <!-- footer -->
-        <footer th:replace="~{fragments/footer :: footer}"></footer>
     </body>
 </html>

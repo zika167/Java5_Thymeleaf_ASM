@@ -34,7 +34,6 @@ public class RegisterRequest {
     @NotBlank(message = "Xác nhận password không được để trống")
     private String confirmPassword;
 
-    @NotBlank(message = "Họ tên không được để trống")
     private String fullName;
 
     private String phone;

@@ -42,6 +42,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // ===== CẤU HÌNH CSRF =====
+            .csrf(csrf -> csrf
+                // Tắt CSRF cho API endpoints (vì API dùng token-based auth)
+                .ignoringRequestMatchers("/api/**")
+            )
+            
             // ===== CẤU HÌNH PHÂN QUYỀN TRUY CẬP URL =====
             .authorizeHttpRequests(auth -> auth
                 // Các trang công khai - ai cũng truy cập được

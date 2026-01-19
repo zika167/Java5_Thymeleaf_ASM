@@ -54,8 +54,11 @@
             Let’s create your account and Shop like a pro and save money.
           </p>
           <!-- Alert messages -->
-          <div th:if="${error}" class="alert alert--error" style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
-            <span th:text="${error}"></span>
+          <div th:if="${errorMessage}" class="alert alert--error" style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            <span th:text="${errorMessage}"></span>
+          </div>
+          <div th:if="${successMessage}" class="alert alert--success" style="color: #155724; background: #d4edda; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            <span th:text="${successMessage}"></span>
           </div>
 
           <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post" class="form auth__form">
