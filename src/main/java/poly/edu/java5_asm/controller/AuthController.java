@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import poly.edu.java5_asm.dto.RegisterRequest;
+import poly.edu.java5_asm.dto.request.RegisterRequest;
 import poly.edu.java5_asm.service.AuthService;
 
 /**
