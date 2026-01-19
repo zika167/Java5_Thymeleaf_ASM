@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,10 +19,12 @@ import poly.edu.java5_asm.security.CustomUserDetailsService;
  * 
  * @Configuration: Đánh dấu class này chứa các Bean configuration
  * @EnableWebSecurity: Kích hoạt Spring Security cho ứng dụng web
+ * @EnableMethodSecurity: Kích hoạt @PreAuthorize, @PostAuthorize
  * @RequiredArgsConstructor: Lombok tự động tạo constructor với các field final
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -43,6 +46,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Các trang công khai - ai cũng truy cập được
                 .requestMatchers("/", "/index", "/products/**", "/category/**").permitAll()
+                // REST API Admin - yêu cầu role ADMIN
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // REST API công khai - cho phép truy cập không cần đăng nhập
+                .requestMatchers("/api/**").permitAll()
                 // Các trang xác thực - cho phép truy cập để đăng nhập/đăng ký
                 .requestMatchers("/auth/**", "/sign-in", "/sign-up").permitAll()
                 // Static resources - CSS, JS, images
