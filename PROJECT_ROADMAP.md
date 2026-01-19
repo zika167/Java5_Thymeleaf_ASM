@@ -26,13 +26,13 @@
 | **Người 1** | Team Leader/DevOps | • Hoàn thiện CI/CD pipeline (build + test + deploy)<br>• Setup DockerHub integration<br>• Configure deployment cho Render/Railway<br>• Setup environment variables management<br>• Monitor và fix integration issues | • Complete CI/CD workflow<br>• DockerHub auto-push<br>• Deployment scripts<br>• .env.example | 🔴 Cao |
 | **Người 2** | Backend Core | • Implement Cart Session management<br>• Implement Cart Database persistence<br>• Tạo CartService với merge logic<br>• Implement Add/Update/Remove cart items<br>• Tạo Cart API endpoints | • CartService<br>• CartController<br>• Session management<br>• Cart merge logic<br>• Unit tests | 🔴 Cao |
 | **Người 3** | Backend Logic/Admin | • Implement Checkout flow<br>• Tạo OrderService<br>• Implement order creation logic<br>• Setup Email templates<br>• Implement email sending service<br>• Tạo bảng user_activity_logs | • OrderService<br>• CheckoutController<br>• EmailService<br>• Email templates<br>• Activity logging | 🔴 Cao |
-| **Người 4** | Frontend/Thymeleaf | • Convert trang Product Detail<br>• Convert trang Cart<br>• Implement Theme Switcher UI<br>• Tạo JavaScript cho theme switching<br>• Integrate với localStorage<br>• Convert trang Login/Register | • product-detail.html<br>• cart.html<br>• theme-switcher.js<br>• login.html<br>• register.html | 🔴 Cao |
+| **Người 4** | Frontend/Thymeleaf | • Convert trang Product Detail<br>• Convert trang Cart<br>• Tạo JavaScript utilities<br>• Convert trang Login/Register<br>• Polish UI/UX | • product-detail.html<br>• cart.html<br>• utilities.js<br>• login.html<br>• register.html | 🔴 Cao |
 
 **Checkpoint Tuần 2:**
 - ✅ Cart hoạt động đầy đủ (Session + DB)
 - ✅ Checkout flow cơ bản hoàn thành
 - ✅ Email notification gửi được
-- ✅ Theme switching hoạt động
+- ✅ Frontend Thymeleaf integration hoàn thành
 - ✅ CI/CD pipeline deploy được lên staging
 
 ---
@@ -51,7 +51,7 @@
 - ✅ Traffic monitoring hoạt động
 - ✅ Charts hiển thị đúng dữ liệu
 - ✅ Toàn bộ pages đã convert sang Thymeleaf
-- ✅ Theme switching hoạt động trên tất cả pages
+- ✅ UI/UX được polish
 
 ---
 

@@ -109,20 +109,7 @@ Fat C Grocery Store là một ứng dụng e-commerce bán hàng tạp hóa đư
 5. THE System SHALL use Thymeleaf expressions for conditional rendering
 6. THE System SHALL use Thymeleaf iteration for lists and collections
 
-### Requirement 8: Theme Switching (Light/Dark Mode)
-
-**User Story:** As a user, I want to switch between light and dark themes, so that I can use the app comfortably in different lighting conditions.
-
-#### Acceptance Criteria
-
-1. WHEN a user clicks theme toggle, THE System SHALL switch between light and dark mode
-2. WHEN a logged-in user changes theme, THE System SHALL save preference to database
-3. WHEN a guest user changes theme, THE System SHALL save preference to localStorage
-4. WHEN a user returns to the site, THE System SHALL apply their saved theme preference
-5. THE System SHALL apply theme changes to all pages without page reload
-6. THE System SHALL provide smooth transition animation between themes
-
-### Requirement 9: CI/CD Pipeline
+### Requirement 8: CI/CD Pipeline
 
 **User Story:** As a developer, I want automated deployment, so that we can release updates quickly and reliably.
 
@@ -135,7 +122,7 @@ Fat C Grocery Store là một ứng dụng e-commerce bán hàng tạp hóa đư
 5. WHEN deployment fails, THE System SHALL send notification to team
 6. THE System SHALL run automated tests before deployment
 
-### Requirement 10: Docker Configuration
+### Requirement 9: Docker Configuration
 
 **User Story:** As a developer, I want containerized application, so that deployment is consistent across environments.
 
@@ -160,7 +147,7 @@ Fat C Grocery Store là một ứng dụng e-commerce bán hàng tạp hóa đư
 - Complete Cart & Checkout logic
 - Email notification system
 - Admin dashboard foundation
-- Theme switching implementation
+- Frontend Thymeleaf integration
 
 ### Week 3: Admin Features & Polish
 - Traffic monitoring system
