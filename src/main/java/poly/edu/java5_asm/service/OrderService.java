@@ -27,6 +27,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    private final EmailService emailService;
 
     /**
      * Tạo đơn hàng từ giỏ hàng
@@ -103,6 +104,14 @@ public class OrderService {
         cartItemRepository.deleteByCart(cart);
         log.info("Xóa giỏ hàng sau khi tạo đơn hàng");
 
+        // Gửi email xác nhận đơn hàng
+        try {
+            emailService.sendOrderConfirmation(order, user);
+        } catch (Exception e) {
+            log.error("Failed to send order confirmation email: {}", e.getMessage());
+            // Don't fail the order creation if email fails
+        }
+
         return getOrderResponse(order);
     }
 
@@ -122,6 +131,13 @@ public class OrderService {
         order.setConfirmedAt(LocalDateTime.now());
         order = orderRepository.save(order);
         log.info("Xác nhận đơn hàng {}", order.getOrderNumber());
+
+        // Gửi email cập nhật trạng thái
+        try {
+            emailService.sendOrderStatusUpdate(order, order.getUser());
+        } catch (Exception e) {
+            log.error("Failed to send order status update email: {}", e.getMessage());
+        }
 
         return getOrderResponse(order);
     }
@@ -178,6 +194,13 @@ public class OrderService {
 
         order = orderRepository.save(order);
         log.info("Cập nhật trạng thái đơn hàng {} thành {}", order.getOrderNumber(), status);
+
+        // Gửi email cập nhật trạng thái
+        try {
+            emailService.sendOrderStatusUpdate(order, order.getUser());
+        } catch (Exception e) {
+            log.error("Failed to send order status update email: {}", e.getMessage());
+        }
 
         return getOrderResponse(order);
     }
