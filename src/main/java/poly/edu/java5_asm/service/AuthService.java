@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.RegisterRequest;
+import poly.edu.java5_asm.dto.request.RegisterRequest;
 import poly.edu.java5_asm.entity.User;
 import poly.edu.java5_asm.repository.UserRepository;
 
