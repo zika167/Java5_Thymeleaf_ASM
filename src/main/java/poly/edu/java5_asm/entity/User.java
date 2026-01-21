@@ -1,12 +1,27 @@
 package poly.edu.java5_asm.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Entity Người dùng
@@ -30,8 +45,8 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     private String email; // Email
 
-    @Column(nullable = false, length = 255)
-    private String password; // Mật khẩu (đã mã hóa)
+    @Column(length = 255)
+    private String password; // Mật khẩu (đã mã hóa) - nullable cho OAuth2 users
 
     @Column(name = "full_name", length = 100)
     private String fullName; // Họ tên đầy đủ
@@ -67,6 +82,13 @@ public class User {
     @Builder.Default
     @Column(name = "login_count")
     private Integer loginCount = 0; // Số lần đăng nhập
+
+    // OAuth2 fields
+    @Column(name = "provider", length = 20)
+    private String provider; // google, facebook, local
+
+    @Column(name = "provider_id", length = 100)
+    private String providerId; // ID từ OAuth2 provider
 
     // Quan hệ: 1 user có nhiều địa chỉ
     @Builder.Default

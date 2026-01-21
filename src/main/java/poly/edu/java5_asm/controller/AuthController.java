@@ -1,7 +1,5 @@
 package poly.edu.java5_asm.controller;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,6 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import poly.edu.java5_asm.dto.request.RegisterRequest;
 import poly.edu.java5_asm.service.AuthService;
 
@@ -57,6 +58,15 @@ public class AuthController {
         // Tạo object rỗng để Thymeleaf binding với form
         model.addAttribute("registerRequest", new RegisterRequest());
         return "sign-up";
+    }
+
+    /**
+     * Error handler để debug OAuth2 errors
+     */
+    @GetMapping("/error")
+    public String errorPage(Model model) {
+        model.addAttribute("errorMessage", "Có lỗi xảy ra trong quá trình đăng nhập. Vui lòng thử lại.");
+        return "sign-in";
     }
 
     /**
