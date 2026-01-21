@@ -142,4 +142,35 @@ public class HomeController {
     public String resetPasswordEmailed() {
         return "reset-password-emailed";
     }
+
+    @GetMapping("/my-orders")
+    public String myOrders(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+        return "my-orders";
+    }
+
+    @GetMapping("/order-detail/{id}")
+    public String orderDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+        model.addAttribute("orderId", id);
+        return "order-detail";
+    }
+
+    @GetMapping("/addresses")
+    public String addresses(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+        return "addresses";
+    }
 }

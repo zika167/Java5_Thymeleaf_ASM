@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <th:block th:replace="~{fragments/head :: head}"></th:block>
+    <title>Quản Lý Users | Admin</title>
+  </head>
+  <body class="admin-body">
+    <th:block th:replace="~{fragments/admin-sidebar :: admin-sidebar}"></th:block>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Quản Lý Users</h1>
+        <div class="admin-user">
+          <img th:src="@{/assets/img/avatar.jpg}" alt="" class="admin-user__avatar" />
+          <span th:text="${session.user.fullName}">Admin</span>
+        </div>
+      </div>
+
+      <div class="admin-content">
+        <div class="table-card">
+          <div class="table-card__header">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm user..." class="search-input" />
+            <select id="roleFilter" class="filter-select">
+              <option value="">Tất cả roles</option>
+              <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </div>
+
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Họ Tên</th>
+                  <th>Role</th>
+                  <th>Trạng Thái</th>
+                  <th>Ngày Tạo</th>
+                  <th>Hành Động</th>
+                </tr>
+              </thead>
+              <tbody id="usersTable">
+                <tr><td colspan="8" class="text-center">Đang tải...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let currentPage = 0;
+      let currentRole = '';
+      let searchQuery = '';
+
+      document.addEventListener('DOMContentLoaded', function() {
+        loadUsers();
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          currentPage = 0;
+          loadUsers();
+        });
+
+        document.getElementById('roleFilter').addEventListener('change', (e) => {
+          currentRole = e.target.value;
+          currentPage = 0;
+          loadUsers();
+        });
+      });
+
+      function loadUsers() {
+        let url = `/api/admin/users?page=${currentPage}&size=20`;
+        if (currentRole) url += `&role=${currentRole}`;
+        if (searchQuery) url += `&search=${searchQuery}`;
+
+        // Mock data for now
+        const mockUsers = [
+          {id: 1, username: 'admin', email: 'admin@example.com', fullName: 'Admin User', role: 'ADMIN', active: true, createdAt: '2024-01-01'},
+          {id: 2, username: 'user1', email: 'user1@example.com', fullName: 'User One', role: 'USER', active: true, createdAt: '2024-01-15'},
+          {id: 3, username: 'user2', email: 'user2@example.com', fullName: 'User Two', role: 'USER', active: false, createdAt: '2024-02-01'}
+        ];
+
+        const tbody = document.getElementById('usersTable');
+        tbody.innerHTML = mockUsers.map(user => `
+          <tr>
+            <td>${user.id}</td>
+            <td>${user.username}</td>
+            <td>${user.email}</td>
+            <td>${user.fullName}</td>
+            <td><span class="badge badge--${user.role.toLowerCase()}">${user.role}</span></td>
+            <td><span class="badge badge--${user.active ? 'success' : 'danger'}">${user.active ? 'Active' : 'Inactive'}</span></td>
+            <td>${new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
+            <td>
+              <button onclick="viewUser(${user.id})" class="btn btn--small">Xem</button>
+              <button onclick="toggleUserStatus(${user.id}, ${user.active})" class="btn btn--small btn--${user.active ? 'danger' : 'success'}">
+                ${user.active ? 'Khóa' : 'Mở khóa'}
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      function viewUser(id) {
+        alert('View user ' + id);
+      }
+
+      function toggleUserStatus(id, currentStatus) {
+        if (confirm(`Bạn có chắc muốn ${currentStatus ? 'khóa' : 'mở khóa'} user này?`)) {
+          console.log('Toggle user status:', id);
+          loadUsers();
+        }
+      }
+    </script>
+
+    <style>
+      .admin-body{margin:0;padding:0;background:#f5f7fa;font-family:system-ui,-apple-system,sans-serif}
+      .admin-main{margin-left:260px;min-height:100vh;padding:0}
+      .admin-header{background:#fff;padding:20px 32px;border-bottom:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center}
+      .admin-header h1{margin:0;font-size:24px}
+      .admin-user{display:flex;align-items:center;gap:12px}
+      .admin-user__avatar{width:40px;height:40px;border-radius:50%}
+      .admin-content{padding:32px}
+      .table-card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+      .table-card__header{display:flex;gap:16px;margin-bottom:20px}
+      .search-input,.filter-select{padding:10px 16px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px}
+      .search-input{flex:1}
+      .filter-select{min-width:150px}
+      .table-responsive{overflow-x:auto}
+      .admin-table{width:100%;border-collapse:collapse}
+      .admin-table th{text-align:left;padding:12px;border-bottom:2px solid #e0e0e0;font-weight:600;color:#666;font-size:14px}
+      .admin-table td{padding:12px;border-bottom:1px solid #f0f0f0;font-size:14px}
+      .badge{padding:4px 12px;border-radius:12px;font-size:12px;font-weight:500}
+      .badge--admin{background:#8b5cf6;color:#fff}
+      .badge--user{background:#3b82f6;color:#fff}
+      .badge--success{background:#d4edda;color:#155724}
+      .badge--danger{background:#f8d7da;color:#721c24}
+      .btn--small{padding:6px 12px;font-size:13px;background:#77dae6;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:4px}
+      .btn--danger{background:#dc3545}
+      .btn--success{background:#28a745}
+      .text-center{text-align:center}
+      .pagination{display:flex;justify-content:center;gap:8px;margin-top:20px}
+      @media (max-width:768px){.admin-main{margin-left:0}.table-card__header{flex-direction:column}}
+    </style>
+  </body>
+</html>
