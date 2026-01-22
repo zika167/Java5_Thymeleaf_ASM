@@ -31,6 +31,14 @@ public class PaymentController {
     private final OrderRepository orderRepository;
 
     /**
+     * Trang chọn phương thức thanh toán (bước cuối checkout)
+     */
+    @GetMapping
+    public String paymentPage() {
+        return "payment";
+    }
+
+    /**
      * Tạo URL thanh toán VNPay
      */
     @GetMapping("/vnpay/create/{orderNumber}")
