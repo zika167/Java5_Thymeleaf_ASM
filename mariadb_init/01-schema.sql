@@ -2,8 +2,10 @@
 -- GROCERY STORE DATABASE SCHEMA
 -- ============================================
 
+-- Use the database
 USE java5_asm;
 
+-- Drop tables if exists (for development)
 DROP TABLE IF EXISTS user_activity_logs;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
@@ -35,8 +37,10 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login_at TIMESTAMP NULL,
     login_count INT DEFAULT 0,
+    theme_preference ENUM('LIGHT', 'DARK', 'AUTO') DEFAULT 'LIGHT',
     INDEX idx_email (email),
-    INDEX idx_username (username)
+    INDEX idx_username (username),
+    INDEX idx_theme (theme_preference)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
@@ -58,6 +62,12 @@ CREATE TABLE addresses (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- 3. PAYMENT METHODS TABLE - REMOVED
+-- ============================================
+-- Payment will be handled by payment gateway (VNPay, Momo, etc.)
+-- Payment info stored in orders table
 
 -- ============================================
 -- 4. CATEGORIES TABLE
@@ -128,6 +138,18 @@ CREATE TABLE products (
     INDEX idx_stock_status (is_out_of_stock, is_active),
     FULLTEXT INDEX idx_search (name, description)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- 7. PRODUCT IMAGES TABLE - REMOVED
+-- ============================================
+-- Images merged into products table (image_url column)
+-- Each product has only one image
+
+-- ============================================
+-- 8. PRODUCT VARIANTS TABLE - REMOVED
+-- ============================================
+-- Products sold as single units (1 bag/1 package)
+-- No variants needed
 
 -- ============================================
 -- 7. REVIEWS TABLE
@@ -284,3 +306,11 @@ CREATE TABLE user_activity_logs (
     INDEX idx_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ============================================
+-- COMPLETED - OPTIMIZED SCHEMA
+-- ============================================
+-- Total tables: 13 (reduced from 15)
+-- Removed: payment_methods, product_variants, banners, product_images
+-- Added: user_activity_logs
+-- Enhanced: users, products, orders with new columns
+-- ============================================

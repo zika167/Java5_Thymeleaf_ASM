@@ -21,4 +21,11 @@ public interface EmailService {
      * @param user The user who placed the order
      */
     void sendOrderStatusUpdate(Order order, User user);
+
+    /**
+     * Send payment status update email to customer
+     * @param order The order with updated payment status
+     * @param user The user who placed the order
+     */
+    void sendPaymentStatusUpdate(Order order, User user);
 }

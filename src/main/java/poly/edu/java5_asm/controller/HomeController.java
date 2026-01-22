@@ -118,11 +118,6 @@ public class HomeController {
         return "shipping";
     }
 
-    @GetMapping("/payment")
-    public String payment(Model model) {
-        return "payment";
-    }
-
     @GetMapping("/favourite")
     public String favourite(Model model) {
         return "favourite";

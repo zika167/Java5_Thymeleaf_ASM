@@ -37,7 +37,8 @@ ALTER TABLE order_items DROP FOREIGN KEY IF EXISTS order_items_ibfk_3;
 -- Add traffic monitoring columns to users table
 ALTER TABLE users
 ADD COLUMN last_login_at TIMESTAMP NULL AFTER updated_at,
-ADD COLUMN login_count INT DEFAULT 0 AFTER last_login_at;
+ADD COLUMN login_count INT DEFAULT 0 AFTER last_login_at,
+ADD COLUMN theme_preference ENUM('LIGHT', 'DARK', 'AUTO') DEFAULT 'LIGHT' AFTER login_count;
 
 -- Add inventory management columns to products table
 ALTER TABLE products
@@ -126,6 +127,10 @@ CREATE TABLE user_activity_logs (
 -- STEP 9: ADD INDEXES FOR PERFORMANCE
 -- ============================================
 
+-- Add index for theme preference queries
+ALTER TABLE users
+ADD INDEX idx_theme (theme_preference);
+
 -- Add index for out of stock products
 ALTER TABLE products
 ADD INDEX idx_stock_status (is_out_of_stock, is_active);
@@ -140,7 +145,7 @@ DROP TEMPORARY TABLE IF EXISTS temp_product_images;
 -- MIGRATION COMPLETED
 -- ============================================
 -- Summary of changes:
--- ✅ Added: last_login_at, login_count to users
+-- ✅ Added: last_login_at, login_count, theme_preference to users
 -- ✅ Added: low_stock_threshold, is_out_of_stock, image_url, search_keywords, tags to products
 -- ✅ Added: payment_method, payment_transaction_id, payment_gateway_response to orders
 -- ✅ Created: user_activity_logs table for traffic monitoring
