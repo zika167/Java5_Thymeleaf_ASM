@@ -150,6 +150,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
 
+        Order.PaymentStatus oldStatus = order.getPaymentStatus();
         order.setPaymentStatus(paymentStatus);
 
         if (paymentStatus.equals(Order.PaymentStatus.PAID)) {
@@ -161,7 +162,86 @@ public class OrderService {
         }
 
         order = orderRepository.save(order);
-        log.info("Cập nhật trạng thái thanh toán đơn hàng {} thành {}", order.getOrderNumber(), paymentStatus);
+        log.info("Cập nhật trạng thái thanh toán đơn hàng {} từ {} thành {}", 
+                order.getOrderNumber(), oldStatus, paymentStatus);
+
+        // Gửi email thông báo khi trạng thái thanh toán thay đổi
+        if (!oldStatus.equals(paymentStatus)) {
+            try {
+                emailService.sendPaymentStatusUpdate(order, order.getUser());
+            } catch (Exception e) {
+                log.error("Failed to send payment status update email: {}", e.getMessage());
+            }
+        }
+
+        return getOrderResponse(order);
+    }
+
+    /**
+     * Cập nhật trạng thái thanh toán theo mã đơn hàng
+     */
+    @Transactional
+    public OrderResponse updatePaymentStatus(String orderNumber, Order.PaymentStatus paymentStatus) {
+        Order order = orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại: " + orderNumber));
+        return updatePaymentStatus(order.getId(), paymentStatus);
+    }
+
+    /**
+     * Xử lý callback thanh toán từ payment gateway
+     * @param orderNumber Mã đơn hàng
+     * @param transactionId Mã giao dịch từ payment gateway
+     * @param paymentStatus Trạng thái thanh toán
+     * @param gatewayResponse Response gốc từ payment gateway
+     * @return OrderResponse
+     */
+    @Transactional
+    public OrderResponse processPaymentCallback(String orderNumber, String transactionId, 
+                                                 Order.PaymentStatus paymentStatus, String gatewayResponse) {
+        log.info("Xử lý callback thanh toán cho đơn hàng: {}, transactionId: {}, status: {}", 
+                orderNumber, transactionId, paymentStatus);
+
+        Order order = orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại: " + orderNumber));
+
+        // Kiểm tra đơn hàng đã được xử lý chưa
+        if (order.getPaymentStatus().equals(Order.PaymentStatus.PAID)) {
+            log.warn("Đơn hàng {} đã được thanh toán trước đó", orderNumber);
+            return getOrderResponse(order);
+        }
+
+        Order.PaymentStatus oldStatus = order.getPaymentStatus();
+        
+        // Cập nhật thông tin thanh toán
+        order.setPaymentTransactionId(transactionId);
+        order.setPaymentGatewayResponse(gatewayResponse);
+        order.setPaymentStatus(paymentStatus);
+
+        // Xử lý theo trạng thái thanh toán
+        if (paymentStatus.equals(Order.PaymentStatus.PAID)) {
+            // Thanh toán thành công - tự động xác nhận đơn hàng
+            if (order.getStatus().equals(Order.OrderStatus.PENDING)) {
+                order.setStatus(Order.OrderStatus.CONFIRMED);
+                order.setConfirmedAt(LocalDateTime.now());
+                log.info("Tự động xác nhận đơn hàng {} sau khi thanh toán thành công", orderNumber);
+            }
+        } else if (paymentStatus.equals(Order.PaymentStatus.FAILED)) {
+            log.warn("Thanh toán thất bại cho đơn hàng: {}", orderNumber);
+        } else if (paymentStatus.equals(Order.PaymentStatus.REFUNDED)) {
+            log.info("Đơn hàng {} đã được hoàn tiền", orderNumber);
+        }
+
+        order = orderRepository.save(order);
+        log.info("Đã cập nhật trạng thái thanh toán đơn hàng {} từ {} thành {}", 
+                orderNumber, oldStatus, paymentStatus);
+
+        // Gửi email thông báo
+        try {
+            emailService.sendPaymentStatusUpdate(order, order.getUser());
+        } catch (Exception e) {
+            log.error("Failed to send payment notification email for order {}: {}", 
+                    orderNumber, e.getMessage());
+        }
 
         return getOrderResponse(order);
     }
