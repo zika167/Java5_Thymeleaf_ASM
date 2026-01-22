@@ -1,92 +1,136 @@
 package poly.edu.java5_asm.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * Entity Người dùng
+ */
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", length = 50, nullable = false, unique = true)
-    private String username;
+    @Column(nullable = false, unique = true, length = 50)
+    private String username; // Tên đăng nhập
 
-    @Column(name = "email", length = 100, nullable = false, unique = true)
-    private String email;
+    @Column(nullable = false, unique = true, length = 100)
+    private String email; // Email
 
-    @Column(name = "password", length = 255, nullable = false)
-    private String password;
+    @Column(length = 255)
+    private String password; // Mật khẩu (đã mã hóa) - nullable cho OAuth2 users
 
     @Column(name = "full_name", length = 100)
-    private String fullName;
+    private String fullName; // Họ tên đầy đủ
 
-    @Column(name = "phone", length = 20)
-    private String phone;
+    @Column(length = 20)
+    private String phone; // Số điện thoại
 
-    @Column(name = "avatar_url", length = 255)
     @Builder.Default
-    private String avatarUrl = "/assets/img/avatar-default.png";
+    @Column(name = "avatar_url", length = 255)
+    private String avatarUrl = "/assets/img/avatar.jpg"; // Ảnh đại diện
 
     @Column(name = "registered_date")
-    @Builder.Default
-    private LocalDate registeredDate = LocalDate.now();
+    private LocalDate registeredDate; // Ngày đăng ký
 
+    @Builder.Default
     @Column(name = "is_active")
-    @Builder.Default
-    private Boolean isActive = true;
+    private Boolean isActive = true; // Trạng thái kích hoạt
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    @Builder.Default
-    private Role role = Role.USER;
+    @Column(length = 10)
+    private Role role = Role.USER; // Vai trò (USER/ADMIN)
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt; // Ngày tạo
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt; // Ngày cập nhật
 
     @Column(name = "last_login_at")
-    private LocalDateTime lastLoginAt;
+    private LocalDateTime lastLoginAt; // Lần đăng nhập cuối
 
+    @Builder.Default
     @Column(name = "login_count")
+    private Integer loginCount = 0; // Số lần đăng nhập
+
+    // OAuth2 fields
+    @Column(name = "provider", length = 20)
+    private String provider; // google, facebook, local
+
+    @Column(name = "provider_id", length = 100)
+    private String providerId; // ID từ OAuth2 provider
+
+    // Quan hệ: 1 user có nhiều địa chỉ
     @Builder.Default
-    private Integer loginCount = 0;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "theme_preference")
+    // Quan hệ: 1 user có nhiều đánh giá
     @Builder.Default
-    private ThemePreference themePreference = ThemePreference.LIGHT;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 
-    public enum Role {
-        USER, ADMIN
-    }
+    // Quan hệ: 1 user có nhiều giỏ hàng
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cart> carts = new ArrayList<>();
 
-    public enum ThemePreference {
-        LIGHT, DARK, AUTO
-    }
+    // Quan hệ: 1 user có nhiều đơn hàng
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
+
+    // Quan hệ: 1 user có nhiều wishlist
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Wishlist> wishlists = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (registeredDate == null) {
+            registeredDate = LocalDate.now();
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    // Enum cho Role
+    public enum Role {
+        USER, ADMIN
     }
 }

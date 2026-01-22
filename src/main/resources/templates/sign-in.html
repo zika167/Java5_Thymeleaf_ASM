@@ -127,16 +127,20 @@
               <button type="submit" class="btn btn--primary auth__btn form__submit-btn">
                 Login
               </button>
-              <button type="button" class="btn btn--outline auth__btn btn--no-margin">
-                <img
-                  th:src="@{/assets/icon/google.svg}"
-                  alt=""
-                  class="btn-icon icon"
-                />
-                Sign in with Google
-              </button>
             </div>
           </form>
+
+          <!-- Google Login Button (Ngoài form để tránh submit) -->
+          <div class="form__group auth__btn-group" style="margin-top: 16px;">
+            <a th:href="@{/oauth2/authorization/google}" class="btn btn--outline auth__btn btn--no-margin" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; width: 100%;">
+              <img
+                th:src="@{/assets/icon/google.svg}"
+                alt=""
+                class="btn-icon icon"
+              />
+              Sign in with Google
+            </a>
+          </div>
 
           <p class="auth__text">
             Don’t have an account yet?

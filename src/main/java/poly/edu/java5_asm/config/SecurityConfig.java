@@ -1,114 +1,117 @@
 package poly.edu.java5_asm.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 import poly.edu.java5_asm.security.CustomUserDetailsService;
+import poly.edu.java5_asm.security.FormLoginSuccessHandler;
+import poly.edu.java5_asm.security.JwtAuthenticationFilter;
+import poly.edu.java5_asm.security.OAuth2LoginFailureHandler;
+import poly.edu.java5_asm.security.OAuth2LoginSuccessHandler;
 
 /**
- * Cấu hình Spring Security cho ứng dụng.
- * Định nghĩa các quy tắc bảo mật, xác thực và phân quyền.
- * 
- * @Configuration: Đánh dấu class này chứa các Bean configuration
- * @EnableWebSecurity: Kích hoạt Spring Security cho ứng dụng web
- * @RequiredArgsConstructor: Lombok tự động tạo constructor với các field final
+ * Security Configuration cho Spring Boot 3.4 + Spring Security 6
+ * Hỗ trợ:
+ * - Form-based authentication với JWT
+ * - Google OAuth2 authentication với JWT
+ * - Stateless session management
+ * - HTTP-Only Cookie để lưu JWT
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    /** Service để load thông tin user từ database */
     private final CustomUserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final FormLoginSuccessHandler formLoginSuccessHandler;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
-    /**
-     * Cấu hình SecurityFilterChain - chuỗi các filter bảo mật.
-     * Đây là cấu hình chính của Spring Security.
-     * 
-     * @param http HttpSecurity object để cấu hình
-     * @return SecurityFilterChain đã được cấu hình
-     * @throws Exception nếu có lỗi trong quá trình cấu hình
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // ===== CẤU HÌNH PHÂN QUYỀN TRUY CẬP URL =====
+            // ===== CSRF CONFIGURATION =====
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API endpoints
+            )
+            
+            // ===== SESSION MANAGEMENT =====
+            // IF_REQUIRED: Cho phép tạo session khi cần (OAuth2 flow), nhưng vẫn dùng JWT cho authentication
+            // OAuth2 login flow cần session để lưu authorization request và state
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            )
+            
+            // ===== AUTHORIZATION CONFIGURATION =====
             .authorizeHttpRequests(auth -> auth
-                // Các trang công khai - ai cũng truy cập được
+                // Public endpoints
                 .requestMatchers("/", "/index", "/products/**", "/category/**").permitAll()
-                // Các trang xác thực - cho phép truy cập để đăng nhập/đăng ký
                 .requestMatchers("/auth/**", "/sign-in", "/sign-up").permitAll()
-                // Static resources - CSS, JS, images
                 .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**").permitAll()
-                // Trang admin - chỉ user có role ADMIN mới truy cập được
+                .requestMatchers("/actuator/health").permitAll() // Health check cho Docker
+                
+                // API endpoints
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/**").permitAll()
+                
+                // Admin pages
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                // Tất cả các request khác đều yêu cầu đăng nhập
+                
+                // OAuth2 endpoints
+                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                
+                // All other requests require authentication
                 .anyRequest().authenticated()
             )
             
-            // ===== CẤU HÌNH FORM LOGIN =====
+            // ===== FORM LOGIN CONFIGURATION =====
             .formLogin(form -> form
-                .loginPage("/sign-in")              // URL trang đăng nhập custom
-                .loginProcessingUrl("/auth/login")  // URL xử lý POST request đăng nhập
-                .usernameParameter("username")      // Tên parameter username trong form
-                .passwordParameter("password")      // Tên parameter password trong form
-                .defaultSuccessUrl("/", true)       // Redirect về trang chủ sau khi đăng nhập thành công
-                .failureUrl("/sign-in?error=true")  // Redirect khi đăng nhập thất bại
-                .permitAll()                        // Cho phép tất cả truy cập trang login
-            )
-            
-            // ===== CẤU HÌNH LOGOUT =====
-            .logout(logout -> logout
-                .logoutUrl("/auth/logout")                  // URL xử lý logout
-                .logoutSuccessUrl("/sign-in?logout=true")   // Redirect sau khi logout
-                .invalidateHttpSession(true)                // Hủy session hiện tại
-                .deleteCookies("JSESSIONID")                // Xóa cookie session
+                .loginPage("/sign-in")
+                .loginProcessingUrl("/auth/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .successHandler(formLoginSuccessHandler) // Tạo JWT sau khi login thành công
+                .failureUrl("/sign-in?error=true")
                 .permitAll()
             )
             
-            // ===== CẤU HÌNH REMEMBER ME =====
-            .rememberMe(remember -> remember
-                .key("uniqueAndSecretKey")          // Key bí mật để mã hóa token
-                .tokenValiditySeconds(86400 * 7)   // Token có hiệu lực 7 ngày (86400 giây = 1 ngày)
+            // ===== OAUTH2 LOGIN CONFIGURATION =====
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/sign-in")
+                .successHandler(oAuth2LoginSuccessHandler) // Tạo JWT sau khi OAuth2 login thành công
+                .failureHandler(oAuth2LoginFailureHandler) // Log chi tiết lỗi OAuth2
             )
             
-            // Đăng ký UserDetailsService để Spring Security sử dụng
+            // ===== LOGOUT CONFIGURATION =====
+            .logout(logout -> logout
+                .logoutUrl("/auth/logout")
+                .logoutSuccessUrl("/sign-in?logout=true")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID", "JWT_TOKEN") // Xóa cả session cookie và JWT cookie
+                .permitAll()
+            )
+            
+            // ===== USER DETAILS SERVICE =====
             .userDetailsService(userDetailsService);
+
+        // ===== ADD JWT FILTER =====
+        // Thêm JWT filter trước UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /**
-     * Bean PasswordEncoder sử dụng thuật toán BCrypt.
-     * BCrypt là thuật toán hash một chiều, an toàn cho việc lưu trữ password.
-     * 
-     * Đặc điểm BCrypt:
-     * - Tự động tạo salt ngẫu nhiên
-     * - Có thể điều chỉnh độ phức tạp (strength)
-     * - Chống được rainbow table attack
-     * 
-     * @return BCryptPasswordEncoder instance
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    /**
-     * Bean AuthenticationManager để quản lý quá trình xác thực.
-     * Được sử dụng khi cần xác thực thủ công (programmatic authentication).
-     * 
-     * @param config AuthenticationConfiguration từ Spring Security
-     * @return AuthenticationManager instance
-     * @throws Exception nếu không thể lấy AuthenticationManager
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

@@ -310,14 +310,17 @@ function searchProducts() {
 // ===== Add-to-cart for product cards =====
 function bindAddToCartButtons() {
     document.querySelectorAll('.js-add-to-cart').forEach((btn) => {
-        btn.onclick = function(e) {
+        btn.onclick = async function(e) {
             e.preventDefault();
-            const id = `list_${this.dataset.id}`;
-            const name = this.dataset.name;
-            const price = parseFloat(this.dataset.price) || 0;
-            const image = this.dataset.image;
-            if (window.CartService && typeof window.CartService.add === 'function') {
-                window.CartService.add({ id, name, price, image });
+            const productId = parseInt(this.dataset.id, 10);
+            
+            // Gọi API backend thay vì localStorage
+            if (window.CartAPI && typeof window.CartAPI.addToCart === 'function') {
+                try {
+                    await window.CartAPI.addToCart(productId, 1);
+                } catch (error) {
+                    console.error('Lỗi khi thêm vào giỏ:', error);
+                }
             }
         };
     });

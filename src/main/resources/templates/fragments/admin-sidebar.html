@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<aside th:fragment="admin-sidebar" class="admin-sidebar">
+  <div class="admin-sidebar__header">
+    <a th:href="@{/}" class="admin-logo">
+      <img th:src="@{/assets/icon/logo.svg}" alt="grocerystore" class="admin-logo__img" />
+      <h2 class="admin-logo__title">Admin Panel</h2>
+    </a>
+  </div>
+
+  <nav class="admin-nav">
+    <ul class="admin-nav__list">
+      <li class="admin-nav__item">
+        <a th:href="@{/admin/dashboard}" 
+           th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/dashboard')} ? 'admin-nav__link--active' : ''"
+           class="admin-nav__link">
+          <img th:src="@{/assets/icon/document.svg}" alt="" class="admin-nav__icon" />
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="admin-nav__item">
+        <a th:href="@{/admin/users}" 
+           th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/users')} ? 'admin-nav__link--active' : ''"
+           class="admin-nav__link">
+          <img th:src="@{/assets/icon/profile.svg}" alt="" class="admin-nav__icon" />
+          <span>Quản lý Users</span>
+        </a>
+      </li>
+      <li class="admin-nav__item">
+        <a th:href="@{/admin/orders}" 
+           th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/orders')} ? 'admin-nav__link--active' : ''"
+           class="admin-nav__link">
+          <img th:src="@{/assets/icon/bag.svg}" alt="" class="admin-nav__icon" />
+          <span>Quản lý Orders</span>
+        </a>
+      </li>
+      <li class="admin-nav__item">
+        <a th:href="@{/admin/products}" 
+           th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/products')} ? 'admin-nav__link--active' : ''"
+           class="admin-nav__link">
+          <img th:src="@{/assets/icon/gift.svg}" alt="" class="admin-nav__icon" />
+          <span>Quản lý Products</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="admin-sidebar__footer">
+    <a th:href="@{/}" class="admin-nav__link">
+      <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="admin-nav__icon" />
+      <span>Về trang chủ</span>
+    </a>
+    <a th:href="@{/logout}" class="admin-nav__link">
+      <img th:src="@{/assets/icon/logout.svg}" alt="" class="admin-nav__icon" />
+      <span>Đăng xuất</span>
+    </a>
+  </div>
+</aside>
+
+<style>
+  .admin-sidebar {
+    width: 260px;
+    height: 100vh;
+    background: #1a1d29;
+    color: #fff;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+
+  .admin-sidebar__header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  .admin-logo__img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .admin-logo__title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .admin-nav {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+  }
+
+  .admin-nav__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .admin-nav__item {
+    margin-bottom: 4px;
+  }
+
+  .admin-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .admin-nav__link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+  }
+
+  .admin-nav__link--active {
+    background: #77dae6;
+    color: #fff;
+  }
+
+  .admin-nav__icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+  }
+
+  .admin-sidebar__footer {
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .admin-sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+    }
+  }
+</style>
+</html>

@@ -1,10 +1,12 @@
 package poly.edu.java5_asm.repository;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import poly.edu.java5_asm.entity.User;
 
-import java.util.Optional;
+import poly.edu.java5_asm.entity.User;
 
 /**
  * Repository interface để thao tác với bảng users trong database.
@@ -75,4 +77,28 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Sử dụng trong: AuthService để validate khi đăng ký tài khoản mới
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Đếm số người dùng đang hoạt động
+     */
+    Long countByIsActiveTrue();
+
+    /**
+     * Đếm số người đăng ký trong một ngày cụ thể
+     */
+    Long countByRegisteredDate(LocalDate date);
+
+    /**
+     * Đếm số người đăng ký trong khoảng thời gian
+     */
+    Long countByRegisteredDateBetween(LocalDate startDate, LocalDate endDate);
+
+    /**
+     * Tìm user theo provider và providerId (cho OAuth2)
+     * 
+     * @param provider Tên provider (google, facebook, etc.)
+     * @param providerId ID từ provider
+     * @return Optional chứa User nếu tìm thấy
+     */
+    Optional<User> findByProviderAndProviderId(String provider, String providerId);
 }

@@ -1,0 +1,2 @@
+org.springframework.context.ApplicationContextInitializer=\
+  poly.edu.java5_asm.config.DotenvConfig

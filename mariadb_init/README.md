@@ -6,9 +6,10 @@ Thư mục này chứa các script SQL sẽ được tự động chạy khi kh�
 
 ```
 mariadb_init/
-├── 01-schema.sql    # Tạo cấu trúc database (tables, indexes, views)
-├── 02-data.sql      # Insert dữ liệu mẫu
-└── README.md        # File này
+├── 01-schema.sql           # Tạo cấu trúc database (tables, indexes, views)
+├── 02-data-optimized.sql   # Insert dữ liệu mẫu (optimized)
+├── 03-migration-optimize.sql # Migration scripts
+└── README.md               # File này
 ```
 
 ## 🚀 Cách hoạt động
