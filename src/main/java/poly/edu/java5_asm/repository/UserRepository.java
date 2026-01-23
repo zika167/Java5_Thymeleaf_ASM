@@ -92,4 +92,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Đếm số người đăng ký trong khoảng thời gian
      */
     Long countByRegisteredDateBetween(LocalDate startDate, LocalDate endDate);
+
+    /**
+     * Tìm user theo provider và providerId (cho OAuth2)
+     * 
+     * @param provider Tên provider (google, facebook, etc.)
+     * @param providerId ID từ provider
+     * @return Optional chứa User nếu tìm thấy
+     */
+    Optional<User> findByProviderAndProviderId(String provider, String providerId);
 }

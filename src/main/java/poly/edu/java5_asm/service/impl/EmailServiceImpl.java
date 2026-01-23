@@ -66,6 +66,60 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    @Async
+    public void sendPaymentStatusUpdate(Order order, User user) {
+        log.info("Sending payment status update email for order {} to {}", order.getOrderNumber(), user.getEmail());
+        
+        try {
+            String subject = getPaymentEmailSubject(order);
+            String htmlContent = buildPaymentStatusUpdateEmail(order, user);
+            
+            sendEmailWithRetry(user.getEmail(), subject, htmlContent);
+            log.info("Payment status update email sent successfully for order {}", order.getOrderNumber());
+        } catch (Exception e) {
+            log.error("Failed to send payment status update email for order {}: {}", order.getOrderNumber(), e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get email subject based on payment status
+     */
+    private String getPaymentEmailSubject(Order order) {
+        return switch (order.getPaymentStatus()) {
+            case PAID -> "Thanh toán thành công - Đơn hàng #" + order.getOrderNumber();
+            case FAILED -> "Thanh toán thất bại - Đơn hàng #" + order.getOrderNumber();
+            case REFUNDED -> "Hoàn tiền thành công - Đơn hàng #" + order.getOrderNumber();
+            case PENDING -> "Chờ thanh toán - Đơn hàng #" + order.getOrderNumber();
+        };
+    }
+
+    /**
+     * Build payment status update email HTML content
+     */
+    private String buildPaymentStatusUpdateEmail(Order order, User user) {
+        Context context = new Context();
+        context.setVariable("user", user);
+        context.setVariable("order", order);
+        context.setVariable("orderItems", orderItemRepository.findByOrder(order));
+        context.setVariable("paymentStatusMessage", getPaymentStatusMessage(order.getPaymentStatus()));
+        context.setVariable("isPaymentSuccess", order.getPaymentStatus() == Order.PaymentStatus.PAID);
+        
+        return templateEngine.process("email/payment-status-email", context);
+    }
+
+    /**
+     * Get user-friendly payment status message
+     */
+    private String getPaymentStatusMessage(Order.PaymentStatus status) {
+        return switch (status) {
+            case PENDING -> "Đơn hàng của bạn đang chờ thanh toán";
+            case PAID -> "Thanh toán đã được xác nhận thành công";
+            case FAILED -> "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác";
+            case REFUNDED -> "Số tiền đã được hoàn lại vào tài khoản của bạn";
+        };
+    }
+
     /**
      * Send email with retry logic (max 3 attempts with exponential backoff)
      */
