@@ -1,87 +1,87 @@
 # MariaDB Initialization Scripts
 
-Thư mục này chứa các script SQL sẽ được tự động chạy khi khởi động MariaDB container lần đầu tiên.
+This directory contains SQL scripts that are automatically executed when the MariaDB container is first created.
 
-## 📁 Cấu trúc
+## Execution Order
 
-```
-mariadb_init/
-├── 01-schema.sql    # Tạo cấu trúc database (tables, indexes, views)
-├── 02-data.sql      # Insert dữ liệu mẫu
-└── README.md        # File này
-```
+Scripts are executed in alphabetical order:
 
-## 🚀 Cách hoạt động
+1. `01-schema.sql` - Creates database schema (tables, indexes, constraints)
+2. `02-data.sql` - Inserts sample data
 
-1. **Lần đầu chạy Docker Compose:**
-   - MariaDB sẽ tự động chạy tất cả file `.sql` trong thư mục này
-   - File được chạy theo thứ tự alphabet (01, 02, ...)
-   - Database `java5_asm` sẽ được tạo với đầy đủ tables và data
+## Files
 
-2. **Các lần chạy sau:**
-   - Script KHÔNG chạy lại (vì data đã tồn tại trong `mariadb_data/`)
-   - Nếu muốn reset database, xóa thư mục `mariadb_data/` và chạy lại
+### 01-schema.sql (UPDATED - 23/01/2026)
+- Creates all database tables (13 tables)
+- Defines relationships and foreign keys
+- Sets up indexes for performance
+- Configures character sets and collations
+- **Optimized schema**: Removed payment_methods, product_variants, banners, product_images
+- **OAuth2 Support**: 
+  - `provider` column (local, google, facebook) with DEFAULT 'local'
+  - `provider_id` column for OAuth2 user ID
+  - `password` column is NULLABLE for OAuth2 users
+  - Indexes for OAuth2 queries (idx_provider, idx_provider_id, idx_provider_provider_id)
 
-## 🔄 Reset Database
+### 02-data.sql (FIXED - 23/01/2026)
+- ✅ Inserts sample users (admin, test users) with provider='local'
+- ✅ Adds addresses for users
+- ✅ Creates product categories (9 categories)
+- ✅ Adds brands (5 brands)
+- ✅ Inserts products (10 coffee products) with image_url
+- ✅ Adds sample reviews
+- ✅ Creates wishlists
+- ✅ Adds sample carts and cart items
+- ✅ Creates sample orders with payment_method (VNPAY, MOMO, COD)
+- ✅ Adds order items
+- ❌ REMOVED: payment_methods, product_images, product_variants, banners (tables don't exist)
 
-Nếu muốn reset database về trạng thái ban đầu:
+## Usage
 
+These scripts run automatically when you:
 ```bash
-# 1. Stop container
-docker-compose down
-
-# 2. Xóa data cũ
-rm -rf mariadb_data/
-
-# 3. Start lại (sẽ chạy init scripts)
 docker-compose up -d
 ```
 
-## 📊 Dữ liệu mẫu
+To reset the database with fixed data:
+```bash
+./reset-database.sh
+```
 
-### Users (4 users)
-- **admin** / password123 (ADMIN)
-- **imrankhan** / password123 (USER)
-- **johnsmith** / password123 (USER)
-- **maryjane** / password123 (USER)
+## Notes
 
-### Products (8 coffee products)
-- Coffee Beans - Espresso Arabica and Robusta Beans ($47.00)
-- Lavazza Coffee Blends ($53.00 → $49.00)
-- Lavazza - Caffè Espresso Black Tin ($99.99)
-- Starbucks Pike Place Roast ($32.00 → $28.00)
-- Trung Nguyen Creative 3 ($45.00)
-- Nescafe Gold Instant Coffee ($24.00)
-- Lavazza Qualità Rossa ($38.00 → $35.00)
-- Starbucks French Roast ($35.00)
+- Scripts only run on first container creation
+- To re-run scripts, you must delete the volume:
+  ```bash
+  docker-compose down -v
+  rm -rf mariadb_data/*
+  docker-compose up -d
+  ```
+- All passwords are BCrypt hashed
+- Default admin password: `password123`
+- OAuth2 users don't need password
 
-### Categories
-- Departments → Coffee → Coffee Beans, Ground Coffee, Instant Coffee
-- Grocery
-- Beauty
+## Changes Log
 
-### Brands
-- Lavazza
-- welikecoffee
-- Starbucks
-- Nescafe
-- Trung Nguyen
+### 23/01/2026 - Major Cleanup & OAuth2 Integration
+**Schema Changes (01-schema.sql):**
+- ✅ Added `provider` column with DEFAULT 'local' (local, google, facebook)
+- ✅ Added `provider_id` column for OAuth2 user ID
+- ✅ Changed `password` to NULLABLE for OAuth2 users
+- ✅ Added indexes: idx_provider, idx_provider_id, idx_provider_provider_id
+- ✅ Removed `theme_preference` column (not used in backend, only localStorage)
+- ✅ Removed `idx_theme` index
 
-### Orders (3 sample orders)
-- ORD-20260115-001: Delivered
-- ORD-20260116-002: Shipped
-- ORD-20260117-003: Processing
+**Data Changes (02-data.sql):**
+- ❌ Removed inserts to non-existent tables (payment_methods, product_images, product_variants, banners)
+- ✅ Fixed cart_items (removed variant_id column)
+- ✅ Fixed order_items (removed variant_id, variant_name columns)
+- ✅ Fixed orders (removed payment_method_id, added payment_method)
+- ✅ Added image_url to products
+- ✅ Added provider='local' to all users
+- ✅ Added INSERT IGNORE to prevent duplicate errors
 
-## 🔧 Chỉnh sửa
-
-Nếu muốn thay đổi schema hoặc data:
-
-1. Sửa file `01-schema.sql` hoặc `02-data.sql`
-2. Reset database (xem hướng dẫn trên)
-3. Chạy lại Docker Compose
-
-## ⚠️ Lưu ý
-
-- **KHÔNG** sửa file khi container đang chạy
-- **KHÔNG** commit thư mục `mariadb_data/` vào Git (đã có trong .gitignore)
-- Password trong file này chỉ dùng cho development, KHÔNG dùng cho production
+**Removed Files:**
+- ❌ 03-migration-optimize.sql (not needed, schema already optimized)
+- ❌ 04-oauth2-migration.sql (merged into 01-schema.sql)
+- ❌ 05-make-password-nullable.sql (duplicate, merged into 01-schema.sql)

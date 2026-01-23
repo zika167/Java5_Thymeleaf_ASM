@@ -1,0 +1,130 @@
+spring:
+  application:
+    name: java5_asm
+
+  # ============================================
+  # DATABASE CONFIGURATION
+  # ============================================
+  # Lấy giá trị từ file .env (KHÔNG commit file .env lên Git)
+  # Khi chạy từ IntelliJ: dùng localhost:3307 (MariaDB trên Docker)
+  # Khi chạy từ Docker: dùng mariadb:3306 (container name)
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3307/java5_asm}
+    username: ${SPRING_DATASOURCE_USERNAME:java5_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:your-database-password}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  # ============================================
+  # JPA/HIBERNATE CONFIGURATION
+  # ============================================
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+  # ============================================
+  # THYMELEAF CONFIGURATION
+  # ============================================
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+
+  # ============================================
+  # EMAIL CONFIGURATION
+  # ============================================
+  # Lấy giá trị từ file .env (KHÔNG commit file .env lên Git)
+  # Với Gmail, cần tạo App Password (16 ký tự) tại:
+  # https://myaccount.google.com/apppasswords
+  # Xem hướng dẫn chi tiết: EMAIL_SETUP_GUIDE.md
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:your-email@gmail.com}
+    password: ${MAIL_PASSWORD:your-app-password}
+    from: ${MAIL_FROM:Fat C Grocery Store <noreply@fatcgrocery.com>}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  # ============================================
+  # GOOGLE OAUTH2 CONFIGURATION
+  # ============================================
+  # Lấy giá trị từ file .env (KHÔNG commit file .env lên Git)
+  # Xem hướng dẫn tạo Google OAuth2 credentials tại:
+  # https://console.cloud.google.com/apis/credentials
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+            scope:
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+            client-name: Google
+
+# ============================================
+# JWT CONFIGURATION
+# ============================================
+# Lấy giá trị từ file .env (KHÔNG commit file .env lên Git)
+# JWT_SECRET: Chuỗi bí mật để ký JWT token (tối thiểu 32 ký tự)
+# JWT_EXPIRATION: Thời gian hết hạn token (milliseconds)
+# Tạo JWT_SECRET random tại: https://randomkeygen.com/
+jwt:
+  secret: ${JWT_SECRET:your-jwt-secret-key-minimum-32-characters}
+  expiration: ${JWT_EXPIRATION:86400000}
+  cookie-name: JWT_TOKEN
+
+# ============================================
+# APPLICATION CONFIGURATION
+# ============================================
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+
+# ============================================
+# ACTUATOR CONFIGURATION
+# ============================================
+management:
+  health:
+    mail:
+      # Tắt mail health check để tránh lỗi 503 khi chưa cấu hình email
+      # Bật lại (enabled: true) sau khi đã cấu hình email đúng trong .env
+      # Kiểm tra: http://localhost:8080/actuator/health
+      enabled: false
+
+# ============================================
+# SERVER CONFIGURATION
+# ============================================
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# ============================================
+# LOGGING CONFIGURATION
+# ============================================
+logging:
+  level:
+    root: INFO
+    poly.edu.java5_asm: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: TRACE  # Chi tiết OAuth2 flow
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

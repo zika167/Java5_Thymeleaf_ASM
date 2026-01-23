@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật thanh toán</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td th:style="${isPaymentSuccess} ? 'background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); padding: 40px 30px; text-align: center;' : 'background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); padding: 40px 30px; text-align: center;'">
+                            <!-- Icon -->
+                            <div th:if="${isPaymentSuccess}" style="margin-bottom: 20px;">
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="40" cy="40" r="38" stroke="white" stroke-width="4" fill="rgba(255,255,255,0.2)"/>
+                                    <path d="M25 40L35 50L55 30" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div th:unless="${isPaymentSuccess}" style="margin-bottom: 20px;">
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="40" cy="40" r="38" stroke="white" stroke-width="4" fill="rgba(255,255,255,0.2)"/>
+                                    <path d="M28 28L52 52M52 28L28 52" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;" th:text="${isPaymentSuccess} ? 'Thanh toán thành công!' : 'Thanh toán thất bại'">Thanh toán</h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <p style="color: #333; font-size: 16px; margin: 0 0 20px;">
+                                Xin chào <strong th:text="${user.fullName}">Khách hàng</strong>,
+                            </p>
+                            <p style="color: #666; font-size: 15px; line-height: 1.6; margin: 0 0 30px;" th:text="${paymentStatusMessage}">
+                                Trạng thái thanh toán
+                            </p>
+
+                            <!-- Order Info Box -->
+                            <table width="100%" cellpadding="0" cellspacing="0" th:style="${isPaymentSuccess} ? 'background-color: #E8F5E9; border-radius: 8px; margin-bottom: 30px;' : 'background-color: #FFEBEE; border-radius: 8px; margin-bottom: 30px;'">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td style="color: #666; font-size: 14px; padding: 8px 0;">Mã đơn hàng:</td>
+                                                <td style="color: #333; font-size: 14px; font-weight: 600; text-align: right;" th:text="${order.orderNumber}">ORD-123456</td>
+                                            </tr>
+                                            <tr th:if="${order.paymentTransactionId}">
+                                                <td style="color: #666; font-size: 14px; padding: 8px 0;">Mã giao dịch:</td>
+                                                <td style="color: #333; font-size: 14px; font-weight: 600; text-align: right;" th:text="${order.paymentTransactionId}">TXN-123456</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #666; font-size: 14px; padding: 8px 0;">Phương thức:</td>
+                                                <td style="color: #333; font-size: 14px; text-align: right;" th:text="${order.paymentMethod}">VNPay</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #666; font-size: 14px; padding: 8px 0;">Tổng tiền:</td>
+                                                <td th:style="${isPaymentSuccess} ? 'color: #4CAF50; font-size: 18px; font-weight: 700; text-align: right;' : 'color: #f44336; font-size: 18px; font-weight: 700; text-align: right;'" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">570,000 đ</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Order Items -->
+                            <h3 style="color: #333; font-size: 18px; margin: 0 0 15px;">Chi tiết đơn hàng</h3>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #eee; border-radius: 8px; margin-bottom: 30px;">
+                                <tr th:each="item : ${orderItems}" style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 15px;">
+                                        <span style="color: #333; font-size: 14px;" th:text="${item.productName}">Sản phẩm</span>
+                                        <span style="color: #999; font-size: 13px;"> x<span th:text="${item.quantity}">1</span></span>
+                                    </td>
+                                    <td style="padding: 15px; text-align: right; color: #333; font-weight: 500;" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">100,000 đ</td>
+                                </tr>
+                            </table>
+
+                            <!-- Action Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0;">
+                                        <a th:if="${isPaymentSuccess}" th:href="@{/order/{orderNumber}(orderNumber=${order.orderNumber})}" style="display: inline-block; background-color: #4CAF50; color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 500;">
+                                            Xem đơn hàng
+                                        </a>
+                                        <a th:unless="${isPaymentSuccess}" th:href="@{/payment/vnpay/create/{orderNumber}(orderNumber=${order.orderNumber})}" style="display: inline-block; background-color: #2196F3; color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 500;">
+                                            Thử thanh toán lại
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Note for failed payment -->
+                            <div th:unless="${isPaymentSuccess}" style="background-color: #FFF8E1; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                                <p style="color: #F57C00; font-size: 14px; margin: 0;">
+                                    💡 Nếu bạn gặp vấn đề khi thanh toán, vui lòng liên hệ hotline: <strong>1900 123 456</strong> để được hỗ trợ.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9f9f9; padding: 30px; text-align: center; border-top: 1px solid #eee;">
+                            <p style="color: #999; font-size: 13px; margin: 0 0 10px;">
+                                Email này được gửi tự động từ Fat C Grocery Store
+                            </p>
+                            <p style="color: #999; font-size: 13px; margin: 0;">
+                                © 2026 Fat C Grocery Store. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

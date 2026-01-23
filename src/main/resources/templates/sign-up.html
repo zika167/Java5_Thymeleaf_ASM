@@ -53,16 +53,22 @@
           <p class="auth__desc">
             Let’s create your account and Shop like a pro and save money.
           </p>
-          <form action="./index-logined.html" class="form auth__form">
+          <!-- Alert messages -->
+          <div th:if="${errorMessage}" class="alert alert--error" style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            <span th:text="${errorMessage}"></span>
+          </div>
+          <div th:if="${successMessage}" class="alert alert--success" style="color: #155724; background: #d4edda; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            <span th:text="${successMessage}"></span>
+          </div>
+
+          <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post" class="form auth__form">
             <div class="form__group">
               <div class="form__text-input">
                 <input
-                  type="email"
-                  name=""
-                  id=""
+                  type="text"
+                  th:field="*{username}"
                   class="form__input"
-                  placeholder="Email"
-                  value="admin@grocerystore.com"
+                  placeholder="Username"
                   required
                   autofocus
                 />
@@ -77,17 +83,52 @@
                   class="form__input-icon-error"
                 />
               </div>
-              <p class="form__error">Email chưa đúng định dạng</p>
+              <p class="form__error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username error</p>
+            </div>
+            <div class="form__group">
+              <div class="form__text-input">
+                <input
+                  type="email"
+                  th:field="*{email}"
+                  class="form__input"
+                  placeholder="Email"
+                  required
+                />
+                <img
+                  th:src="@{/assets/icon/email.svg}"
+                  alt=""
+                  class="form__input-icon"
+                />
+                <img
+                  th:src="@{/assets/icon/error.svg}"
+                  alt=""
+                  class="form__input-icon-error"
+                />
+              </div>
+              <p class="form__error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</p>
+            </div>
+            <div class="form__group">
+              <div class="form__text-input">
+                <input
+                  type="text"
+                  th:field="*{fullName}"
+                  class="form__input"
+                  placeholder="Họ và tên (tùy chọn)"
+                />
+                <img
+                  th:src="@{/assets/icon/email.svg}"
+                  alt=""
+                  class="form__input-icon"
+                />
+              </div>
             </div>
             <div class="form__group">
               <div class="form__text-input">
                 <input
                   type="password"
-                  name=""
-                  id=""
+                  th:field="*{password}"
                   class="form__input"
                   placeholder="Password"
-                  value="123123123"
                   required
                   minlength="6"
                 />
@@ -102,17 +143,15 @@
                   class="form__input-icon-error"
                 />
               </div>
-              <p class="form__error">Mật khẩu ít nhất 6 ký tự</p>
+              <p class="form__error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</p>
             </div>
             <div class="form__group">
               <div class="form__text-input">
                 <input
                   type="password"
-                  name=""
-                  id=""
+                  th:field="*{confirmPassword}"
                   class="form__input"
                   placeholder="Confirm password"
-                  value="123123123"
                   required
                   minlength="6"
                 />
@@ -127,24 +166,19 @@
                   class="form__input-icon-error"
                 />
               </div>
-              <p class="form__error">Mật khẩu ít nhất 6 ký tự</p>
+              <p class="form__error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Confirm password error</p>
             </div>
             <div class="form__group form__group--inline">
               <label class="form__checkbox">
-                <input type="checkbox" name="" class="form__checkbox-input" />
-                <span class="form__checkbox-label">Set as default card</span>
+                <input type="checkbox" name="agreeTerms" class="form__checkbox-input" required />
+                <span class="form__checkbox-label">Tôi đồng ý với điều khoản sử dụng</span>
               </label>
-              <a
-                th:href="@{/reset-password}"
-                class="auth__link form__pull-right"
-                >Forgot Password?</a
-              >
             </div>
             <div class="form__group auth__btn-group">
-              <button class="btn btn--primary auth__btn form__submit-btn">
+              <button type="submit" class="btn btn--primary auth__btn form__submit-btn">
                 Sign Up
               </button>
-              <button class="btn btn--outline auth__btn btn--no-margin">
+              <button type="button" class="btn btn--outline auth__btn btn--no-margin">
                 <img
                   th:src="@{/assets/icon/google.svg}"
                   alt=""

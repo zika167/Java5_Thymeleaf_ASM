@@ -1,22 +1,70 @@
 services:
+  # ============================================
+  # MARIADB DATABASE SERVICE
+  # ============================================
   mariadb:
     image: mariadb:latest
     container_name: coffee_shop_db
     restart: always
     environment:
-      # Mật khẩu cho tài khoản root
-      MARIADB_ROOT_PASSWORD: rootpassword
-      # Tên Database sẽ tự động khởi tạo khi chạy
-      MARIADB_DATABASE: java5_asm
-      # Tạo một user riêng để Spring Boot sử dụng (an toàn hơn root)
-      MARIADB_USER: java5_user
-      MARIADB_PASSWORD: java5_password
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3307:3306" # Map cổng 3307 của máy thật vào cổng 3306 của container
+      - "3307:3306" # Host:Container - Truy cập từ máy host qua port 3307
     volumes:
-      - ./mariadb_data:/var/lib/mysql # Lưu dữ liệu vào máy thật để không bị mất khi tắt container
-      - ./mariadb_init:/docker-entrypoint-initdb.d # Auto-run SQL scripts on first start
+      - ./mariadb_data:/var/lib/mysql
+      - ./mariadb_init:/docker-entrypoint-initdb.d
+    networks:
+      - coffee_network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # SPRING BOOT APPLICATION SERVICE
+  # ============================================
+  # COMMENT: Nếu chạy app từ IntelliJ/IDE, comment service này lại
+  # Chỉ uncomment khi muốn chạy toàn bộ bằng Docker
+  
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: coffee_shop_app
+  #   restart: always
+  #   ports:
+  #     - "${APP_PORT}:8080"
+  #   environment:
+  #     # Database Configuration
+  #     SPRING_DATASOURCE_URL: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}
+  #     SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+  #     SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+  #     
+  #     # Google OAuth2
+  #     GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+  #     GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+  #     
+  #     # JWT Configuration
+  #     JWT_SECRET: ${JWT_SECRET}
+  #     JWT_EXPIRATION: ${JWT_EXPIRATION}
+  #     
+  #     # Application Base URL
+  #     APP_BASE_URL: ${APP_BASE_URL}
+  #     
+  #     # Email Configuration
+  #     MAIL_USERNAME: ${MAIL_USERNAME}
+  #     MAIL_PASSWORD: ${MAIL_PASSWORD}
+  #     MAIL_FROM: ${MAIL_FROM}
+  #   depends_on:
+  #     mariadb:
+  #       condition: service_healthy
+  #   networks:
+  #     - coffee_network
 
 networks:
-  default:
-    name: coffee_network
+  coffee_network:
+    driver: bridge

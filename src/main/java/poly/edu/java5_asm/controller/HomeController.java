@@ -1,62 +1,121 @@
 package poly.edu.java5_asm.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import poly.edu.java5_asm.dto.response.ProductListResponse;
+import poly.edu.java5_asm.dto.response.ProductResponse;
+import poly.edu.java5_asm.entity.User;
+import poly.edu.java5_asm.security.CustomUserDetails;
+import poly.edu.java5_asm.service.CartService;
+import poly.edu.java5_asm.service.ProductService;
 
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
 
+    private final ProductService productService;
+    private final CartService cartService;
+
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // Featured products
+        ProductListResponse featuredProducts = productService.getFeaturedProducts(0, 8);
+        model.addAttribute("featuredProducts", featuredProducts.getProducts());
+
+        // Latest products
+        ProductListResponse latestProducts = productService.getLatestProducts(0, 8);
+        model.addAttribute("latestProducts", latestProducts.getProducts());
+
+        // Categories
+        model.addAttribute("categories", productService.getAllCategories());
+
+        // Cart count
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+
         return "index";
     }
 
-    @GetMapping("/sign-in")
-    public String signIn() {
-        return "sign-in";
-    }
-
-    @GetMapping("/sign-up")
-    public String signUp() {
-        return "sign-up";
-    }
-
     @GetMapping("/category")
-    public String category(Model model) {
+    public String category(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // All products with pagination
+        ProductListResponse products = productService.getAllProducts(0, 12, "createdAt", "DESC");
+        model.addAttribute("products", products.getProducts());
+        model.addAttribute("totalPages", products.getTotalPages());
+        model.addAttribute("currentPage", products.getCurrentPage());
+
+        // Categories for sidebar
+        model.addAttribute("categories", productService.getAllCategories());
+
+        // Brands for filter
+        model.addAttribute("brands", productService.getAllBrands());
+
+        // Cart count
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+
         return "category";
     }
 
     @GetMapping("/product/{id}")
-    public String productDetail(@PathVariable Long id, Model model) {
-        // TODO: Load product by id
+    public String productDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // Product details
+        ProductResponse product = productService.getProductById(id);
+        model.addAttribute("product", product);
+
+        // Related products (same category)
+        ProductListResponse relatedProducts = productService.getAllProducts(0, 4, "createdAt", "DESC");
+        model.addAttribute("relatedProducts", relatedProducts.getProducts());
+
+        // Cart count
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+
         return "product-detail";
     }
 
+    @GetMapping("/cart")
+    public String cart(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // Cart count
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+
+        return "cart";
+    }
+
     @GetMapping("/checkout")
-    public String checkout(Model model) {
+    public String checkout(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            // Cart data
+            model.addAttribute("cart", cartService.getCart(user));
+            // Cart count
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+
         return "checkout";
     }
 
     @GetMapping("/shipping")
     public String shipping(Model model) {
         return "shipping";
-    }
-
-    @GetMapping("/payment")
-    public String payment(Model model) {
-        return "payment";
-    }
-
-    @GetMapping("/profile")
-    public String profile(Model model) {
-        return "profile";
-    }
-
-    @GetMapping("/edit-personal-info")
-    public String editPersonalInfo(Model model) {
-        return "edit-personal-info";
     }
 
     @GetMapping("/favourite")
@@ -77,5 +136,36 @@ public class HomeController {
     @GetMapping("/reset-password-emailed")
     public String resetPasswordEmailed() {
         return "reset-password-emailed";
+    }
+
+    @GetMapping("/my-orders")
+    public String myOrders(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+        return "my-orders";
+    }
+
+    @GetMapping("/order-detail/{id}")
+    public String orderDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+        model.addAttribute("orderId", id);
+        return "order-detail";
+    }
+
+    @GetMapping("/addresses")
+    public String addresses(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Integer cartCount = cartService.getCartItemCount(user);
+            model.addAttribute("cartCount", cartCount);
+        }
+        return "addresses";
     }
 }
