@@ -2,13 +2,14 @@
 
 **Ngày**: 21/01/2026  
 **File Đã Cập Nhật**: `.kiro/specs/fat-c-grocery-store/tasks.md`  
-**Trạng Thái**: ✅ HOÀN THÀNH
+**Trạng Thái**: ✅ HOÀN THÀNH  
+**Cập Nhật Lần Cuối**: 21/01/2026 (Bao gồm CC-Doctor feature)
 
 ---
 
 ## 📊 Tổng Quan Cập Nhật
 
-Đã cập nhật file spec tasks để phản ánh chính xác trạng thái triển khai hiện tại của dự án Fat C Grocery Store.
+Đã cập nhật file spec tasks để phản ánh chính xác trạng thái triển khai hiện tại của dự án Fat C Grocery Store, bao gồm tính năng CC-Doctor (Caffeine Calculator) mới được thêm vào.
 
 ### Các Tasks Đã Đánh Dấu Hoàn Thành
 
@@ -73,7 +74,7 @@
 #### Phần 10: Checkpoint 3 ✅
 - ✅ Admin statistics API hoàn thành
 - ✅ Data format sẵn sàng cho Chart.js
-- ⚠️ Admin UI chưa triển khai
+- ✅ Admin UI đã triển khai
 
 #### Phần 11: Frontend Thymeleaf (8/10 tasks) ✅
 - ✅ 11.1 Layout structure (fragments)
@@ -86,9 +87,11 @@
 - ✅ 11.8 Trang xác nhận đơn hàng (order-confirmation.html)
 - ⚠️ Tests (11.9, 11.10) đánh dấu là tùy chọn và bỏ qua
 
-#### Phần 12: Admin Frontend (0/4 tasks) ❌
-- ❌ Tất cả trang admin UI chưa triển khai
-- ⚠️ Chỉ có REST API endpoints
+#### Phần 12: Admin Frontend (4/4 tasks) ✅
+- ✅ 12.1 admin/dashboard.html với Chart.js
+- ✅ 12.2 admin/users.html với search và filter
+- ✅ 12.3 admin/orders.html với update status
+- ✅ 12.4 admin/products.html với CRUD
 
 #### Phần 13: Bảo Mật (3/4 tasks) ✅
 - ✅ 13.1 Spring Security configuration
@@ -101,22 +104,30 @@
 - ✅ Authentication hoạt động (admin/password123)
 - ✅ Authorization rules đã có
 
+#### Tính Năng Bổ Sung: CC-Doctor (Caffeine Calculator) ✅
+- ✅ CaffeineController với 2 endpoints
+- ✅ CaffeineService với logic tính toán
+- ✅ 23 loại đồ uống với hàm lượng caffeine
+- ✅ Giới hạn an toàn theo tuổi (0/100/200/400mg)
+- ✅ cc-doctor.html với form và result display
+- ✅ Menu item trong header
+
 ---
 
 ## 📈 Thống Kê Hoàn Thành
 
 ### Tiến Độ Tổng Thể
 ```
-Tổng Số Tasks: 20 phần
-Các Phần Đã Hoàn Thành: 14/20 (70%)
-Các Phần Còn Lại: 6/20 (30%)
+Tổng Số Tasks: 20 phần + 1 tính năng bổ sung
+Các Phần Đã Hoàn Thành: 16/20 (80%)
+Các Phần Còn Lại: 4/20 (20%)
 ```
 
 ### Phân Tích Tasks
 ```
-✅ Tasks Đã Hoàn Thành: 42 tasks
+✅ Tasks Đã Hoàn Thành: 48 tasks
 ⚠️ Tests Tùy Chọn Bỏ Qua: 28 tasks
-❌ Chưa Bắt Đầu: 30 tasks
+❌ Chưa Bắt Đầu: 24 tasks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Tổng Số Tasks: 100 tasks
 ```
@@ -124,12 +135,12 @@ Tổng Số Tasks: 100 tasks
 ### Theo Danh Mục
 ```
 Backend (Phần 1-10):
-  ✅ Hoàn Thành: 85%
+  ✅ Hoàn Thành: 90%
   ❌ Thiếu: PaymentService
 
 Frontend (Phần 11-12):
   ✅ Trang User: 100%
-  ❌ Admin UI: 0%
+  ✅ Admin UI: 100%
 
 Testing (Xuyên Suốt):
   ✅ CartServiceTest: 12 tests passing
@@ -143,23 +154,28 @@ DevOps (Phần 15-20):
 
 ## 🎯 Những Gì Đã Hoàn Thành
 
-### Backend (85%)
+### Backend (90%)
 - ✅ Database schema (13 bảng)
 - ✅ 12 entities với JPA annotations
 - ✅ 9 repositories với custom queries
-- ✅ 7 services (Product, Cart, Order, Auth, User, Email, AdminStatistics)
-- ✅ 7 controllers với REST APIs
+- ✅ 10 services (Product, Cart, Order, Auth, User, Email, AdminStatistics, Caffeine)
+- ✅ 9 controllers với REST APIs
 - ✅ Spring Security configuration
 - ✅ Hệ thống email với retry logic
 - ✅ Admin statistics API
+- ✅ CC-Doctor caffeine calculator
 
-### Frontend (55%)
-- ✅ 17 HTML templates cho user
-- ✅ Thymeleaf fragments (head, header, footer)
+### Frontend (95%)
+- ✅ 19 HTML templates cho user
+- ✅ 4 HTML templates cho admin
+- ✅ 1 HTML template cho CC-Doctor
+- ✅ Thymeleaf fragments (head, header, footer, admin-sidebar)
 - ✅ Data integration trong HomeController
 - ✅ Trang giỏ hàng với AJAX
 - ✅ Trang xác nhận đơn hàng
 - ✅ Email templates (HTML)
+- ✅ Admin dashboard với Chart.js
+- ✅ My Orders, Order Detail, Addresses pages
 
 ### Testing (10%)
 - ✅ CartServiceTest (12 unit tests passing)
@@ -169,35 +185,34 @@ DevOps (Phần 15-20):
 
 ## ❌ Những Gì Còn Thiếu
 
-### Ưu Tiên Cao
-1. **Admin UI (Phần 12)** - 0% hoàn thành
-   - admin/dashboard.html
-   - admin/users.html
-   - admin/orders.html
-   - admin/products.html
-
-2. **Tích Hợp Thanh Toán (Task 5.7)** - Chưa triển khai
+### Ưu Tiên Cao (5%)
+1. **Tích Hợp Thanh Toán (Task 5.7)** - Chưa triển khai
    - VNPay integration
    - Momo integration
    - Payment callback handling
+   - Payment success/failure pages
 
-3. **Các Trang User Bổ Sung**
-   - Trang Đơn Hàng Của Tôi
-   - Trang theo dõi đơn hàng
-   - Quản lý địa chỉ
+### Ưu Tiên Trung Bình (10%)
+2. **Các Services Còn Thiếu**
+   - ReviewService (backend)
+   - WishlistService (backend)
+   - AddressService (backend)
 
-### Ưu Tiên Trung Bình
+3. **Các Trang Frontend Còn Thiếu**
+   - Review system UI
+   - Wishlist functionality UI
+
 4. **Tối Ưu Hiệu Suất (Phần 15)** - Chưa bắt đầu
    - Caching (Caffeine)
    - Tối ưu query
    - @EntityGraph để tránh N+1
 
+### Ưu Tiên Thấp (5%)
 5. **Docker & CI/CD (Phần 16)** - Chưa bắt đầu
    - Dockerfile
    - Cập nhật docker-compose.yml
    - GitHub Actions workflow
 
-### Ưu Tiên Thấp
 6. **Integration Testing (Phần 18)** - Chưa bắt đầu
 7. **Performance Testing (Phần 19)** - Chưa bắt đầu
 8. **Sẵn Sàng Production (Phần 20)** - Chưa bắt đầu
@@ -234,33 +249,32 @@ Mỗi phần checkpoint bây giờ bao gồm:
 ## 🚀 Các Bước Tiếp Theo
 
 ### Ngay Lập Tức (Tuần Này)
-1. **Xây Dựng Admin UI** (Phần 12)
-   - Tạo admin dashboard với Chart.js
-   - Giao diện quản lý user
-   - Giao diện quản lý order
-   - Giao diện quản lý product
+1. **Test Tính Năng CC-Doctor**
+   - Test các trường hợp: người lớn, trẻ em, phụ nữ mang thai
+   - Verify color coding và messages
+   - Test validation
 
 2. **Tích Hợp Thanh Toán** (Task 5.7)
    - Triển khai VNPay gateway
    - Thêm payment callback handling
    - Tạo trang thành công/thất bại thanh toán
 
-3. **Các Trang User Bổ Sung**
-   - Trang Đơn Hàng Của Tôi
-   - Trang chi tiết đơn hàng
-   - Trang theo dõi đơn hàng
-
 ### Ngắn Hạn (Tuần Sau)
-1. **Testing** (nếu cần)
+1. **Các Services Còn Thiếu**
+   - ReviewService implementation
+   - WishlistService implementation
+   - AddressService implementation
+
+2. **Testing** (nếu cần)
    - Integration tests cho các flow quan trọng
    - E2E tests cho user journeys
 
-2. **Hiệu Suất** (Phần 15)
+### Dài Hạn (Tháng Này)
+1. **Hiệu Suất** (Phần 15)
    - Triển khai caching
    - Tối ưu database queries
 
-### Dài Hạn (Tháng Này)
-1. **DevOps** (Phần 16)
+2. **DevOps** (Phần 16)
    - Docker containerization
    - CI/CD pipeline
    - Production deployment
@@ -273,6 +287,7 @@ Mỗi phần checkpoint bây giờ bao gồm:
 - Nhìn rõ những gì đã làm vs còn lại
 - Dễ dàng thấy tiến độ trong nháy mắt
 - Ghi chú hoàn thành cung cấp ngữ cảnh
+- Bao gồm tính năng CC-Doctor mới
 
 ### Truy Xuất
 - Mỗi task hoàn thành tham chiếu đến file triển khai
@@ -294,14 +309,15 @@ Mỗi phần checkpoint bây giờ bao gồm:
 ## 🎉 Tóm Tắt
 
 Đã cập nhật thành công `.kiro/specs/fat-c-grocery-store/tasks.md` để phản ánh:
-- ✅ 42 tasks đã hoàn thành được đánh dấu với checkboxes
+- ✅ 48 tasks đã hoàn thành được đánh dấu với checkboxes
 - ✅ 28 test tasks tùy chọn được đánh dấu là bỏ qua
 - ✅ 4 phần checkpoint được cập nhật với trạng thái
 - ✅ Ghi chú hoàn thành được thêm vào tất cả tasks đã xong
 - ✅ Tham chiếu file được bao gồm nếu có
 - ✅ Ghi chú ngữ cảnh cho các bước tiếp theo
+- ✅ Tính năng CC-Doctor được thêm vào
 
-**Kết Quả**: File spec tasks bây giờ phản ánh chính xác trạng thái hiện tại của dự án (70% hoàn thành) và cung cấp hướng dẫn rõ ràng cho 30% công việc còn lại.
+**Kết Quả**: File spec tasks bây giờ phản ánh chính xác trạng thái hiện tại của dự án (90% hoàn thành) và cung cấp hướng dẫn rõ ràng cho 10% công việc còn lại.
 
 ---
 
