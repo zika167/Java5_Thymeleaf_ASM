@@ -8,10 +8,10 @@ USE java5_asm;
 -- 1. USERS
 -- ============================================
 INSERT IGNORE INTO users (username, email, password, full_name, phone, registered_date, role, provider) VALUES
-('admin', 'admin@grocerystore.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Admin User', '0123456789', '2022-01-01', 'ADMIN', 'local'),
-('imrankhan', 'imran@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Imran Khan', '0987654321', '2022-05-17', 'USER', 'local'),
-('johnsmith', 'john@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'John Smith', '0912345678', '2023-03-10', 'USER', 'local'),
-('maryjane', 'mary@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Mary Jane', '0923456789', '2023-06-20', 'USER', 'local');
+('admin', 'admin@grocerystore.com', '$2a$10$547jHD5iIaAp/7g1OKx3rO4cRul78RDFuaeeZT60rHCvyfnLSB2WO', 'Admin User', '0123456789', '2022-01-01', 'ADMIN', 'local'),
+('imrankhan', 'imran@example.com', '$2a$10$547jHD5iIaAp/7g1OKx3rO4cRul78RDFuaeeZT60rHCvyfnLSB2WO', 'Imran Khan', '0987654321', '2022-05-17', 'USER', 'local'),
+('johnsmith', 'john@example.com', '$2a$10$547jHD5iIaAp/7g1OKx3rO4cRul78RDFuaeeZT60rHCvyfnLSB2WO', 'John Smith', '0912345678', '2023-03-10', 'USER', 'local'),
+('maryjane', 'mary@example.com', '$2a$10$547jHD5iIaAp/7g1OKx3rO4cRul78RDFuaeeZT60rHCvyfnLSB2WO', 'Mary Jane', '0923456789', '2023-06-20', 'USER', 'local');
 -- Password for all: password123
 
 -- ============================================
