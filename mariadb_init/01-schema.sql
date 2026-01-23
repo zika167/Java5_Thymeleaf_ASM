@@ -26,13 +26,15 @@ CREATE TABLE users (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NULL COMMENT 'Nullable for OAuth2 users',
     full_name VARCHAR(100),
     phone VARCHAR(20),
     avatar_url VARCHAR(255) DEFAULT '/assets/img/avatar.jpg',
     registered_date DATE DEFAULT (CURRENT_DATE),
     is_active BOOLEAN DEFAULT TRUE,
     role ENUM('USER', 'ADMIN') DEFAULT 'USER',
+    provider VARCHAR(20) DEFAULT 'local' COMMENT 'OAuth2 provider: local, google, facebook',
+    provider_id VARCHAR(100) COMMENT 'ID from OAuth2 provider',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login_at TIMESTAMP NULL,
@@ -40,7 +42,10 @@ CREATE TABLE users (
     theme_preference ENUM('LIGHT', 'DARK', 'AUTO') DEFAULT 'LIGHT',
     INDEX idx_email (email),
     INDEX idx_username (username),
-    INDEX idx_theme (theme_preference)
+    INDEX idx_theme (theme_preference),
+    INDEX idx_provider (provider),
+    INDEX idx_provider_id (provider_id),
+    INDEX idx_provider_provider_id (provider, provider_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
