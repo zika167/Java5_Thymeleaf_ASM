@@ -1,271 +1,175 @@
-# Email System Setup Guide
+# 📧 Hướng Dẫn Cấu Hình Email
 
-## 📧 Gmail Configuration for Email System
-
-### Prerequisites
-- Gmail account
-- 2-Factor Authentication enabled
+> **Để gửi email xác nhận đơn hàng cho khách hàng**
 
 ---
 
-## Step 1: Enable 2-Factor Authentication
+## 📋 Yêu Cầu
 
-1. Go to your Google Account: https://myaccount.google.com/
-2. Navigate to **Security** section
-3. Find **2-Step Verification** and click **Get Started**
-4. Follow the prompts to enable 2FA
+- Tài khoản Gmail
+- Đã bật 2-Step Verification
 
 ---
 
-## Step 2: Generate App Password
+## 🔧 Các Bước Cấu Hình
 
-1. Go to: https://myaccount.google.com/apppasswords
-2. Select **Mail** as the app
-3. Select **Other (Custom name)** as the device
-4. Enter name: `Fat C Grocery Store`
-5. Click **Generate**
-6. Copy the 16-character password (format: `xxxx xxxx xxxx xxxx`)
+### Bước 1: Bật 2-Step Verification
 
-**Important**: Save this password securely. You won't be able to see it again.
+1. Truy cập [Google Account Security](https://myaccount.google.com/security)
+2. Tìm mục **2-Step Verification**
+3. Click **Get Started** và làm theo hướng dẫn
+4. Hoàn tất việc bật 2-Step Verification
 
----
+### Bước 2: Tạo App Password
 
-## Step 3: Configure Application
+1. Truy cập [App Passwords](https://myaccount.google.com/apppasswords)
+2. Đăng nhập lại nếu được yêu cầu
+3. Tại mục **Select app**: Chọn **Mail**
+4. Tại mục **Select device**: Chọn **Other (Custom name)**
+5. Nhập tên: `Java5 ASM` hoặc `Coffee Shop`
+6. Click **Generate**
+7. Google sẽ hiển thị mật khẩu 16 ký tự (dạng: `xxxx xxxx xxxx xxxx`)
+8. **Copy mật khẩu này** (chỉ hiển thị 1 lần)
 
-### Option 1: Environment Variables (Recommended for Production)
+### Bước 3: Cập Nhật File `.env`
 
-**macOS/Linux:**
-```bash
-export MAIL_USERNAME=your-email@gmail.com
-export MAIL_PASSWORD=xxxx-xxxx-xxxx-xxxx
+Mở file `.env` trong thư mục project và tìm 3 dòng sau:
+
+```env
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_FROM=Fat C Grocery Store <noreply@fatcgrocery.com>
 ```
 
-**Windows (Command Prompt):**
-```cmd
-set MAIL_USERNAME=your-email@gmail.com
-set MAIL_PASSWORD=xxxx-xxxx-xxxx-xxxx
+Sửa thành:
+
+```env
+MAIL_USERNAME=youremail@gmail.com
+MAIL_PASSWORD=xxxx xxxx xxxx xxxx
+MAIL_FROM=Fat C Grocery Store <noreply@fatcgrocery.com>
 ```
 
-**Windows (PowerShell):**
-```powershell
-$env:MAIL_USERNAME="your-email@gmail.com"
-$env:MAIL_PASSWORD="xxxx-xxxx-xxxx-xxxx"
+**Ví dụ**:
+```env
+MAIL_USERNAME=nguyenvana@gmail.com
+MAIL_PASSWORD=abcd efgh ijkl mnop
+MAIL_FROM=Fat C Grocery Store <noreply@fatcgrocery.com>
 ```
 
-### Option 2: application.properties (For Development Only)
+### Bước 4: Restart Application
 
-Edit `src/main/resources/application.properties`:
+- Stop app trong IntelliJ (nếu đang chạy)
+- Run lại `Java5AsmApplication`
 
-```properties
-spring.mail.username=your-email@gmail.com
-spring.mail.password=xxxx-xxxx-xxxx-xxxx
+---
+
+## ✅ Kiểm Tra Email Hoạt Động
+
+### 1. Xem logs khi start app
+
+Console phải hiển thị:
+```
+✅ Loaded .env file successfully
 ```
 
-**⚠️ Warning**: Never commit credentials to Git! Add to `.gitignore` if using this method.
-
----
-
-## Step 4: Test Email System
-
-### 1. Start the Application
-
-```bash
-./mvnw spring-boot:run
+**KHÔNG** thấy lỗi:
+```
+❌ AuthenticationFailedException: 535-5.7.8 Username and Password not accepted
 ```
 
-### 2. Create a Test Order
+### 2. Test gửi email
 
-**Using Postman or curl:**
+1. Truy cập: http://localhost:8080
+2. Đăng nhập vào hệ thống
+3. Thêm sản phẩm vào giỏ hàng
+4. Tiến hành đặt hàng
+5. Điền thông tin giao hàng và thanh toán
+6. Hoàn tất đơn hàng
 
-```bash
-curl -X POST http://localhost:8080/api/orders/checkout \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "shippingMethod": "standard",
-    "paymentMethod": "COD",
-    "customerNote": "Test order"
-  }'
+### 3. Kiểm tra email
+
+- Mở hộp thư email của tài khoản đã đăng nhập
+- Phải nhận được email xác nhận đơn hàng
+- Email có tiêu đề: **"Order Confirmation - Order #XXXXX"**
+
+---
+
+## 🐛 Xử Lý Lỗi
+
+### Lỗi 1: AuthenticationFailedException
+
+**Triệu chứng**:
+```
+AuthenticationFailedException: 535-5.7.8 Username and Password not accepted
 ```
 
-### 3. Check Your Email
+**Nguyên nhân**:
+- Chưa bật 2-Step Verification
+- App Password sai
+- Dùng mật khẩu Gmail thông thường thay vì App Password
 
-- Check inbox for order confirmation email
-- Verify email formatting and content
-- Check spam folder if not received
+**Giải pháp**:
+1. Kiểm tra đã bật 2-Step Verification chưa
+2. Tạo lại App Password
+3. Copy đúng 16 ký tự (có thể giữ nguyên khoảng trắng)
+4. Paste vào `MAIL_PASSWORD` trong file `.env`
+5. Restart app
 
-### 4. Test Status Update
+### Lỗi 2: Mail server connection failed
 
-```bash
-curl -X PUT http://localhost:8080/api/orders/{orderId}/status \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '"CONFIRMED"'
+**Triệu chứng**:
+```
+Could not connect to SMTP host: smtp.gmail.com, port: 587
 ```
 
----
+**Nguyên nhân**:
+- Không có kết nối internet
+- Firewall chặn port 587
 
-## Troubleshooting
+**Giải pháp**:
+1. Kiểm tra kết nối internet
+2. Tắt firewall tạm thời để test
+3. Thêm exception cho port 587 trong firewall
 
-### Issue: "Authentication failed"
+### Lỗi 3: Email không được gửi nhưng không có lỗi
 
-**Solution:**
-- Verify 2FA is enabled
-- Regenerate App Password
-- Check for typos in email/password
-- Remove spaces from App Password
+**Nguyên nhân**:
+- `MAIL_USERNAME` sai
+- Email bị vào spam
 
-### Issue: "Connection timeout"
-
-**Solution:**
-- Check internet connection
-- Verify firewall settings
-- Try different network (corporate networks may block SMTP)
-
-### Issue: "Email not received"
-
-**Solution:**
-- Check spam/junk folder
-- Verify email address is correct
-- Check Gmail's "Sent" folder
-- Review application logs for errors
-
-### Issue: "535-5.7.8 Username and Password not accepted"
-
-**Solution:**
-- Use App Password, not regular Gmail password
-- Ensure 2FA is enabled
-- Regenerate App Password
+**Giải pháp**:
+1. Kiểm tra lại `MAIL_USERNAME` trong `.env`
+2. Kiểm tra thư mục Spam/Junk trong email
+3. Xem logs trong IntelliJ console để biết chi tiết
 
 ---
 
-## Email Configuration Details
+## 📌 Lưu Ý Quan Trọng
 
-### Current Settings (application.properties)
-
-```properties
-# Gmail SMTP Configuration
-spring.mail.host=smtp.gmail.com
-spring.mail.port=587
-spring.mail.username=${MAIL_USERNAME:your-email@gmail.com}
-spring.mail.password=${MAIL_PASSWORD:your-app-password}
-
-# SMTP Properties
-spring.mail.properties.mail.smtp.auth=true
-spring.mail.properties.mail.smtp.starttls.enable=true
-spring.mail.properties.mail.smtp.starttls.required=true
-spring.mail.properties.mail.smtp.connectiontimeout=5000
-spring.mail.properties.mail.smtp.timeout=5000
-spring.mail.properties.mail.smtp.writetimeout=5000
-
-# Sender Info
-spring.mail.from=${MAIL_FROM:Fat C Grocery Store <noreply@fatcgrocery.com>}
-```
-
-### Features Implemented
-
-- ✅ **Async Sending**: Emails sent in background (non-blocking)
-- ✅ **Retry Logic**: Max 3 attempts with exponential backoff
-- ✅ **Error Handling**: Graceful failure without breaking order flow
-- ✅ **HTML Templates**: Professional Thymeleaf templates
-- ✅ **Logging**: Detailed logs for debugging
+- ✅ `MAIL_PASSWORD` là **App Password** (16 ký tự), KHÔNG phải mật khẩu Gmail
+- ✅ Có thể giữ nguyên khoảng trắng trong App Password
+- ✅ Mỗi App Password chỉ hiển thị 1 lần, nếu mất phải tạo lại
+- ✅ Có thể tạo nhiều App Password cho các ứng dụng khác nhau
+- ✅ Nếu không cấu hình email, app vẫn chạy bình thường (chỉ không gửi email)
+- ⚠️ **KHÔNG commit file `.env` lên Git** (chứa thông tin nhạy cảm)
 
 ---
 
-## Testing Checklist
+## 🔐 Bảo Mật
 
-- [ ] 2FA enabled on Gmail account
-- [ ] App Password generated
-- [ ] Environment variables set
-- [ ] Application starts without errors
-- [ ] Order confirmation email received
-- [ ] Status update email received
-- [ ] Email formatting looks correct
-- [ ] Links in email work
-- [ ] Vietnamese characters display correctly
+- App Password có quyền truy cập đầy đủ vào Gmail
+- Nên tạo App Password riêng cho từng ứng dụng
+- Có thể thu hồi App Password bất kỳ lúc nào tại [App Passwords](https://myaccount.google.com/apppasswords)
+- Không chia sẻ App Password với người khác
 
 ---
 
-## Production Considerations
+## 📚 Tham Khảo
 
-### Security
-- ✅ Use environment variables (never hardcode)
-- ✅ Use App Passwords (not regular passwords)
-- ✅ Enable TLS/STARTTLS
-- ✅ Rotate passwords regularly
-
-### Performance
-- ✅ Async sending (non-blocking)
-- ✅ Connection pooling
-- ✅ Timeout configurations
-- ✅ Retry mechanism
-
-### Monitoring
-- ✅ Log all email attempts
-- ✅ Track success/failure rates
-- ✅ Alert on repeated failures
-- ✅ Monitor email queue
-
-### Alternatives to Gmail
-
-For production, consider:
-- **SendGrid** - Reliable, scalable
-- **Amazon SES** - Cost-effective
-- **Mailgun** - Developer-friendly
-- **Postmark** - Transactional emails
+- [Google App Passwords](https://support.google.com/accounts/answer/185833)
+- [2-Step Verification](https://support.google.com/accounts/answer/185839)
+- [Gmail SMTP Settings](https://support.google.com/mail/answer/7126229)
 
 ---
 
-## Example Email Templates
-
-### Order Confirmation Email
-- ✅ Order number and date
-- ✅ Order status
-- ✅ Product items with quantities
-- ✅ Price breakdown (subtotal, shipping, tax, total)
-- ✅ Customer notes
-- ✅ Call-to-action button
-
-### Order Status Update Email
-- ✅ Status timeline
-- ✅ Current status highlight
-- ✅ Order details
-- ✅ Payment information
-- ✅ Call-to-action button
-
----
-
-## Support
-
-If you encounter issues:
-
-1. Check application logs: `logs/spring.log`
-2. Enable debug logging:
-   ```properties
-   logging.level.org.springframework.mail=DEBUG
-   ```
-3. Test SMTP connection manually
-4. Review Gmail's security settings
-5. Contact team lead if issues persist
-
----
-
-## Quick Start Commands
-
-```bash
-# Set environment variables
-export MAIL_USERNAME=your-email@gmail.com
-export MAIL_PASSWORD=your-app-password
-
-# Run application
-./mvnw spring-boot:run
-
-# Test email (after creating order)
-# Check your inbox!
-```
-
----
-
-**Last Updated**: 21/01/2026  
-**Version**: 1.0  
-**Status**: ✅ Ready for Testing
+**🎉 Xong! Giờ hệ thống có thể gửi email xác nhận đơn hàng!**

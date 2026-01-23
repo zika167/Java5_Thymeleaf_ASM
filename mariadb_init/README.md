@@ -69,6 +69,8 @@ To reset the database with fixed data:
 - ✅ Added `provider_id` column for OAuth2 user ID
 - ✅ Changed `password` to NULLABLE for OAuth2 users
 - ✅ Added indexes: idx_provider, idx_provider_id, idx_provider_provider_id
+- ✅ Removed `theme_preference` column (not used in backend, only localStorage)
+- ✅ Removed `idx_theme` index
 
 **Data Changes (02-data.sql):**
 - ❌ Removed inserts to non-existent tables (payment_methods, product_images, product_variants, banners)

@@ -39,10 +39,8 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login_at TIMESTAMP NULL,
     login_count INT DEFAULT 0,
-    theme_preference ENUM('LIGHT', 'DARK', 'AUTO') DEFAULT 'LIGHT',
     INDEX idx_email (email),
     INDEX idx_username (username),
-    INDEX idx_theme (theme_preference),
     INDEX idx_provider (provider),
     INDEX idx_provider_id (provider_id),
     INDEX idx_provider_provider_id (provider, provider_id)
