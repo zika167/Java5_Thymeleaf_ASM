@@ -1,15 +1,16 @@
 package poly.edu.java5_asm.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import poly.edu.java5_asm.entity.Order;
 import poly.edu.java5_asm.entity.User;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -19,6 +20,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     // Tìm tất cả đơn hàng của user
     List<Order> findByUserOrderByOrderedAtDesc(User user);
+    
+    // Tìm tất cả đơn hàng của user theo ID
+    List<Order> findByUserId(Long userId);
     
     // Tìm đơn hàng của user với phân trang
     Page<Order> findByUserOrderByOrderedAtDesc(User user, Pageable pageable);

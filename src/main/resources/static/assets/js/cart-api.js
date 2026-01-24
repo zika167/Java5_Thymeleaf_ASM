@@ -28,7 +28,6 @@
             }
 
             const cartData = await response.json();
-            console.log('✅ Thêm vào giỏ hàng thành công:', cartData);
             showCartToast('Đã thêm vào giỏ hàng');
             updateHeaderCartUI(cartData);
             return cartData;
@@ -56,7 +55,6 @@
             }
 
             const cartData = await response.json();
-            console.log('✅ Lấy giỏ hàng:', cartData);
             return cartData;
         } catch (error) {
             console.error('❌ Lỗi khi lấy giỏ hàng:', error);
@@ -85,7 +83,6 @@
             }
 
             const cartData = await response.json();
-            console.log('✅ Cập nhật giỏ hàng:', cartData);
             updateHeaderCartUI(cartData);
             return cartData;
         } catch (error) {
@@ -112,7 +109,6 @@
             }
 
             const cartData = await response.json();
-            console.log('✅ Xóa item khỏi giỏ:', cartData);
             showCartToast('Đã xóa khỏi giỏ hàng');
             updateHeaderCartUI(cartData);
             return cartData;
@@ -139,7 +135,6 @@
                 throw new Error(`HTTP ${response.status}`);
             }
 
-            console.log('✅ Xóa toàn bộ giỏ hàng');
             showCartToast('Đã xóa toàn bộ giỏ hàng');
             updateHeaderCartUI({ items: [], totalItems: 0, totalPrice: 0 });
         } catch (error) {
@@ -166,7 +161,6 @@
             }
 
             const count = await response.json();
-            console.log('✅ Số lượng items:', count);
             return count;
         } catch (error) {
             console.error('❌ Lỗi khi lấy số lượng:', error);
@@ -295,7 +289,6 @@
      * Khởi tạo khi DOM ready
      */
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('🛒 Cart API Service initialized');
         bindAddToCartButtons();
         getCartItemCount().then(count => {
             document.querySelectorAll('.nav-btn__qnt').forEach((el) => {
@@ -316,6 +309,4 @@
         getCartItemCount,
         updateHeaderCartUI
     };
-
-    console.log('✅ CartAPI available at window.CartAPI');
 })();

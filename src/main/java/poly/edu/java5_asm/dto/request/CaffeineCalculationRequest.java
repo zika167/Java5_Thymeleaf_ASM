@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.dto;
+package poly.edu.java5_asm.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
