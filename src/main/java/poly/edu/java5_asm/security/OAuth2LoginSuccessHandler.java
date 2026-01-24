@@ -96,24 +96,45 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         user.setLoginCount(user.getLoginCount() + 1);
         userRepository.save(user);
 
-        // Tạo JWT token
+        // Clear any existing JWT cookie first to prevent duplicates
+        clearExistingJwtCookie(response);
+        
+        // Generate new JWT token
         String jwt = jwtUtils.generateTokenFromUsername(user.getUsername());
 
-        // Tạo HTTP-Only Cookie chứa JWT
-        Cookie jwtCookie = new Cookie(jwtCookieName, jwt);
-        jwtCookie.setHttpOnly(true); // Bảo mật: không thể truy cập từ JavaScript
-        jwtCookie.setSecure(false); // Set true nếu dùng HTTPS
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge((int) (jwtExpiration / 1000)); // Convert milliseconds to seconds
-
+        // Create new HTTP-Only Cookie with JWT
+        Cookie jwtCookie = createJwtCookie(jwt);
         response.addCookie(jwtCookie);
 
         log.info("JWT token created and stored in cookie for user: {}", user.getUsername());
         log.info("Redirecting to home page: /");
 
-        // Redirect về trang chủ
+        // Redirect to home page
         getRedirectStrategy().sendRedirect(request, response, "/");
         
         log.info("=== OAuth2 Login Success Handler Completed ===");
+    }
+
+    /**
+     * Clear existing JWT cookie to prevent duplicates
+     */
+    private void clearExistingJwtCookie(HttpServletResponse response) {
+        Cookie clearCookie = new Cookie(jwtCookieName, null);
+        clearCookie.setPath("/");
+        clearCookie.setMaxAge(0);
+        clearCookie.setHttpOnly(true);
+        response.addCookie(clearCookie);
+    }
+
+    /**
+     * Create JWT cookie with proper security settings
+     */
+    private Cookie createJwtCookie(String jwt) {
+        Cookie jwtCookie = new Cookie(jwtCookieName, jwt);
+        jwtCookie.setHttpOnly(true); // Prevent XSS attacks
+        jwtCookie.setSecure(false); // Set true for HTTPS in production
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge((int) (jwtExpiration / 1000));
+        return jwtCookie;
     }
 }
