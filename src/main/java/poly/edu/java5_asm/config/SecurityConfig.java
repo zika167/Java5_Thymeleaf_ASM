@@ -61,7 +61,8 @@ public class SecurityConfig {
                 .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll() // Health check cho Docker
                 
-                // API endpoints
+                // API endpoints - Review APIs are public for GET, require auth for POST/DELETE
+                .requestMatchers("/api/reviews/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").permitAll()
                 

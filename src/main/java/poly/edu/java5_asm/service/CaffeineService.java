@@ -1,9 +1,9 @@
 package poly.edu.java5_asm.service;
 
-import poly.edu.java5_asm.dto.CaffeineCalculationRequest;
-import poly.edu.java5_asm.dto.CaffeineCalculationResult;
-
 import java.util.Map;
+
+import poly.edu.java5_asm.dto.request.CaffeineCalculationRequest;
+import poly.edu.java5_asm.dto.result.CaffeineCalculationResult;
 
 public interface CaffeineService {
     /**

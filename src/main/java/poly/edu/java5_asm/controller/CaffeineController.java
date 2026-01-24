@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import poly.edu.java5_asm.dto.CaffeineCalculationRequest;
-import poly.edu.java5_asm.dto.CaffeineCalculationResult;
+import poly.edu.java5_asm.dto.request.CaffeineCalculationRequest;
+import poly.edu.java5_asm.dto.result.CaffeineCalculationResult;
 import poly.edu.java5_asm.service.CaffeineService;
 
 @Controller

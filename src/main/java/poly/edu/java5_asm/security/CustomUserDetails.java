@@ -1,14 +1,15 @@
 package poly.edu.java5_asm.security;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import poly.edu.java5_asm.entity.User;
 
-import java.util.Collection;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import poly.edu.java5_asm.entity.User;
 
 /**
  * Custom implementation của UserDetails interface.
@@ -25,6 +26,16 @@ public class CustomUserDetails implements UserDetails {
      * Entity User được wrap bên trong để truy cập thông tin người dùng
      */
     private final User user;
+
+    /**
+     * Trả về ID của user.
+     * Helper method để dễ dàng truy cập user ID.
+     * 
+     * @return ID của user
+     */
+    public Long getUserId() {
+        return user.getId();
+    }
 
     /**
      * Trả về danh sách quyền (authorities) của user.
