@@ -40,6 +40,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        // Bỏ qua JWT validation cho static resources
+        String requestPath = request.getRequestURI();
+        if (isStaticResource(requestPath)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             // Lấy JWT token từ Cookie
             String jwt = getJwtFromCookie(request);
@@ -74,6 +81,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Tiếp tục filter chain
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Kiểm tra xem request có phải là static resource không
+     */
+    private boolean isStaticResource(String requestPath) {
+        return requestPath.startsWith("/assets/") ||
+               requestPath.startsWith("/css/") ||
+               requestPath.startsWith("/js/") ||
+               requestPath.startsWith("/images/") ||
+               requestPath.equals("/favicon.ico") ||
+               requestPath.endsWith(".woff") ||
+               requestPath.endsWith(".woff2") ||
+               requestPath.endsWith(".ttf") ||
+               requestPath.endsWith(".eot") ||
+               requestPath.endsWith(".svg") ||
+               requestPath.endsWith(".png") ||
+               requestPath.endsWith(".jpg") ||
+               requestPath.endsWith(".jpeg") ||
+               requestPath.endsWith(".gif") ||
+               requestPath.endsWith(".css") ||
+               requestPath.endsWith(".js");
     }
 
     /**

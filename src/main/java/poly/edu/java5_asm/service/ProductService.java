@@ -70,6 +70,14 @@ public class ProductService {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
         
+        // Force load lazy relationships
+        if (product.getCategory() != null) {
+            product.getCategory().getName();
+        }
+        if (product.getBrand() != null) {
+            product.getBrand().getName();
+        }
+        
         return productMapper.toResponse(product);
     }
 

@@ -55,10 +55,12 @@ public class SecurityConfig {
             
             // ===== AUTHORIZATION CONFIGURATION =====
             .authorizeHttpRequests(auth -> auth
+                // Static resources - MUST be first to bypass all filters
+                .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/*.woff", "/*.woff2").permitAll()
+                
                 // Public endpoints
                 .requestMatchers("/", "/index", "/products/**", "/category/**").permitAll()
                 .requestMatchers("/auth/**", "/sign-in", "/sign-up").permitAll()
-                .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll() // Health check cho Docker
                 
                 // API endpoints - Review APIs are public for GET, require auth for POST/DELETE
