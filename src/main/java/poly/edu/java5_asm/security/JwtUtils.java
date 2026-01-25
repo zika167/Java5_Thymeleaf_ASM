@@ -89,20 +89,8 @@ public class JwtUtils {
     /**
      * Lấy signing key từ secret
      * Sử dụng HMAC-SHA algorithm
-     * 
-     * Nếu secret quá ngắn (< 512 bits), tự động tạo key đủ mạnh
-     * để tránh lỗi WeakKeyException từ JJWT library
      */
     private Key getSigningKey() {
-        byte[] secretBytes = jwtSecret.getBytes();
-        
-        // Kiểm tra độ dài key (512 bits = 64 bytes)
-        // Nếu quá ngắn, sử dụng Keys.secretKeyFor() để tạo key an toàn
-        if (secretBytes.length < 64) {
-            log.warn("JWT secret key quá ngắn ({} bytes), sử dụng key được tạo tự động", secretBytes.length);
-            return Keys.secretKeyFor(SignatureAlgorithm.HS512);
-        }
-        
-        return Keys.hmacShaKeyFor(secretBytes);
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 }

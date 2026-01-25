@@ -6,7 +6,7 @@
         <header th:replace="~{fragments/header :: header}"></header>
         
         <!-- MAIN -->
-        <main class="product-page">
+        <main class="product-page" th:data-product-id="${product.id}">
             <div class="container">
                 <!-- Search bar -->
                 <div class="product-container">
@@ -79,14 +79,14 @@
                         <div class="col-7 col-xl-6 col-lg-12">
                             <form action="" class="form">
                                 <section class="prod-info">
-                                    <h1 class="prod-info__heading">
+                                    <h1 class="prod-info__heading" th:text="${product.name}">
                                         Coffee Beans - Espresso Arabica and Robusta Beans
                                     </h1>
                                     <div class="row">
                                         <div class="col-5 col-xxl-6 col-xl-12">
                                             <div class="prod-prop">
                                                 <img th:src="@{/assets/icon/star.svg}" alt="" class="prod-prop__icon" />
-                                                <h4 class="prod-prop__title">(3.5) 1100 reviews</h4>
+                                                <h4 class="prod-prop__title">(<span id="avgRating">3.5</span>) <span id="reviewCount">1100</span> reviews</h4>
                                             </div>
                                             <label for="" class="form__label prod-info__label">Weight/Size</label>
                                             <div class="filter__form-group">
@@ -166,15 +166,15 @@
                                                 </div>
                                                 <div class="prod-info__card">
                                                     <div class="prod-info__row">
-                                                        <span class="prod-info__price">$500.00</span>
+                                                        <span class="prod-info__price" th:text="'$' + ${product.price}">$500.00</span>
                                                         <span class="prod-info__tax">10%</span>
                                                     </div>
-                                                    <p class="prod-info__total-price">$540.00</p>
+                                                    <p class="prod-info__total-price" th:text="'$' + ${product.price * 1.1}">$540.00</p>
                                                     <div class="prod-info__row">
                                                         <button class="btn btn--primary prod-info__add-to-cart">
                                                             Add to cart
                                                         </button>
-                                                        <button class="like-btn prod-info__like-btn">
+                                                        <button class="like-btn prod-info__like-btn" id="wishlistBtn" onclick="toggleWishlist()">
                                                             <img
                                                                 th:src="@{/assets/icon/heart.svg}"
                                                                 alt=""
@@ -311,7 +311,42 @@
                             <div class="prod-tab__content">
                                 <div class="prod-content">
                                     <h2 class="prod-content__heading">What our customers are saying</h2>
-                                    <div class="row row-cols-3 gx-lg-2 row-cols-md-1 gy-md-3">
+                                    
+                                    <!-- Review Form -->
+                                    <div class="review-form-container" style="margin-bottom: 30px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 15px;">Leave a Review</h3>
+                                        <form id="reviewForm">
+                                            <!-- Rating Stars -->
+                                            <div style="margin-bottom: 15px;">
+                                                <label style="display: block; margin-bottom: 8px;">Rating:</label>
+                                                <div id="ratingStars" style="display: flex; gap: 10px;">
+                                                    <span class="rating-star" data-rating="1" style="cursor: pointer; font-size: 24px;">☆</span>
+                                                    <span class="rating-star" data-rating="2" style="cursor: pointer; font-size: 24px;">☆</span>
+                                                    <span class="rating-star" data-rating="3" style="cursor: pointer; font-size: 24px;">☆</span>
+                                                    <span class="rating-star" data-rating="4" style="cursor: pointer; font-size: 24px;">☆</span>
+                                                    <span class="rating-star" data-rating="5" style="cursor: pointer; font-size: 24px;">☆</span>
+                                                </div>
+                                                <input type="hidden" id="selectedRating" value="0" />
+                                            </div>
+                                            
+                                            <!-- Title Input -->
+                                            <div style="margin-bottom: 15px;">
+                                                <label for="reviewTitle" style="display: block; margin-bottom: 8px;">Title:</label>
+                                                <input type="text" id="reviewTitle" placeholder="Enter review title" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
+                                            </div>
+                                            
+                                            <!-- Comment Textarea -->
+                                            <div style="margin-bottom: 15px;">
+                                                <label for="reviewComment" style="display: block; margin-bottom: 8px;">Comment:</label>
+                                                <textarea id="reviewComment" placeholder="Enter your review comment" rows="5" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                                            </div>
+                                            
+                                            <!-- Submit Button -->
+                                            <button type="button" class="btn btn--primary" onclick="submitReview()">Submit Review</button>
+                                        </form>
+                                    </div>
+                                    
+                                    <div class="row row-cols-3 gx-lg-2 row-cols-md-1 gy-md-3" id="reviewsList">
                                         <!-- Review card 1 -->
                                         <div class="col">
                                             <div class="review-card">
@@ -916,5 +951,195 @@
 
         <!-- Footer -->
         <footer th:replace="~{fragments/footer :: footer}"></footer>
+        
+        <!-- API Service Scripts -->
+        <script th:src="@{/assets/js/reviews-api.js}"></script>
+        <script th:src="@{/assets/js/wishlist-api.js}"></script>
+        <script th:src="@{/assets/js/cart-api.js}"></script>
+        
+        <!-- Product Detail Scripts -->
+        <script>
+            // Get product ID from data attribute
+            const productId = document.querySelector('[th\\:data-product-id]')?.getAttribute('data-product-id') || 
+                             document.querySelector('[data-product-id]')?.getAttribute('data-product-id');
+
+            // Load reviews on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                loadReviews();
+                setupRatingStars();
+                updateWishlistButton();
+            });
+
+            // Load reviews from API
+            function loadReviews() {
+                if (!productId) return;
+                
+                fetch(`/api/reviews/product/${productId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const reviewsList = document.getElementById('reviewsList');
+                        reviewsList.innerHTML = '';
+                        
+                        if (data && data.length > 0) {
+                            // Update average rating and review count
+                            const avgRating = (data.reduce((sum, r) => sum + r.rating, 0) / data.length).toFixed(1);
+                            const reviewCount = data.length;
+                            document.getElementById('avgRating').textContent = avgRating;
+                            document.getElementById('reviewCount').textContent = reviewCount;
+                            
+                            // Display reviews
+                            data.forEach(review => {
+                                const reviewCard = createReviewCard(review);
+                                reviewsList.appendChild(reviewCard);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error loading reviews:', error));
+            }
+
+            // Create review card element
+            function createReviewCard(review) {
+                const col = document.createElement('div');
+                col.className = 'col';
+                
+                const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                
+                col.innerHTML = `
+                    <div class="review-card">
+                        <div class="review-card__content">
+                            <img src="${review.userAvatar || '/assets/img/avatar/avatar-1.png'}" alt="" class="review-card__avatar" />
+                            <div class="review-card__info">
+                                <h4 class="review-card__title">${review.userName}</h4>
+                                <p class="review-card__desc">${review.title}</p>
+                            </div>
+                        </div>
+                        <div class="review-card__rating">
+                            <div class="review-card__star-list">
+                                ${stars}
+                            </div>
+                            <span class="review-card__rating-title">( ${review.rating} ) Review</span>
+                        </div>
+                    </div>
+                `;
+                
+                return col;
+            }
+
+            // Setup rating stars click handlers
+            function setupRatingStars() {
+                const stars = document.querySelectorAll('.rating-star');
+                stars.forEach(star => {
+                    star.addEventListener('click', function() {
+                        const rating = this.getAttribute('data-rating');
+                        document.getElementById('selectedRating').value = rating;
+                        
+                        // Update star display
+                        stars.forEach(s => {
+                            if (s.getAttribute('data-rating') <= rating) {
+                                s.textContent = '★';
+                            } else {
+                                s.textContent = '☆';
+                            }
+                        });
+                    });
+                });
+            }
+
+            // Submit review
+            function submitReview() {
+                const rating = document.getElementById('selectedRating').value;
+                const title = document.getElementById('reviewTitle').value;
+                const comment = document.getElementById('reviewComment').value;
+                
+                if (!rating || !title || !comment) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                if (!productId) {
+                    alert('Product ID not found');
+                    return;
+                }
+                
+                const reviewData = {
+                    productId: productId,
+                    rating: parseInt(rating),
+                    title: title,
+                    comment: comment
+                };
+                
+                fetch('/api/reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(reviewData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Review submitted successfully!');
+                    document.getElementById('reviewForm').reset();
+                    document.getElementById('selectedRating').value = 0;
+                    document.querySelectorAll('.rating-star').forEach(s => s.textContent = '☆');
+                    loadReviews();
+                })
+                .catch(error => {
+                    console.error('Error submitting review:', error);
+                    alert('Error submitting review');
+                });
+            }
+
+            // Toggle wishlist
+            function toggleWishlist() {
+                if (!productId) return;
+                
+                const wishlistBtn = document.getElementById('wishlistBtn');
+                const isWishlisted = wishlistBtn.classList.contains('like-btn__liked');
+                
+                const endpoint = isWishlisted ? 
+                    `/api/wishlist/${productId}` : 
+                    `/api/wishlist`;
+                
+                const method = isWishlisted ? 'DELETE' : 'POST';
+                
+                const body = isWishlisted ? null : JSON.stringify({ productId: productId });
+                
+                fetch(endpoint, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: body
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateWishlistButton();
+                })
+                .catch(error => console.error('Error toggling wishlist:', error));
+            }
+
+            // Update wishlist button state
+            function updateWishlistButton() {
+                if (!productId) return;
+                
+                fetch(`/api/wishlist/check/${productId}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const wishlistBtn = document.getElementById('wishlistBtn');
+                    if (data.isWishlisted) {
+                        wishlistBtn.classList.add('like-btn__liked');
+                    } else {
+                        wishlistBtn.classList.remove('like-btn__liked');
+                    }
+                })
+                .catch(error => console.error('Error checking wishlist:', error));
+            }
+        </script>
     </body>
 </html>

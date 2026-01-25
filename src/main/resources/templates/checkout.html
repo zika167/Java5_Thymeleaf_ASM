@@ -83,6 +83,22 @@
                 </div>
               </div>
 
+              <!-- Shipping Address -->
+              <div class="cart-info">
+                <h2 class="cart-info__heading cart-info__heading--lv2">Địa chỉ giao hàng</h2>
+                <div class="cart-info__separate"></div>
+                
+                <div id="addressSelection" style="margin-bottom: 20px;">
+                  <select id="selectedAddress" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    <option value="">-- Chọn địa chỉ giao hàng --</option>
+                  </select>
+                </div>
+                
+                <a th:href="@{/addresses}" class="btn btn--outline" style="width: 100%; text-align: center; padding: 10px;">
+                  Quản lý địa chỉ
+                </a>
+              </div>
+
               <!-- Payment Methods -->
               <div class="cart-info">
                 <h2 class="cart-info__heading cart-info__heading--lv2">Phương thức thanh toán</h2>
@@ -271,8 +287,10 @@
     </style>
 
     <!-- Payment Methods Script -->
+    <script th:src="@{/assets/js/address-api.js}"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      // Load addresses on page load
+      document.addEventListener('DOMContentLoaded', async function() {
         const paymentInputs = document.querySelectorAll('input[name="paymentMethod"]');
         const instructions = document.querySelectorAll('.payment-instruction');
 
@@ -299,7 +317,31 @@
             savedInput.dispatchEvent(new Event('change'));
           }
         }
+
+        // Load addresses
+        await loadAddressesForCheckout();
       });
+
+      async function loadAddressesForCheckout() {
+        const addresses = await AddressAPI.getUserAddresses();
+        const select = document.getElementById('selectedAddress');
+        
+        if (!addresses || addresses.length === 0) {
+          select.innerHTML = '<option value="">-- Chưa có địa chỉ, vui lòng thêm --</option>';
+          return;
+        }
+        
+        select.innerHTML = '<option value="">-- Chọn địa chỉ giao hàng --</option>';
+        addresses.forEach(addr => {
+          const option = document.createElement('option');
+          option.value = addr.id;
+          option.textContent = `${addr.recipientName} - ${addr.addressLine1}, ${addr.city}`;
+          if (addr.isDefault) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+      }
     </script>
   </body>
 </html>
