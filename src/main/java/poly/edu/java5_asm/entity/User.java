@@ -84,11 +84,13 @@ public class User {
     private Integer loginCount = 0; // Số lần đăng nhập
 
     // OAuth2 fields
-    @Column(name = "provider", length = 20)
-    private String provider; // google, facebook, local
+    // Hiện tại thì trong database không có 2 cột này
+    // dẫn đến khi đăng kí tài khoản Insert không có cột bị lỗi dữ liệu không cho tạo tài khoản
+    // @Column(name = "provider", length = 20)
+    // private String provider; // google, facebook, local
 
-    @Column(name = "provider_id", length = 100)
-    private String providerId; // ID từ OAuth2 provider
+    // @Column(name = "provider_id", length = 100)
+    // private String providerId; // ID từ OAuth2 provider
 
     // Quan hệ: 1 user có nhiều địa chỉ
     @Builder.Default

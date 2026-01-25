@@ -81,8 +81,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                             .password(encodedPassword) // Set password để tránh lỗi NOT NULL
                             .fullName(name)
                             .avatarUrl(picture)
-                            .provider("google")
-                            .providerId(googleId)
+//                            .provider("google")
+//                            .providerId(googleId)
                             .isActive(true)
                             .role(User.Role.USER)
                             .registeredDate(LocalDate.now())

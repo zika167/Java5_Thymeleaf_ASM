@@ -11,23 +11,27 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReviewResponse {
+public class AddressResponse {
     
     private Long id;
     
-    private Long productId;
+    private String recipientName;
     
-    private Long userId;
+    private String phone;
     
-    private String userName;
+    private String addressLine1;
     
-    private Integer rating;
+    private String addressLine2;
     
-    private String title;
+    private String city;
     
-    private String comment;
+    private String state;
     
-    private Boolean isVerifiedPurchase;
+    private String postalCode;
+    
+    private String country;
+    
+    private Boolean isDefault;
     
     private LocalDateTime createdAt;
 }
