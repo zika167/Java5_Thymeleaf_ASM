@@ -2,195 +2,176 @@ package poly.edu.java5_asm.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import poly.edu.java5_asm.dto.request.CreateReviewRequest;
-import poly.edu.java5_asm.dto.response.ProductRatingResponse;
-import poly.edu.java5_asm.dto.response.ReviewListResponse;
 import poly.edu.java5_asm.dto.response.ReviewResponse;
+import poly.edu.java5_asm.entity.User;
 import poly.edu.java5_asm.security.CustomUserDetails;
 import poly.edu.java5_asm.service.ReviewService;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-/**
- * REST Controller cho Review
- */
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewController {
 
     private final ReviewService reviewService;
 
     /**
-     * Tạo review mới cho sản phẩm
-     * POST /api/reviews/products/{productId}
+     * Tạo đánh giá mới
      */
-    @PostMapping("/products/{productId}")
-    public ResponseEntity<?> createReview(
-            @PathVariable Long productId,
-            @Valid @RequestBody CreateReviewRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Bạn cần đăng nhập để đánh giá sản phẩm"));
-        }
-
+    @PostMapping
+    public ResponseEntity<ReviewResponse> createReview(
+            Authentication authentication,
+            @Valid @RequestBody CreateReviewRequest request) {
         try {
-            ReviewResponse review = reviewService.createReview(
-                    userDetails.getUserId(),
-                    productId,
-                    request
-            );
-
+            User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+            ReviewResponse review = reviewService.createReview(user, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(review);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            log.error("Lỗi khi tạo đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            log.error("Lỗi khi tạo đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     /**
-     * Lấy danh sách reviews của sản phẩm
-     * GET /api/reviews/products/{productId}
+     * Cập nhật đánh giá
      */
-    @GetMapping("/products/{productId}")
-    public ResponseEntity<?> getProductReviews(
-            @PathVariable Long productId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String sortBy) {
-
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<ReviewResponse> updateReview(
+            Authentication authentication,
+            @PathVariable Long reviewId,
+            @Valid @RequestBody CreateReviewRequest request) {
         try {
-            ReviewListResponse reviews = reviewService.getProductReviews(productId, page, size, sortBy);
-            return ResponseEntity.ok(reviews);
+            User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+            ReviewResponse review = reviewService.updateReview(user, reviewId, request);
+            return ResponseEntity.ok(review);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            log.error("Lỗi khi cập nhật đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            log.error("Lỗi khi cập nhật đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     /**
-     * Lấy danh sách reviews của user hiện tại
-     * GET /api/reviews/my-reviews
-     */
-    @GetMapping("/my-reviews")
-    public ResponseEntity<?> getMyReviews(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Bạn cần đăng nhập"));
-        }
-
-        try {
-            ReviewListResponse reviews = reviewService.getUserReviews(
-                    userDetails.getUserId(),
-                    page,
-                    size
-            );
-            return ResponseEntity.ok(reviews);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    /**
-     * Lấy danh sách reviews của một user cụ thể (public)
-     * GET /api/reviews/users/{userId}
-     */
-    @GetMapping("/users/{userId}")
-    public ResponseEntity<?> getUserReviews(
-            @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        try {
-            ReviewListResponse reviews = reviewService.getUserReviews(userId, page, size);
-            return ResponseEntity.ok(reviews);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    /**
-     * Xóa review
-     * DELETE /api/reviews/{reviewId}
+     * Xóa đánh giá
      */
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReview(
-            @PathVariable Long reviewId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Bạn cần đăng nhập"));
-        }
-
+    public ResponseEntity<Void> deleteReview(
+            Authentication authentication,
+            @PathVariable Long reviewId) {
         try {
-            boolean isAdmin = userDetails.getAuthorities().stream()
-                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-
-            reviewService.deleteReview(reviewId, userDetails.getUserId(), isAdmin);
-
-            return ResponseEntity.ok(Map.of("message", "Xóa đánh giá thành công"));
+            User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+            reviewService.deleteReview(user, reviewId);
+            return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            log.error("Lỗi khi xóa đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            log.error("Lỗi khi xóa đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     /**
-     * Lấy thống kê rating của sản phẩm
-     * GET /api/reviews/products/{productId}/rating
+     * Lấy tất cả đánh giá của sản phẩm
      */
-    @GetMapping("/products/{productId}/rating")
-    public ResponseEntity<?> getProductRating(@PathVariable Long productId) {
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<List<ReviewResponse>> getProductReviews(
+            @PathVariable Long productId) {
         try {
-            ProductRatingResponse rating = reviewService.calculateProductRating(productId);
-            return ResponseEntity.ok(rating);
+            List<ReviewResponse> reviews = reviewService.getProductReviews(productId);
+            return ResponseEntity.ok(reviews);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            log.error("Lỗi khi lấy đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     /**
-     * Kiểm tra user đã review sản phẩm chưa
-     * GET /api/reviews/products/{productId}/check
+     * Lấy đánh giá của sản phẩm với phân trang
      */
-    @GetMapping("/products/{productId}/check")
-    public ResponseEntity<?> checkUserReview(
+    @GetMapping("/product/{productId}/paginated")
+    public ResponseEntity<Page<ReviewResponse>> getProductReviewsPaginated(
             @PathVariable Long productId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        if (userDetails == null) {
-            return ResponseEntity.ok(Map.of("hasReviewed", false));
+            Pageable pageable) {
+        try {
+            Page<ReviewResponse> reviews = reviewService.getProductReviewsPaginated(productId, pageable);
+            return ResponseEntity.ok(reviews);
+        } catch (RuntimeException e) {
+            log.error("Lỗi khi lấy đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
 
-        boolean hasReviewed = reviewService.hasUserReviewedProduct(
-                userDetails.getUserId(),
-                productId
-        );
+    /**
+     * Lấy đánh giá của user
+     */
+    @GetMapping("/user")
+    public ResponseEntity<List<ReviewResponse>> getUserReviews(
+            Authentication authentication) {
+        try {
+            User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+            List<ReviewResponse> reviews = reviewService.getUserReviews(user);
+            return ResponseEntity.ok(reviews);
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-        boolean hasPurchased = reviewService.hasUserPurchasedProduct(
-                userDetails.getUserId(),
-                productId
-        );
+    /**
+     * Lấy trung bình rating của sản phẩm
+     */
+    @GetMapping("/product/{productId}/average-rating")
+    public ResponseEntity<Double> getProductAverageRating(
+            @PathVariable Long productId) {
+        try {
+            Double averageRating = reviewService.getProductAverageRating(productId);
+            return ResponseEntity.ok(averageRating);
+        } catch (RuntimeException e) {
+            log.error("Lỗi khi lấy trung bình rating: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy trung bình rating: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("hasReviewed", hasReviewed);
-        response.put("hasPurchased", hasPurchased);
-
-        return ResponseEntity.ok(response);
+    /**
+     * Lấy số lượng đánh giá của sản phẩm
+     */
+    @GetMapping("/product/{productId}/count")
+    public ResponseEntity<Long> getProductReviewCount(
+            @PathVariable Long productId) {
+        try {
+            Long count = reviewService.getProductReviewCount(productId);
+            return ResponseEntity.ok(count);
+        } catch (RuntimeException e) {
+            log.error("Lỗi khi lấy số lượng đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy số lượng đánh giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

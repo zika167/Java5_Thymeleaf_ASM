@@ -99,6 +99,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param provider Tên provider (google, facebook, etc.)
      * @param providerId ID từ provider
      * @return Optional chứa User nếu tìm thấy
+     * 
+     * COMMENTED OUT: User entity không còn có field provider và providerId
+     * Sẽ implement OAuth2 ở phiên bản sau
      */
-    Optional<User> findByProviderAndProviderId(String provider, String providerId);
+    // Optional<User> findByProviderAndProviderId(String provider, String providerId);
 }
