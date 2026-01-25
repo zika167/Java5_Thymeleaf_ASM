@@ -93,24 +93,26 @@
 
     <th:block th:replace="~{fragments/footer :: footer}"></th:block>
     <script th:src="@{/assets/js/scripts.js}"></script>
+    <script th:src="@{/assets/js/address-api.js}"></script>
     <script>
       document.addEventListener('DOMContentLoaded', loadAddresses);
 
-      function loadAddresses() {
-        // Mock data - replace with actual API call
-        const addresses = [
-          {id: 1, fullName: 'Nguyễn Văn A', phone: '0123456789', addressLine: '123 Đường ABC', city: 'Hà Nội', isDefault: true},
-          {id: 2, fullName: 'Nguyễn Văn A', phone: '0123456789', addressLine: '456 Đường XYZ', city: 'TP.HCM', isDefault: false}
-        ];
-        
+      async function loadAddresses() {
+        const addresses = await AddressAPI.getUserAddresses();
         const container = document.getElementById('addressesList');
+        
+        if (!addresses || addresses.length === 0) {
+          container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #999;">Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ mới.</p>';
+          return;
+        }
+        
         container.innerHTML = addresses.map(addr => `
           <div class="address-card ${addr.isDefault ? 'address-card--default' : ''}">
             ${addr.isDefault ? '<span class="address-badge">Mặc định</span>' : ''}
-            <h3>${addr.fullName}</h3>
+            <h3>${addr.recipientName}</h3>
             <p>${addr.phone}</p>
-            <p>${addr.addressLine}</p>
-            <p>${addr.city}</p>
+            <p>${addr.addressLine1}</p>
+            <p>${addr.city}, ${addr.state} ${addr.postalCode}</p>
             <div class="address-actions">
               <button onclick="editAddress(${addr.id})" class="btn btn--outline btn--small">Sửa</button>
               ${!addr.isDefault ? `<button onclick="deleteAddress(${addr.id})" class="btn btn--danger btn--small">Xóa</button>` : ''}
@@ -127,10 +129,20 @@
         document.getElementById('addressModal').style.display = 'flex';
       }
 
-      function editAddress(id) {
+      async function editAddress(id) {
+        const address = await AddressAPI.getAddress(id);
+        if (!address) {
+          alert('Không thể tải địa chỉ');
+          return;
+        }
+        
         document.getElementById('modalTitle').textContent = 'Chỉnh Sửa Địa Chỉ';
-        document.getElementById('addressId').value = id;
-        // Load address data and populate form
+        document.getElementById('addressId').value = address.id;
+        document.getElementById('fullName').value = address.recipientName;
+        document.getElementById('phone').value = address.phone;
+        document.getElementById('addressLine').value = address.addressLine1;
+        document.getElementById('city').value = address.city;
+        document.getElementById('isDefault').checked = address.isDefault;
         document.getElementById('addressModal').style.display = 'flex';
       }
 
@@ -138,37 +150,52 @@
         document.getElementById('addressModal').style.display = 'none';
       }
 
-      function saveAddress(e) {
+      async function saveAddress(e) {
         e.preventDefault();
+        
+        const addressId = document.getElementById('addressId').value;
         const data = {
-          id: document.getElementById('addressId').value,
-          fullName: document.getElementById('fullName').value,
+          recipientName: document.getElementById('fullName').value,
           phone: document.getElementById('phone').value,
-          addressLine: document.getElementById('addressLine').value,
+          addressLine1: document.getElementById('addressLine').value,
           city: document.getElementById('city').value,
+          state: '',
+          postalCode: '',
+          country: 'Vietnam',
           isDefault: document.getElementById('isDefault').checked
         };
-        console.log('Save address:', data);
-        // TODO: API call
-        closeModal();
-        alert('Đã lưu địa chỉ thành công');
-        loadAddresses();
-      }
-
-      function deleteAddress(id) {
-        if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
-          console.log('Delete address:', id);
-          // TODO: API call
-          alert('Đã xóa địa chỉ');
-          loadAddresses();
+        
+        try {
+          if (addressId) {
+            await AddressAPI.updateAddress(addressId, data);
+          } else {
+            await AddressAPI.createAddress(data);
+          }
+          closeModal();
+          await loadAddresses();
+        } catch (error) {
+          console.error('Error saving address:', error);
         }
       }
 
-      function setDefault(id) {
-        console.log('Set default:', id);
-        // TODO: API call
-        alert('Đã đặt làm địa chỉ mặc định');
-        loadAddresses();
+      async function deleteAddress(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+          try {
+            await AddressAPI.deleteAddress(id);
+            await loadAddresses();
+          } catch (error) {
+            console.error('Error deleting address:', error);
+          }
+        }
+      }
+
+      async function setDefault(id) {
+        try {
+          await AddressAPI.setDefaultAddress(id);
+          await loadAddresses();
+        } catch (error) {
+          console.error('Error setting default address:', error);
+        }
       }
     </script>
     <style>
