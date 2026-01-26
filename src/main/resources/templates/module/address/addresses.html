@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <th:block th:replace="~{shared/fragments/head :: head}"></th:block>
+    <title>Địa Chỉ Giao Hàng | grocerystore</title>
+  </head>
+  <body>
+    <th:block th:replace="~{shared/shared/fragments/header :: header}"></th:block>
+
+    <main class="profile">
+      <div class="container">
+        <div class="profile-container">
+          <div class="row gy-md-3">
+            <div class="col-12 col-md-3">
+              <aside class="profile__sidebar">
+                <div class="profile-user">
+                  <img th:src="@{/assets/img/avatar.jpg}" alt="" class="profile-user__avatar" />
+                  <h1 class="profile-user__name" th:text="${session.user.fullName}">John Smith</h1>
+                  <p class="profile-user__desc" th:text="'@' + ${session.user.username}">@johnsmith</p>
+                </div>
+                <div class="profile-menu">
+                  <h3 class="profile-menu__title">Quản lý tài khoản</h3>
+                  <ul class="profile-menu__list">
+                    <li><a th:href="@{/profile}" class="profile-menu__link">
+                      <span class="profile-menu__icon"><img th:src="@{/assets/icon/profile.svg}" alt="" class="icon" /></span>
+                      Thông tin cá nhân</a></li>
+                    <li><a th:href="@{/my-orders}" class="profile-menu__link">
+                      <span class="profile-menu__icon"><img th:src="@{/assets/icon/bag.svg}" alt="" class="icon" /></span>
+                      Đơn hàng của tôi</a></li>
+                    <li><a th:href="@{/favourite}" class="profile-menu__link">
+                      <span class="profile-menu__icon"><img th:src="@{/assets/icon/heart.svg}" alt="" class="icon" /></span>
+                      Danh sách yêu thích</a></li>
+                    <li><a th:href="@{/addresses}" class="profile-menu__link profile-menu__link--active">
+                      <span class="profile-menu__icon"><img th:src="@{/assets/icon/location.svg}" alt="" class="icon" /></span>
+                      Địa chỉ giao hàng</a></li>
+                  </ul>
+                </div>
+              </aside>
+            </div>
+
+            <div class="col-12 col-md-9">
+              <div class="cart-info">
+                <div class="cart-info__top">
+                  <h1 class="cart-info__heading">Địa Chỉ Giao Hàng</h1>
+                  <button onclick="showAddAddressModal()" class="btn btn--primary">+ Thêm địa chỉ mới</button>
+                </div>
+
+                <div id="addressesList" class="addresses-grid">
+                  <div class="loading-state"><p>Đang tải địa chỉ...</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Add/Edit Address Modal -->
+    <div id="addressModal" class="modal" style="display:none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Thêm Địa Chỉ Mới</h2>
+          <button onclick="closeModal()" class="modal-close">&times;</button>
+        </div>
+        <form id="addressForm" onsubmit="saveAddress(event)">
+          <input type="hidden" id="addressId" />
+          <div class="form-group">
+            <label>Họ và tên *</label>
+            <input type="text" id="fullName" required class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại *</label>
+            <input type="tel" id="phone" required class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>Địa chỉ chi tiết *</label>
+            <textarea id="addressLine" required class="form-control" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Thành phố *</label>
+            <input type="text" id="city" required class="form-control" />
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" id="isDefault" /> Đặt làm địa chỉ mặc định</label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" onclick="closeModal()" class="btn btn--outline">Hủy</button>
+            <button type="submit" class="btn btn--primary">Lưu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <th:block th:replace="~{shared/fragments/footer :: footer}"></th:block>
+    <script th:src="@{/assets/js/scripts.js}"></script>
+    <script th:src="@{/assets/js/address-api.js}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', loadAddresses);
+
+      async function loadAddresses() {
+        const addresses = await AddressAPI.getUserAddresses();
+        const container = document.getElementById('addressesList');
+        
+        if (!addresses || addresses.length === 0) {
+          container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #999;">Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ mới.</p>';
+          return;
+        }
+        
+        container.innerHTML = addresses.map(addr => `
+          <div class="address-card ${addr.isDefault ? 'address-card--default' : ''}">
+            ${addr.isDefault ? '<span class="address-badge">Mặc định</span>' : ''}
+            <h3>${addr.recipientName}</h3>
+            <p>${addr.phone}</p>
+            <p>${addr.addressLine1}</p>
+            <p>${addr.city}, ${addr.state} ${addr.postalCode}</p>
+            <div class="address-actions">
+              <button onclick="editAddress(${addr.id})" class="btn btn--outline btn--small">Sửa</button>
+              ${!addr.isDefault ? `<button onclick="deleteAddress(${addr.id})" class="btn btn--danger btn--small">Xóa</button>` : ''}
+              ${!addr.isDefault ? `<button onclick="setDefault(${addr.id})" class="btn btn--primary btn--small">Đặt mặc định</button>` : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function showAddAddressModal() {
+        document.getElementById('modalTitle').textContent = 'Thêm Địa Chỉ Mới';
+        document.getElementById('addressForm').reset();
+        document.getElementById('addressId').value = '';
+        document.getElementById('addressModal').style.display = 'flex';
+      }
+
+      async function editAddress(id) {
+        const address = await AddressAPI.getAddress(id);
+        if (!address) {
+          alert('Không thể tải địa chỉ');
+          return;
+        }
+        
+        document.getElementById('modalTitle').textContent = 'Chỉnh Sửa Địa Chỉ';
+        document.getElementById('addressId').value = address.id;
+        document.getElementById('fullName').value = address.recipientName;
+        document.getElementById('phone').value = address.phone;
+        document.getElementById('addressLine').value = address.addressLine1;
+        document.getElementById('city').value = address.city;
+        document.getElementById('isDefault').checked = address.isDefault;
+        document.getElementById('addressModal').style.display = 'flex';
+      }
+
+      function closeModal() {
+        document.getElementById('addressModal').style.display = 'none';
+      }
+
+      async function saveAddress(e) {
+        e.preventDefault();
+        
+        const addressId = document.getElementById('addressId').value;
+        const data = {
+          recipientName: document.getElementById('fullName').value,
+          phone: document.getElementById('phone').value,
+          addressLine1: document.getElementById('addressLine').value,
+          city: document.getElementById('city').value,
+          state: '',
+          postalCode: '',
+          country: 'Vietnam',
+          isDefault: document.getElementById('isDefault').checked
+        };
+        
+        try {
+          if (addressId) {
+            await AddressAPI.updateAddress(addressId, data);
+          } else {
+            await AddressAPI.createAddress(data);
+          }
+          closeModal();
+          await loadAddresses();
+        } catch (error) {
+          console.error('Error saving address:', error);
+        }
+      }
+
+      async function deleteAddress(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+          try {
+            await AddressAPI.deleteAddress(id);
+            await loadAddresses();
+          } catch (error) {
+            console.error('Error deleting address:', error);
+          }
+        }
+      }
+
+      async function setDefault(id) {
+        try {
+          await AddressAPI.setDefaultAddress(id);
+          await loadAddresses();
+        } catch (error) {
+          console.error('Error setting default address:', error);
+        }
+      }
+    </script>
+    <style>
+      .cart-info__top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+      .addresses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+      .address-card{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:20px;position:relative;transition:all 0.3s}
+      .address-card:hover{border-color:#77dae6;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+      .address-card--default{border-color:#77dae6;background:#f0fbfc}
+      .address-badge{position:absolute;top:12px;right:12px;background:#77dae6;color:#fff;padding:4px 12px;border-radius:12px;font-size:12px}
+      .address-card h3{font-size:18px;margin-bottom:8px}
+      .address-card p{margin-bottom:4px;color:#666;font-size:14px}
+      .address-actions{display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid #f0f0f0}
+      .btn--small{padding:6px 12px;font-size:13px}
+      .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000}
+      .modal-content{background:#fff;border-radius:12px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
+      .modal-header{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid #e0e0e0}
+      .modal-close{background:none;border:none;font-size:28px;cursor:pointer;color:#666}
+      .modal-footer{display:flex;gap:12px;justify-content:flex-end;padding:20px;border-top:1px solid #e0e0e0}
+      .form-group{padding:0 20px;margin-bottom:16px}
+      .form-group label{display:block;margin-bottom:8px;font-weight:500}
+      .form-control{width:100%;padding:10px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px}
+      .form-control:focus{outline:none;border-color:#77dae6}
+      textarea.form-control{resize:vertical}
+    </style>
+  </body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <th:block th:replace="~{shared/fragments/head :: head}"></th:block>
+    <title>Chi Tiết Đơn Hàng | grocerystore</title>
+  </head>
+  <body>
+    <th:block th:replace="~{shared/shared/fragments/header :: header}"></th:block>
+
+    <main class="profile">
+      <div class="container">
+        <div class="profile-container">
+          <div class="row gy-md-3">
+            <div class="col-12 col-md-3">
+              <aside class="profile__sidebar">
+                <div class="profile-user">
+                  <img th:src="@{/assets/img/avatar.jpg}" alt="" class="profile-user__avatar" />
+                  <h1 class="profile-user__name" th:text="${session.user.fullName}">John Smith</h1>
+                  <p class="profile-user__desc" th:text="'@' + ${session.user.username}">@johnsmith</p>
+                </div>
+                <div class="profile-menu">
+                  <h3 class="profile-menu__title">Quản lý tài khoản</h3>
+                  <ul class="profile-menu__list">
+                    <li><a th:href="@{/profile}" class="profile-menu__link">
+                      <span class="profile-menu__icon"><img th:src="@{/assets/icon/profile.svg}" alt="" class="icon" /></span>
+                      Thông tin cá nhân</a></li>
+                    <li><a th:href="@{/my-orders}" class="profile-menu__link profile-menu__link--active">
+                      <span class="profile-menu__icon"><img th:src="@{/assets/icon/bag.svg}" alt="" class="icon" /></span>
+                      Đơn hàng của tôi</a></li>
+                    <li><a th:href="@{/favourite}" class="profile-menu__link">
+                      <span class="profile-menu__icon"><img th:src="@{/assets/icon/heart.svg}" alt="" class="icon" /></span>
+                      Danh sách yêu thích</a></li>
+                    <li><a th:href="@{/addresses}" class="profile-menu__link">
+                      <span class="profile-menu__icon"><img th:src="@{/assets/icon/location.svg}" alt="" class="icon" /></span>
+                      Địa chỉ giao hàng</a></li>
+                  </ul>
+                </div>
+              </aside>
+            </div>
+
+            <div class="col-12 col-md-9">
+              <div class="cart-info">
+                <div class="cart-info__top">
+                  <a th:href="@{/my-orders}" class="cart-info__back">← Quay lại</a>
+                  <h1 class="cart-info__heading" id="orderNumber">Chi Tiết Đơn Hàng</h1>
+                </div>
+
+                <div id="loadingState"><p>Đang tải...</p></div>
+                <div id="orderDetail" style="display: none;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <th:block th:replace="~{shared/fragments/footer :: footer}"></th:block>
+    <script th:src="@{/assets/js/scripts.js}"></script>
+    <script th:inline="javascript">
+      const orderId = /*[[${orderId}]]*/ 0;
+      document.addEventListener('DOMContentLoaded', () => loadOrderDetail());
+
+      function loadOrderDetail() {
+        fetch(`/api/orders/${orderId}`)
+          .then(r => r.json())
+          .then(order => {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('orderNumber').textContent = `Đơn Hàng #${order.orderNumber}`;
+            renderOrderDetail(order);
+          })
+          .catch(e => {
+            console.error(e);
+            alert('Không thể tải đơn hàng');
+          });
+      }
+
+      function renderOrderDetail(order) {
+        const container = document.getElementById('orderDetail');
+        const statusBadges = {
+          'PENDING': '<span class="badge badge--warning">Chờ xác nhận</span>',
+          'CONFIRMED': '<span class="badge badge--info">Đã xác nhận</span>',
+          'PROCESSING': '<span class="badge badge--info">Đang xử lý</span>',
+          'SHIPPED': '<span class="badge badge--primary">Đang giao</span>',
+          'DELIVERED': '<span class="badge badge--success">Đã giao</span>',
+          'CANCELLED': '<span class="badge badge--danger">Đã hủy</span>'
+        };
+
+        container.innerHTML = `
+          <div class="order-status-card">
+            <div class="order-status-header">
+              <div><h3>Trạng thái đơn hàng</h3><p>Ngày đặt: ${new Date(order.createdAt).toLocaleDateString('vi-VN')}</p></div>
+              ${statusBadges[order.status]}
+            </div>
+            <div class="order-timeline">
+              <div class="timeline-item ${['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED'].includes(order.status) ? 'active' : ''}">
+                <div class="timeline-dot"></div><div class="timeline-content"><h4>Đơn hàng đã đặt</h4></div>
+              </div>
+              <div class="timeline-item ${['CONFIRMED','PROCESSING','SHIPPED','DELIVERED'].includes(order.status) ? 'active' : ''}">
+                <div class="timeline-dot"></div><div class="timeline-content"><h4>Đã xác nhận</h4></div>
+              </div>
+              <div class="timeline-item ${['PROCESSING','SHIPPED','DELIVERED'].includes(order.status) ? 'active' : ''}">
+                <div class="timeline-dot"></div><div class="timeline-content"><h4>Đang xử lý</h4></div>
+              </div>
+              <div class="timeline-item ${['SHIPPED','DELIVERED'].includes(order.status) ? 'active' : ''}">
+                <div class="timeline-dot"></div><div class="timeline-content"><h4>Đang giao hàng</h4></div>
+              </div>
+              <div class="timeline-item ${order.status === 'DELIVERED' ? 'active' : ''}">
+                <div class="timeline-dot"></div><div class="timeline-content"><h4>Đã giao</h4></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-info-grid">
+            <div class="info-card">
+              <h3>Thông tin giao hàng</h3>
+              <p><strong>Người nhận:</strong> ${order.shippingName}</p>
+              <p><strong>Số điện thoại:</strong> ${order.shippingPhone}</p>
+              <p><strong>Địa chỉ:</strong> ${order.shippingAddress}</p>
+            </div>
+            <div class="info-card">
+              <h3>Thanh toán</h3>
+              <p><strong>Phương thức:</strong> ${order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng' : order.paymentMethod}</p>
+              <p><strong>Trạng thái:</strong> ${order.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}</p>
+            </div>
+          </div>
+
+          <div class="order-items-card">
+            <h3>Sản phẩm đã đặt</h3>
+            <div class="order-items-list">
+              ${order.items.map(item => `
+                <div class="order-item">
+                  <img src="/assets/img/product/${item.productImage || 'default.jpg'}" alt="${item.productName}" />
+                  <div class="order-item-info">
+                    <h4>${item.productName}</h4>
+                    <p>Số lượng: ${item.quantity}</p>
+                  </div>
+                  <div class="order-item-price">
+                    <p>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(item.price)}</p>
+                    <p class="total">${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(item.price * item.quantity)}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="order-summary-card">
+            <h3>Tổng cộng</h3>
+            <div class="summary-row"><span>Tạm tính:</span><span>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.subtotal)}</span></div>
+            <div class="summary-row"><span>Phí vận chuyển:</span><span>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.shippingFee)}</span></div>
+            <div class="summary-row"><span>Thuế:</span><span>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.tax)}</span></div>
+            <div class="summary-row total"><span>Tổng cộng:</span><span>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.totalAmount)}</span></div>
+          </div>
+
+          ${order.status === 'PENDING' ? `
+            <div class="order-actions">
+              <button onclick="cancelOrder(${order.id})" class="btn btn--danger">Hủy đơn hàng</button>
+            </div>
+          ` : ''}
+        `;
+        container.style.display = 'block';
+      }
+
+      function cancelOrder(id) {
+        if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+          fetch(`/api/orders/${id}/cancel`, {method: 'PUT'})
+            .then(r => r.json())
+            .then(() => {
+              alert('Đã hủy đơn hàng thành công');
+              loadOrderDetail();
+            })
+            .catch(e => alert('Có lỗi xảy ra'));
+        }
+      }
+    </script>
+    <style>
+      .cart-info__back{display:inline-block;margin-bottom:16px;color:#77dae6;text-decoration:none}
+      .order-status-card,.info-card,.order-items-card,.order-summary-card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:20px;margin-bottom:20px}
+      .order-status-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+      .order-timeline{display:flex;justify-content:space-between;position:relative}
+      .order-timeline::before{content:'';position:absolute;top:20px;left:0;right:0;height:2px;background:#e0e0e0;z-index:0}
+      .timeline-item{position:relative;flex:1;text-align:center;z-index:1}
+      .timeline-dot{width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid #e0e0e0;margin:0 auto 12px;transition:all 0.3s}
+      .timeline-item.active .timeline-dot{background:#77dae6;border-color:#77dae6}
+      .timeline-content h4{font-size:14px;margin:0}
+      .order-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:20px}
+      .info-card h3{font-size:18px;margin-bottom:16px}
+      .info-card p{margin-bottom:8px;font-size:14px}
+      .order-items-list{display:flex;flex-direction:column;gap:16px}
+      .order-item{display:flex;gap:16px;padding:16px;border:1px solid #f0f0f0;border-radius:8px}
+      .order-item img{width:80px;height:80px;object-fit:cover;border-radius:8px}
+      .order-item-info{flex:1}
+      .order-item-info h4{font-size:16px;margin-bottom:8px}
+      .order-item-price{text-align:right}
+      .order-item-price .total{font-size:18px;font-weight:600;color:#77dae6}
+      .summary-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f0}
+      .summary-row.total{font-size:20px;font-weight:600;color:#77dae6;border-bottom:none;padding-top:16px}
+      .order-actions{text-align:right}
+      .badge{padding:4px 12px;border-radius:12px;font-size:12px;font-weight:500}
+      .badge--warning{background:#fff3cd;color:#856404}
+      .badge--info{background:#d1ecf1;color:#0c5460}
+      .badge--primary{background:#cce5ff;color:#004085}
+      .badge--success{background:#d4edda;color:#155724}
+      .badge--danger{background:#f8d7da;color:#721c24}
+    </style>
+  </body>
+</html>

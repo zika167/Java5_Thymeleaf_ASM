@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán thành công - Fat C Grocery Store</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{shared/shared/fragments/header :: header}"></div>
+
+    <!-- Main Content -->
+    <main class="payment-result">
+        <div class="container">
+            <div class="result-box result-box--success">
+                <!-- Success Icon -->
+                <div class="result-icon">
+                    <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                        <circle cx="50" cy="50" r="48" stroke="#4CAF50" stroke-width="4" fill="#E8F5E9"/>
+                        <path d="M30 50L45 65L70 35" stroke="#4CAF50" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+
+                <h1>Thanh toán thành công!</h1>
+                <p class="result-message">Cảm ơn bạn đã thanh toán. Đơn hàng của bạn đã được xác nhận và đang được xử lý.</p>
+
+                <!-- Payment Info -->
+                <div class="payment-info">
+                    <div class="payment-info__row">
+                        <span>Mã đơn hàng:</span>
+                        <strong th:text="${orderNumber}">ORD-123456</strong>
+                    </div>
+                    <div class="payment-info__row" th:if="${transactionId}">
+                        <span>Mã giao dịch:</span>
+                        <strong th:text="${transactionId}">TXN-123456</strong>
+                    </div>
+                    <div class="payment-info__row" th:if="${order}">
+                        <span>Phương thức:</span>
+                        <span th:text="${order.paymentMethod}">VNPay</span>
+                    </div>
+                    <div class="payment-info__row" th:if="${order}">
+                        <span>Trạng thái:</span>
+                        <span class="status-badge status-badge--paid">Đã thanh toán</span>
+                    </div>
+                </div>
+
+                <!-- Order Details -->
+                <div class="order-details" th:if="${order}">
+                    <h3>Chi tiết đơn hàng</h3>
+                    <div class="order-items">
+                        <div class="order-item" th:each="item : ${order.orderItems}">
+                            <div class="order-item__info">
+                                <span class="order-item__name" th:text="${item.productName}">Tên sản phẩm</span>
+                                <span class="order-item__quantity">x<span th:text="${item.quantity}">1</span></span>
+                            </div>
+                            <span class="order-item__price" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">100,000 đ</span>
+                        </div>
+                    </div>
+
+                    <div class="order-summary">
+                        <div class="order-summary__row">
+                            <span>Tạm tính:</span>
+                            <span th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">500,000 đ</span>
+                        </div>
+                        <div class="order-summary__row">
+                            <span>Phí vận chuyển:</span>
+                            <span th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' đ'">20,000 đ</span>
+                        </div>
+                        <div class="order-summary__row">
+                            <span>Thuế (10%):</span>
+                            <span th:text="${#numbers.formatDecimal(order.tax, 0, 'COMMA', 0, 'POINT')} + ' đ'">50,000 đ</span>
+                        </div>
+                        <div class="order-summary__row order-summary__total">
+                            <span>Tổng cộng:</span>
+                            <strong th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">570,000 đ</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="result-actions">
+                    <a th:href="@{/order/{orderNumber}(orderNumber=${orderNumber})}" class="btn btn--primary">Xem chi tiết đơn hàng</a>
+                    <a href="/" class="btn btn--secondary">Tiếp tục mua sắm</a>
+                </div>
+
+                <!-- Note -->
+                <div class="result-note">
+                    <p>📧 Email xác nhận đã được gửi đến địa chỉ email của bạn.</p>
+                    <p>📦 Đơn hàng sẽ được giao trong vòng 2-3 ngày làm việc.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{shared/fragments/footer :: footer}"></div>
+
+    <style>
+        .payment-result { padding: 60px 0; background: #f5f5f5; min-height: 80vh; }
+        .result-box { max-width: 700px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        .result-box--success { border-top: 4px solid #4CAF50; }
+        .result-icon { margin-bottom: 30px; }
+        .result-box h1 { font-size: 32px; color: #4CAF50; margin-bottom: 15px; }
+        .result-message { font-size: 16px; color: #666; margin-bottom: 30px; }
+        .payment-info { background: #E8F5E9; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: left; }
+        .payment-info__row { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .payment-info__row:last-child { margin-bottom: 0; }
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 14px; }
+        .status-badge--paid { background: #C8E6C9; color: #2E7D32; }
+        .order-details { text-align: left; margin-bottom: 30px; }
+        .order-details h3 { margin-bottom: 20px; font-size: 20px; }
+        .order-items { border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+        .order-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .order-item:last-child { border-bottom: none; }
+        .order-item__info { display: flex; gap: 10px; }
+        .order-item__name { font-weight: 500; }
+        .order-item__quantity { color: #666; }
+        .order-item__price { font-weight: bold; }
+        .order-summary { background: #f9f9f9; padding: 15px; border-radius: 8px; }
+        .order-summary__row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .order-summary__total { font-size: 18px; padding-top: 15px; border-top: 2px solid #ddd; margin-top: 10px; color: #4CAF50; }
+        .result-actions { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .btn { display: inline-block; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 500; transition: all 0.3s; }
+        .btn--primary { background: #4CAF50; color: white; }
+        .btn--primary:hover { background: #45a049; }
+        .btn--secondary { background: white; color: #333; border: 2px solid #ddd; }
+        .btn--secondary:hover { background: #f5f5f5; }
+        .result-note { background: #f9f9f9; padding: 20px; border-radius: 8px; text-align: left; }
+        .result-note p { margin: 8px 0; color: #666; }
+        @media (max-width: 600px) {
+            .result-box { padding: 25px; margin: 0 15px; }
+            .result-actions { flex-direction: column; }
+            .btn { width: 100%; text-align: center; }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{shared/fragments/head :: head('Sign In - Grocery Store')}"></head>
+
+  <body>
+    <!-- main -->
+    <main class="auth">
+      <!-- auth intro -->
+      <div class="auth__intro d-md-none">
+        <!-- logo -->
+        <a th:href="@{/}" class="logo d-none d-md-flex">
+          <img
+            th:src="@{/assets/icon/logo.svg}"
+            alt="grocerystore"
+            class="logo__img"
+          />
+          <h1 class="logo__title">grocerystore</h1>
+        </a>
+
+        <div class="auth__intro-main">
+          <img
+            th:src="@{/assets/img/auth/intro.svg}"
+            alt=""
+            class="auth__intro-img"
+          />
+          <p class="auth__intro-text">
+            The best of luxury brand values, high quality products and
+            innovative services.
+          </p>
+        </div>
+
+        <button class="auth__intro-next d-none d-md-block">
+          <img th:src="@{/assets/icon/next.svg}" alt="" />
+        </button>
+      </div>
+
+      <!-- auth content -->
+      <div class="auth__content">
+        <div class="auth__content-inner">
+          <!-- logo -->
+          <a th:href="@{/}" class="logo">
+            <img
+              th:src="@{/assets/icon/logo.svg}"
+              alt="grocerystore"
+              class="logo__img"
+            />
+            <h1 class="logo__title">grocerystore</h1>
+          </a>
+          <h1 class="auth__heading">Hello Again!</h1>
+          <p class="auth__desc">
+            Welcome back to sign in . As a returning customer , you have access
+            to your previously saved all information.
+          </p>
+
+          <!-- Alert messages -->
+          <div th:if="${param.error}" class="alert alert--error" style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            Tên đăng nhập hoặc mật khẩu không đúng!
+          </div>
+          <div th:if="${param.logout}" class="alert alert--success" style="color: #155724; background: #d4edda; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            Đăng xuất thành công!
+          </div>
+          <div th:if="${success}" class="alert alert--success" style="color: #155724; background: #d4edda; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+            <span th:text="${success}"></span>
+          </div>
+
+          <form th:action="@{/auth/login}" method="post" class="form auth__form">
+            <div class="form__group">
+              <div class="form__text-input">
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  class="form__input"
+                  placeholder="Username hoặc Email"
+                  required
+                  autofocus
+                />
+                <img
+                  th:src="@{/assets/icon/email.svg}"
+                  alt=""
+                  class="form__input-icon"
+                />
+                <img
+                  th:src="@{/assets/icon/error.svg}"
+                  alt=""
+                  class="form__input-icon-error"
+                />
+              </div>
+              <p class="form__error">Username không được để trống</p>
+            </div>
+            <div class="form__group">
+              <div class="form__text-input">
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  class="form__input"
+                  placeholder="Password"
+                  required
+                  minlength="6"
+                />
+                <img
+                  th:src="@{/assets/icon/lock.svg}"
+                  alt=""
+                  class="form__input-icon"
+                />
+                <img
+                  th:src="@{/assets/icon/error.svg}"
+                  alt=""
+                  class="form__input-icon-error"
+                />
+              </div>
+              <p class="form__error">Mật khẩu ít nhất 6 ký tự</p>
+            </div>
+            <div class="form__group form__group--inline">
+              <label class="form__checkbox">
+                <input type="checkbox" name="remember-me" class="form__checkbox-input" />
+                <span class="form__checkbox-label">Ghi nhớ đăng nhập</span>
+              </label>
+              <a
+                th:href="@{/reset-password}"
+                class="auth__link form__pull-right"
+                >Forgot Password?</a
+              >
+            </div>
+            <div class="form__group auth__btn-group">
+              <button type="submit" class="btn btn--primary auth__btn form__submit-btn">
+                Login
+              </button>
+            </div>
+          </form>
+
+          <!-- Google Login Button (Ngoài form để tránh submit) -->
+          <div class="form__group auth__btn-group" style="margin-top: 16px;">
+            <a th:href="@{/oauth2/authorization/google}" class="btn btn--outline auth__btn btn--no-margin" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; width: 100%;">
+              <img
+                th:src="@{/assets/icon/google.svg}"
+                alt=""
+                class="btn-icon icon"
+              />
+              Sign in with Google
+            </a>
+          </div>
+
+          <p class="auth__text">
+            Don’t have an account yet?
+            <a th:href="@{/sign-up}" class="auth__link">Sign Up</a>
+          </p>
+        </div>
+      </div>
+    </main>
+    <script>
+      window.dispatchEvent(new Event("template-loaded"));
+    </script>
+  </body>
+</html>

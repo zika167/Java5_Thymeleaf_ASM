@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{shared/fragments/head :: head('Checkout - Grocery Store')}"></head>
+  <body>
+    <!-- Header -->
+    <header th:replace="~{shared/shared/fragments/header :: header}"></header>
+    
+
+    <!-- MAIN -->
+    <main class="checkout-page">
+      <div class="container">
+        <!-- Search bar -->
+        <div class="checkout-container">
+          <div class="search-bar d-none d-md-flex">
+            <input
+              type="text"
+              name=""
+              id=""
+              placeholder="Search for item"
+              class="search-bar__input"
+            />
+            <button class="search-bar__submit">
+              <img
+                th:src="@{/assets/icon/search.svg}"
+                alt=""
+                class="search-bar__icon icon"
+              />
+            </button>
+          </div>
+        </div>
+
+        <!-- Breadcrumbs -->
+        <div class="checkout-container">
+          <ul class="breadcrumbs checkout-page__breadcrumbs">
+            <li>
+              <a th:href="@{/index-logined}" class="breadcrumbs__link">
+                Home
+                <img th:src="@{/assets/icon/arrow-right.svg}" alt="" />
+              </a>
+            </li>
+            <li>
+              <a href="#!" class="breadcrumbs__link breadcrumbs__link--current"
+                >Checkout</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Checkout content -->
+        <div class="checkout-container">
+          <div class="row gy-xl-3">
+            <div class="col-8 col-xl-12">
+              <div class="cart-info">
+                <div class="cart-info__list">
+                  <!-- Filled by JS -->
+                </div>
+                <div class="cart-info__bottom d-md-none">
+                  <div class="cart-info__continue" style="padding-top: 12px;">
+                    <a th:href="@{/index-logined}" class="btn btn--primary btn--rounded">Continue Shopping</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-4 col-xl-12">
+              <!-- Order Summary -->
+              <div class="cart-info">
+                <div class="cart-info__row">
+                  <span>Subtotal</span>
+                  <span class="cart-summary__items-count"></span>
+                </div>
+                <div class="cart-info__row">
+                  <span>Price</span>
+                  <span class="cart-summary__price"></span>
+                </div>
+                <div class="cart-info__row">
+                  <span>Shipping</span>
+                  <span class="cart-summary__shipping"></span>
+                </div>
+                <div class="cart-info__separate"></div>
+                <div class="cart-info__row">
+                  <span>Estimated Total</span>
+                  <span class="cart-summary__estimated"></span>
+                </div>
+              </div>
+
+              <!-- Shipping Address -->
+              <div class="cart-info">
+                <h2 class="cart-info__heading cart-info__heading--lv2">Địa chỉ giao hàng</h2>
+                <div class="cart-info__separate"></div>
+                
+                <div id="addressSelection" style="margin-bottom: 20px;">
+                  <select id="selectedAddress" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    <option value="">-- Chọn địa chỉ giao hàng --</option>
+                  </select>
+                </div>
+                
+                <a th:href="@{/addresses}" class="btn btn--outline" style="width: 100%; text-align: center; padding: 10px;">
+                  Quản lý địa chỉ
+                </a>
+              </div>
+
+              <!-- Payment Methods -->
+              <div class="cart-info">
+                <h2 class="cart-info__heading cart-info__heading--lv2">Phương thức thanh toán</h2>
+                <div class="cart-info__separate"></div>
+
+                <div class="payment-methods">
+                  <!-- COD -->
+                  <label class="payment-method">
+                    <input type="radio" name="paymentMethod" value="COD" checked class="payment-method__input" />
+                    <div class="payment-method__content">
+                      <div class="payment-method__logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                          <rect width="40" height="40" rx="8" fill="#E8F5E9"/>
+                          <path d="M12 20h16M20 12v16" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"/>
+                          <circle cx="20" cy="20" r="8" stroke="#4CAF50" stroke-width="2" fill="none"/>
+                        </svg>
+                      </div>
+                      <div class="payment-method__info">
+                        <h3 class="payment-method__title">Thanh toán khi nhận hàng (COD)</h3>
+                        <p class="payment-method__desc">Thanh toán bằng tiền mặt khi nhận hàng</p>
+                      </div>
+                      <span class="payment-method__check"></span>
+                    </div>
+                  </label>
+
+                  <!-- VNPay -->
+                  <label class="payment-method">
+                    <input type="radio" name="paymentMethod" value="VNPAY" class="payment-method__input" />
+                    <div class="payment-method__content">
+                      <div class="payment-method__logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                          <rect width="40" height="40" rx="8" fill="#E3F2FD"/>
+                          <text x="8" y="26" font-size="12" font-weight="bold" fill="#1976D2">VN</text>
+                          <text x="22" y="26" font-size="12" font-weight="bold" fill="#D32F2F">Pay</text>
+                        </svg>
+                      </div>
+                      <div class="payment-method__info">
+                        <h3 class="payment-method__title">VNPay</h3>
+                        <p class="payment-method__desc">Thanh toán qua VNPay (ATM, Visa, MasterCard, QR Code)</p>
+                      </div>
+                      <span class="payment-method__check"></span>
+                    </div>
+                  </label>
+
+                  <!-- Momo -->
+                  <label class="payment-method">
+                    <input type="radio" name="paymentMethod" value="MOMO" class="payment-method__input" />
+                    <div class="payment-method__content">
+                      <div class="payment-method__logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                          <rect width="40" height="40" rx="8" fill="#FCE4EC"/>
+                          <circle cx="20" cy="20" r="12" fill="#A50064"/>
+                          <text x="12" y="25" font-size="10" font-weight="bold" fill="white">M</text>
+                          <text x="22" y="25" font-size="10" font-weight="bold" fill="white">M</text>
+                        </svg>
+                      </div>
+                      <div class="payment-method__info">
+                        <h3 class="payment-method__title">Ví MoMo</h3>
+                        <p class="payment-method__desc">Thanh toán qua ví điện tử MoMo</p>
+                      </div>
+                      <span class="payment-method__check"></span>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Payment Instructions -->
+                <div class="payment-instructions" id="payment-instructions">
+                  <div class="payment-instruction payment-instruction--cod" data-method="COD">
+                    <div class="payment-instruction__icon">💵</div>
+                    <div class="payment-instruction__content">
+                      <p>Bạn sẽ thanh toán bằng tiền mặt khi nhận hàng.</p>
+                      <p>Vui lòng chuẩn bị đúng số tiền để thuận tiện cho việc giao hàng.</p>
+                    </div>
+                  </div>
+                  <div class="payment-instruction payment-instruction--vnpay hide" data-method="VNPAY">
+                    <div class="payment-instruction__icon">🏦</div>
+                    <div class="payment-instruction__content">
+                      <p>Bạn sẽ được chuyển đến cổng thanh toán VNPay.</p>
+                      <p>Hỗ trợ: Thẻ ATM nội địa, Visa, MasterCard, JCB, QR Code.</p>
+                    </div>
+                  </div>
+                  <div class="payment-instruction payment-instruction--momo hide" data-method="MOMO">
+                    <div class="payment-instruction__icon">📱</div>
+                    <div class="payment-instruction__content">
+                      <p>Bạn sẽ được chuyển đến ứng dụng MoMo để thanh toán.</p>
+                      <p>Đảm bảo ví MoMo có đủ số dư trước khi thanh toán.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cart-info__separate"></div>
+
+                <a
+                  th:href="@{/shipping}"
+                  class="cart-info__next-btn btn btn--primary btn--rounded"
+                  id="checkout-btn"
+                >
+                  Tiếp tục thanh toán
+                </a>
+              </div>
+
+              <!-- Gift Option -->
+              <div class="cart-info">
+                <a href="#!">
+                  <article class="gift-item">
+                    <div class="gift-item__icon-wrap">
+                      <img
+                        th:src="@{/assets/icon/gift.svg}"
+                        alt=""
+                        class="gift-item__icon"
+                      />
+                    </div>
+                    <div class="gift-item__content">
+                      <h3 class="gift-item__title">
+                        Send this order as a gift.
+                      </h3>
+                      <p class="gift-item__desc">
+                        Available items will be shipped to your gift recipient.
+                      </p>
+                    </div>
+                  </article>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+
+    <!-- Modal: confirm remove shopping cart item -->
+    <div id="delete-confirm" class="modal hide">
+      <div class="modal__content">
+        <p class="modal__text">
+          Do you want to remove this item from shopping cart?
+        </p>
+        <div class="modal__bottom">
+          <button
+            class="btn btn--small btn--outline modal__btn js-toggle"
+            toggle-target="#delete-confirm"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn--small btn--danger btn--primary modal__btn btn--no-margin js-toggle"
+            toggle-target="#delete-confirm"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+      <div
+        class="modal__overlay js-toggle"
+        toggle-target="#delete-confirm"
+      ></div>
+    </div>
+
+    <!-- Payment Methods Styles -->
+    <style>
+      .payment-methods { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+      .payment-method { cursor: pointer; }
+      .payment-method__input { display: none; }
+      .payment-method__content { display: flex; align-items: center; gap: 15px; padding: 16px; border: 2px solid #e0e0e0; border-radius: 12px; transition: all 0.3s ease; }
+      .payment-method__input:checked + .payment-method__content { border-color: #4CAF50; background: #E8F5E9; }
+      .payment-method__logo { flex-shrink: 0; width: 40px; height: 40px; }
+      .payment-method__info { flex: 1; }
+      .payment-method__title { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 4px; }
+      .payment-method__desc { font-size: 13px; color: #666; }
+      .payment-method__check { width: 22px; height: 22px; border: 2px solid #ccc; border-radius: 50%; position: relative; flex-shrink: 0; }
+      .payment-method__input:checked + .payment-method__content .payment-method__check { border-color: #4CAF50; background: #4CAF50; }
+      .payment-method__input:checked + .payment-method__content .payment-method__check::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: white; border-radius: 50%; }
+      .payment-instructions { margin-top: 15px; }
+      .payment-instruction { display: flex; gap: 12px; padding: 15px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #4CAF50; }
+      .payment-instruction--vnpay { border-left-color: #1976D2; background: #E3F2FD; }
+      .payment-instruction--momo { border-left-color: #A50064; background: #FCE4EC; }
+      .payment-instruction__icon { font-size: 24px; }
+      .payment-instruction__content p { margin: 4px 0; font-size: 14px; color: #555; }
+      .payment-instruction.hide { display: none; }
+      @media (max-width: 768px) {
+        .payment-method__content { padding: 12px; gap: 10px; }
+        .payment-method__title { font-size: 14px; }
+        .payment-method__desc { font-size: 12px; }
+      }
+    </style>
+
+    <!-- Payment Methods Script -->
+    <script th:src="@{/assets/js/address-api.js}"></script>
+    <script>
+      // Load addresses on page load
+      document.addEventListener('DOMContentLoaded', async function() {
+        const paymentInputs = document.querySelectorAll('input[name="paymentMethod"]');
+        const instructions = document.querySelectorAll('.payment-instruction');
+
+        paymentInputs.forEach(input => {
+          input.addEventListener('change', function() {
+            // Hide all instructions
+            instructions.forEach(inst => inst.classList.add('hide'));
+            // Show selected instruction
+            const selectedInstruction = document.querySelector(`.payment-instruction[data-method="${this.value}"]`);
+            if (selectedInstruction) {
+              selectedInstruction.classList.remove('hide');
+            }
+            // Store selected payment method
+            localStorage.setItem('selectedPaymentMethod', this.value);
+          });
+        });
+
+        // Restore selected payment method
+        const savedMethod = localStorage.getItem('selectedPaymentMethod');
+        if (savedMethod) {
+          const savedInput = document.querySelector(`input[name="paymentMethod"][value="${savedMethod}"]`);
+          if (savedInput) {
+            savedInput.checked = true;
+            savedInput.dispatchEvent(new Event('change'));
+          }
+        }
+
+        // Load addresses
+        await loadAddressesForCheckout();
+      });
+
+      async function loadAddressesForCheckout() {
+        const addresses = await AddressAPI.getUserAddresses();
+        const select = document.getElementById('selectedAddress');
+        
+        if (!addresses || addresses.length === 0) {
+          select.innerHTML = '<option value="">-- Chưa có địa chỉ, vui lòng thêm --</option>';
+          return;
+        }
+        
+        select.innerHTML = '<option value="">-- Chọn địa chỉ giao hàng --</option>';
+        addresses.forEach(addr => {
+          const option = document.createElement('option');
+          option.value = addr.id;
+          option.textContent = `${addr.recipientName} - ${addr.addressLine1}, ${addr.city}`;
+          if (addr.isDefault) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+      }
+    </script>
+  </body>
+</html>
