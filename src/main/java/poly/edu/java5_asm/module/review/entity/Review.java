@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
  * Entity Đánh giá sản phẩm
  */
 @Entity
-@Table(name = "reviews", 
-       uniqueConstraints = @UniqueConstraint(name = "unique_user_product", columnNames = {"user_id", "product_id"}))
+@Table(name = "reviews",
+        uniqueConstraints = @UniqueConstraint(name = "unique_user_product", columnNames = {"user_id", "product_id"}))
 @Getter
 @Setter
 @NoArgsConstructor

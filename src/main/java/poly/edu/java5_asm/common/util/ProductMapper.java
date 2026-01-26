@@ -44,7 +44,7 @@ public class ProductMapper {
     // Chuyển List<Product> → List<ProductResponse>
     public List<ProductResponse> toResponseList(List<Product> products) {
         if (products == null) return List.of();
-        
+
         return products.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -94,7 +94,7 @@ public class ProductMapper {
         if (product.getReviews() == null || product.getReviews().isEmpty()) {
             return 0.0;
         }
-        
+
         return product.getReviews().stream()
                 .mapToInt(review -> review.getRating())
                 .average()

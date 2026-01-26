@@ -167,7 +167,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .id(review.getId())
                 .productId(review.getProduct().getId())
                 .userId(review.getUser().getId())
-                .userName(review.getUser().getFullName() != null ? 
+                .userName(review.getUser().getFullName() != null ?
                         review.getUser().getFullName() : review.getUser().getUsername())
                 .rating(review.getRating())
                 .title(review.getTitle())

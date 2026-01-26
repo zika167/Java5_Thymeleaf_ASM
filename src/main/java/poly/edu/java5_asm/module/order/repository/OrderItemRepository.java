@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
-    
+
     // Tìm tất cả items của đơn hàng
     List<OrderItem> findByOrder(Order order);
 }

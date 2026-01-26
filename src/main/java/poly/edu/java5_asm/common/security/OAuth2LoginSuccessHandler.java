@@ -52,7 +52,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         log.info("=== OAuth2 Login Success Handler Started ===");
         log.info("Authentication class: {}", authentication.getClass().getName());
         log.info("Authentication principal class: {}", authentication.getPrincipal().getClass().getName());
-        
+
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         log.info("OAuth2User attributes: {}", oAuth2User.getAttributes());
 
@@ -69,11 +69,11 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 .orElseGet(() -> {
                     // Tạo user mới nếu chưa tồn tại
                     log.info("Creating new user from Google OAuth2: {}", email);
-                    
+
                     // Tạo random password cho OAuth2 user (không bao giờ dùng để login)
                     String randomPassword = UUID.randomUUID().toString();
                     String encodedPassword = passwordEncoder.encode(randomPassword);
-                    
+
                     User newUser = User.builder()
                             .email(email)
                             .username(email) // Sử dụng email làm username
@@ -97,7 +97,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         // Clear any existing JWT cookie first to prevent duplicates
         clearExistingJwtCookie(response);
-        
+
         // Generate new JWT token
         String jwt = jwtUtils.generateTokenFromUsername(user.getUsername());
 
@@ -110,7 +110,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         // Redirect to home page
         getRedirectStrategy().sendRedirect(request, response, "/");
-        
+
         log.info("=== OAuth2 Login Success Handler Completed ===");
     }
 

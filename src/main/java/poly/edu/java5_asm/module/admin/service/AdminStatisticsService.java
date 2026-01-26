@@ -45,7 +45,7 @@ public class AdminStatisticsService {
                         startOfWeek.toLocalDate(), LocalDate.now()))
                 .newUsersThisMonth(userRepository.countByRegisteredDateBetween(
                         startOfMonth.toLocalDate(), LocalDate.now()))
-                
+
                 // Thống kê traffic
                 .totalPageViewsToday(activityLogRepository.countPageViewsBetween(startOfToday, now))
                 .totalPageViewsThisWeek(activityLogRepository.countPageViewsBetween(startOfWeek, now))
@@ -53,7 +53,7 @@ public class AdminStatisticsService {
                 .uniqueVisitorsToday(activityLogRepository.countUniqueVisitorsBetween(startOfToday, now))
                 .uniqueVisitorsThisWeek(activityLogRepository.countUniqueVisitorsBetween(startOfWeek, now))
                 .uniqueVisitorsThisMonth(activityLogRepository.countUniqueVisitorsBetween(startOfMonth, now))
-                
+
                 // Thống kê hoạt động
                 .totalLogins(activityLogRepository.countByActivityType(UserActivityLog.ActivityType.LOGIN))
                 .totalProductViews(activityLogRepository.countByActivityType(UserActivityLog.ActivityType.PRODUCT_VIEW))
@@ -68,19 +68,19 @@ public class AdminStatisticsService {
      */
     public List<UserRegistrationStatsResponse> getUserRegistrationStats(LocalDate startDate, LocalDate endDate) {
         List<UserRegistrationStatsResponse> stats = new ArrayList<>();
-        
+
         LocalDate currentDate = startDate;
         while (!currentDate.isAfter(endDate)) {
             Long count = userRepository.countByRegisteredDate(currentDate);
-            
+
             stats.add(UserRegistrationStatsResponse.builder()
                     .date(currentDate)
                     .registrationCount(count)
                     .build());
-            
+
             currentDate = currentDate.plusDays(1);
         }
-        
+
         return stats;
     }
 
@@ -89,12 +89,12 @@ public class AdminStatisticsService {
      */
     public List<TrafficStatsResponse> getTrafficStats(LocalDate startDate, LocalDate endDate) {
         List<TrafficStatsResponse> stats = new ArrayList<>();
-        
+
         LocalDate currentDate = startDate;
         while (!currentDate.isAfter(endDate)) {
             LocalDateTime dayStart = currentDate.atStartOfDay();
             LocalDateTime dayEnd = currentDate.atTime(LocalTime.MAX);
-            
+
             stats.add(TrafficStatsResponse.builder()
                     .date(currentDate)
                     .totalPageViews(activityLogRepository.countPageViewsBetween(dayStart, dayEnd))
@@ -105,10 +105,10 @@ public class AdminStatisticsService {
                     .addToCartCount(activityLogRepository.countAddToCartsBetween(dayStart, dayEnd))
                     .checkoutCount(activityLogRepository.countCheckoutsBetween(dayStart, dayEnd))
                     .build());
-            
+
             currentDate = currentDate.plusDays(1);
         }
-        
+
         return stats;
     }
 

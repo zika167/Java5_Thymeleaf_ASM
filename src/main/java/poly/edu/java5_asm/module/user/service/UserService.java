@@ -42,7 +42,7 @@ public class UserService {
         User user = findById(userId);
 
         // Kiểm tra email đã được sử dụng bởi user khác chưa
-        if (!user.getEmail().equals(request.getEmail()) 
+        if (!user.getEmail().equals(request.getEmail())
                 && userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email đã được sử dụng bởi tài khoản khác");
         }

@@ -13,15 +13,15 @@ async function loadProductReviews(productId, page = 0, size = 10, sortBy = 'crea
         const response = await fetch(
             `${API_BASE_URL}/products/${productId}?page=${page}&size=${size}&sortBy=${sortBy}`
         );
-        
+
         if (!response.ok) {
             throw new Error('Failed to load reviews');
         }
-        
+
         const data = await response.json();
         displayReviews(data);
         displayPagination(data);
-        
+
         return data;
     } catch (error) {
         console.error('Error loading reviews:', error);
@@ -35,14 +35,14 @@ async function loadProductReviews(productId, page = 0, size = 10, sortBy = 'crea
 async function loadProductRating(productId) {
     try {
         const response = await fetch(`${API_BASE_URL}/products/${productId}/rating`);
-        
+
         if (!response.ok) {
             throw new Error('Failed to load rating');
         }
-        
+
         const data = await response.json();
         displayRatingSummary(data);
-        
+
         return data;
     } catch (error) {
         console.error('Error loading rating:', error);
@@ -55,15 +55,15 @@ async function loadProductRating(productId) {
 async function checkUserReview(productId) {
     try {
         const response = await fetch(`${API_BASE_URL}/products/${productId}/check`);
-        
+
         if (!response.ok) {
-            return { hasReviewed: false, hasPurchased: false };
+            return {hasReviewed: false, hasPurchased: false};
         }
-        
+
         return await response.json();
     } catch (error) {
         console.error('Error checking review:', error);
-        return { hasReviewed: false, hasPurchased: false };
+        return {hasReviewed: false, hasPurchased: false};
     }
 }
 
@@ -79,15 +79,15 @@ async function createReview(productId, reviewData) {
             },
             body: JSON.stringify(reviewData)
         });
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.error || 'Failed to create review');
         }
-        
+
         showSuccess('Đánh giá của bạn đã được gửi thành công!');
-        
+
         // Reload reviews
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
@@ -95,11 +95,11 @@ async function createReview(productId, reviewData) {
             await loadProductReviews(productId);
             await loadProductRating(productId);
         }
-        
+
         // Reset form
         document.getElementById('reviewForm')?.reset();
         resetStarRating();
-        
+
         return data;
     } catch (error) {
         console.error('Error creating review:', error);
@@ -115,20 +115,20 @@ async function deleteReview(reviewId) {
     if (!confirm('Bạn có chắc chắn muốn xóa đánh giá này?')) {
         return;
     }
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/${reviewId}`, {
             method: 'DELETE'
         });
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.error || 'Failed to delete review');
         }
-        
+
         showSuccess('Xóa đánh giá thành công!');
-        
+
         // Reload reviews
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
@@ -136,7 +136,7 @@ async function deleteReview(reviewId) {
             await loadProductReviews(productId);
             await loadProductRating(productId);
         }
-        
+
     } catch (error) {
         console.error('Error deleting review:', error);
         showError(error.message);
@@ -149,12 +149,12 @@ async function deleteReview(reviewId) {
 function displayReviews(data) {
     const container = document.getElementById('reviewsList');
     if (!container) return;
-    
+
     if (!data.reviews || data.reviews.length === 0) {
         container.innerHTML = '<p class="text-center">Chưa có đánh giá nào cho sản phẩm này.</p>';
         return;
     }
-    
+
     container.innerHTML = data.reviews.map(review => `
         <div class="review-card" data-review-id="${review.id}">
             <div class="review-card__header">
@@ -180,7 +180,7 @@ function displayReviews(data) {
             ${review.comment ? `<p class="review-card__desc">${escapeHtml(review.comment)}</p>` : ''}
         </div>
     `).join('');
-    
+
     // Show delete button for own reviews (implement based on your auth system)
     showDeleteButtons();
 }
@@ -191,10 +191,10 @@ function displayReviews(data) {
 function displayRatingSummary(data) {
     const container = document.getElementById('ratingSummary');
     if (!container) return;
-    
+
     const avgRating = data.averageRating || 0;
     const totalReviews = data.totalReviews || 0;
-    
+
     container.innerHTML = `
         <div class="rating-summary">
             <div class="rating-summary__score">
@@ -206,9 +206,9 @@ function displayRatingSummary(data) {
             </div>
             <div class="rating-summary__bars">
                 ${[5, 4, 3, 2, 1].map(star => {
-                    const count = data.ratingDistribution[star] || 0;
-                    const percentage = data.ratingPercentage[star] || 0;
-                    return `
+        const count = data.ratingDistribution[star] || 0;
+        const percentage = data.ratingPercentage[star] || 0;
+        return `
                         <div class="rating-bar">
                             <span class="rating-bar__label">${star} sao</span>
                             <div class="rating-bar__track">
@@ -217,7 +217,7 @@ function displayRatingSummary(data) {
                             <span class="rating-bar__count">${count}</span>
                         </div>
                     `;
-                }).join('')}
+    }).join('')}
             </div>
         </div>
     `;
@@ -229,19 +229,19 @@ function displayRatingSummary(data) {
 function displayPagination(data) {
     const container = document.getElementById('reviewsPagination');
     if (!container) return;
-    
+
     if (data.totalPages <= 1) {
         container.innerHTML = '';
         return;
     }
-    
+
     let html = '<div class="pagination">';
-    
+
     for (let i = 0; i < data.totalPages; i++) {
         const active = i === data.currentPage ? 'active' : '';
         html += `<button class="pagination__btn ${active}" onclick="changePage(${i})">${i + 1}</button>`;
     }
-    
+
     html += '</div>';
     container.innerHTML = html;
 }
@@ -253,21 +253,21 @@ function generateStarRating(rating) {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
+
     let html = '';
-    
+
     for (let i = 0; i < fullStars; i++) {
         html += '<img src="/assets/icon/star.svg" alt="star" class="star-icon" />';
     }
-    
+
     if (hasHalfStar) {
         html += '<img src="/assets/icon/half-star.svg" alt="half star" class="star-icon" />';
     }
-    
+
     for (let i = 0; i < emptyStars; i++) {
         html += '<img src="/assets/icon/blank-star.svg" alt="empty star" class="star-icon" />';
     }
-    
+
     return html;
 }
 
@@ -279,13 +279,13 @@ function formatDate(dateString) {
     const now = new Date();
     const diffTime = Math.abs(now - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return 'Hôm nay';
     if (diffDays === 1) return 'Hôm qua';
     if (diffDays < 7) return `${diffDays} ngày trước`;
     if (diffDays < 30) return `${Math.floor(diffDays / 7)} tuần trước`;
     if (diffDays < 365) return `${Math.floor(diffDays / 30)} tháng trước`;
-    
+
     return date.toLocaleDateString('vi-VN');
 }
 
@@ -329,19 +329,19 @@ function changePage(page) {
 function initStarRating() {
     const stars = document.querySelectorAll('.star-rating__star');
     const ratingInput = document.getElementById('ratingInput');
-    
+
     stars.forEach((star, index) => {
         star.addEventListener('click', () => {
             const rating = index + 1;
             ratingInput.value = rating;
             updateStarDisplay(rating);
         });
-        
+
         star.addEventListener('mouseenter', () => {
             updateStarDisplay(index + 1);
         });
     });
-    
+
     const container = document.querySelector('.star-rating');
     if (container) {
         container.addEventListener('mouseleave', () => {
@@ -383,27 +383,27 @@ function showDeleteButtons() {
 function initReviewForm() {
     const form = document.getElementById('reviewForm');
     if (!form) return;
-    
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
-        
+
         if (!productId) {
             showError('Không tìm thấy sản phẩm');
             return;
         }
-        
+
         const rating = document.getElementById('ratingInput').value;
         const title = document.getElementById('reviewTitle').value;
         const comment = document.getElementById('reviewComment').value;
-        
+
         if (!rating) {
             showError('Vui lòng chọn số sao đánh giá');
             return;
         }
-        
+
         try {
             await createReview(productId, {
                 rating: parseInt(rating),
@@ -420,7 +420,7 @@ function initReviewForm() {
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
-    
+
     if (productId) {
         loadProductReviews(productId);
         loadProductRating(productId);
@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     initStarRating();
     initReviewForm();
 });

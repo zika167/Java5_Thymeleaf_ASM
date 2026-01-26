@@ -1,203 +1,208 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="~{shared/fragments/head :: head('Sign Up - Grocery Store')}"></head>
+<head th:replace="~{shared/fragments/head :: head('Sign Up - Grocery Store')}"></head>
 
-  <body>
-    <!-- main -->
-    <main class="auth">
-      <!-- auth intro -->
-      <div class="auth__intro">
+<body>
+<!-- main -->
+<main class="auth">
+    <!-- auth intro -->
+    <div class="auth__intro">
         <!-- logo -->
         <a th:href="@{/}" class="logo d-none d-md-flex">
-          <img
-            th:src="@{/assets/icon/logo.svg}"
-            alt="grocerystore"
-            class="logo__img"
-          />
-          <h1 class="logo__title">grocerystore</h1>
+            <img
+                    th:src="@{/assets/icon/logo.svg}"
+                    alt="grocerystore"
+                    class="logo__img"
+            />
+            <h1 class="logo__title">grocerystore</h1>
         </a>
 
         <div class="auth__intro-main">
-          <img
-            th:src="@{/assets/img/auth/intro.svg}"
-            alt=""
-            class="auth__intro-img"
-          />
-          <p class="auth__intro-text">
-            The best of luxury brand values, high quality products and
-            innovative services.
-          </p>
+            <img
+                    th:src="@{/assets/img/auth/intro.svg}"
+                    alt=""
+                    class="auth__intro-img"
+            />
+            <p class="auth__intro-text">
+                The best of luxury brand values, high quality products and
+                innovative services.
+            </p>
         </div>
 
         <button
-          class="auth__intro-next d-none d-md-block js-toggle"
-          toggle-target="#auth-content"
+                class="auth__intro-next d-none d-md-block js-toggle"
+                toggle-target="#auth-content"
         >
-          <img th:src="@{/assets/icon/next.svg}" alt="" />
+            <img th:src="@{/assets/icon/next.svg}" alt=""/>
         </button>
-      </div>
+    </div>
 
-      <!-- auth content -->
-      <div id="auth-content" class="auth__content hide">
+    <!-- auth content -->
+    <div id="auth-content" class="auth__content hide">
         <div class="auth__content-inner">
-          <!-- logo -->
-          <a th:href="@{/}" class="logo">
-            <img
-              th:src="@{/assets/icon/logo.svg}"
-              alt="grocerystore"
-              class="logo__img"
-            />
-            <h1 class="logo__title">grocerystore</h1>
-          </a>
-          <h1 class="auth__heading">Sign Up</h1>
-          <p class="auth__desc">
-            Let’s create your account and Shop like a pro and save money.
-          </p>
-          <!-- Alert messages -->
-          <div th:if="${errorMessage}" class="alert alert--error" style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
-            <span th:text="${errorMessage}"></span>
-          </div>
-          <div th:if="${successMessage}" class="alert alert--success" style="color: #155724; background: #d4edda; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
-            <span th:text="${successMessage}"></span>
-          </div>
+            <!-- logo -->
+            <a th:href="@{/}" class="logo">
+                <img
+                        th:src="@{/assets/icon/logo.svg}"
+                        alt="grocerystore"
+                        class="logo__img"
+                />
+                <h1 class="logo__title">grocerystore</h1>
+            </a>
+            <h1 class="auth__heading">Sign Up</h1>
+            <p class="auth__desc">
+                Let’s create your account and Shop like a pro and save money.
+            </p>
+            <!-- Alert messages -->
+            <div th:if="${errorMessage}" class="alert alert--error"
+                 style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+                <span th:text="${errorMessage}"></span>
+            </div>
+            <div th:if="${successMessage}" class="alert alert--success"
+                 style="color: #155724; background: #d4edda; padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+                <span th:text="${successMessage}"></span>
+            </div>
 
-          <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post" class="form auth__form">
-            <div class="form__group">
-              <div class="form__text-input">
-                <input
-                  type="text"
-                  th:field="*{username}"
-                  class="form__input"
-                  placeholder="Username"
-                  required
-                  autofocus
-                />
-                <img
-                  th:src="@{/assets/icon/email.svg}"
-                  alt=""
-                  class="form__input-icon"
-                />
-                <img
-                  th:src="@{/assets/icon/error.svg}"
-                  alt=""
-                  class="form__input-icon-error"
-                />
-              </div>
-              <p class="form__error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username error</p>
-            </div>
-            <div class="form__group">
-              <div class="form__text-input">
-                <input
-                  type="email"
-                  th:field="*{email}"
-                  class="form__input"
-                  placeholder="Email"
-                  required
-                />
-                <img
-                  th:src="@{/assets/icon/email.svg}"
-                  alt=""
-                  class="form__input-icon"
-                />
-                <img
-                  th:src="@{/assets/icon/error.svg}"
-                  alt=""
-                  class="form__input-icon-error"
-                />
-              </div>
-              <p class="form__error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</p>
-            </div>
-            <div class="form__group">
-              <div class="form__text-input">
-                <input
-                  type="text"
-                  th:field="*{fullName}"
-                  class="form__input"
-                  placeholder="Họ và tên (tùy chọn)"
-                />
-                <img
-                  th:src="@{/assets/icon/email.svg}"
-                  alt=""
-                  class="form__input-icon"
-                />
-              </div>
-            </div>
-            <div class="form__group">
-              <div class="form__text-input">
-                <input
-                  type="password"
-                  th:field="*{password}"
-                  class="form__input"
-                  placeholder="Password"
-                  required
-                  minlength="6"
-                />
-                <img
-                  th:src="@{/assets/icon/lock.svg}"
-                  alt=""
-                  class="form__input-icon"
-                />
-                <img
-                  th:src="@{/assets/icon/error.svg}"
-                  alt=""
-                  class="form__input-icon-error"
-                />
-              </div>
-              <p class="form__error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</p>
-            </div>
-            <div class="form__group">
-              <div class="form__text-input">
-                <input
-                  type="password"
-                  th:field="*{confirmPassword}"
-                  class="form__input"
-                  placeholder="Confirm password"
-                  required
-                  minlength="6"
-                />
-                <img
-                  th:src="@{/assets/icon/lock.svg}"
-                  alt=""
-                  class="form__input-icon"
-                />
-                <img
-                  th:src="@{/assets/icon/error.svg}"
-                  alt=""
-                  class="form__input-icon-error"
-                />
-              </div>
-              <p class="form__error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Confirm password error</p>
-            </div>
-            <div class="form__group form__group--inline">
-              <label class="form__checkbox">
-                <input type="checkbox" name="agreeTerms" class="form__checkbox-input" required />
-                <span class="form__checkbox-label">Tôi đồng ý với điều khoản sử dụng</span>
-              </label>
-            </div>
-            <div class="form__group auth__btn-group">
-              <button type="submit" class="btn btn--primary auth__btn form__submit-btn">
-                Sign Up
-              </button>
-              <button type="button" class="btn btn--outline auth__btn btn--no-margin">
-                <img
-                  th:src="@{/assets/icon/google.svg}"
-                  alt=""
-                  class="btn-icon icon"
-                />
-                Sign in with Google
-              </button>
-            </div>
-          </form>
+            <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post" class="form auth__form">
+                <div class="form__group">
+                    <div class="form__text-input">
+                        <input
+                                type="text"
+                                th:field="*{username}"
+                                class="form__input"
+                                placeholder="Username"
+                                required
+                                autofocus
+                        />
+                        <img
+                                th:src="@{/assets/icon/email.svg}"
+                                alt=""
+                                class="form__input-icon"
+                        />
+                        <img
+                                th:src="@{/assets/icon/error.svg}"
+                                alt=""
+                                class="form__input-icon-error"
+                        />
+                    </div>
+                    <p class="form__error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username
+                        error</p>
+                </div>
+                <div class="form__group">
+                    <div class="form__text-input">
+                        <input
+                                type="email"
+                                th:field="*{email}"
+                                class="form__input"
+                                placeholder="Email"
+                                required
+                        />
+                        <img
+                                th:src="@{/assets/icon/email.svg}"
+                                alt=""
+                                class="form__input-icon"
+                        />
+                        <img
+                                th:src="@{/assets/icon/error.svg}"
+                                alt=""
+                                class="form__input-icon-error"
+                        />
+                    </div>
+                    <p class="form__error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</p>
+                </div>
+                <div class="form__group">
+                    <div class="form__text-input">
+                        <input
+                                type="text"
+                                th:field="*{fullName}"
+                                class="form__input"
+                                placeholder="Họ và tên (tùy chọn)"
+                        />
+                        <img
+                                th:src="@{/assets/icon/email.svg}"
+                                alt=""
+                                class="form__input-icon"
+                        />
+                    </div>
+                </div>
+                <div class="form__group">
+                    <div class="form__text-input">
+                        <input
+                                type="password"
+                                th:field="*{password}"
+                                class="form__input"
+                                placeholder="Password"
+                                required
+                                minlength="6"
+                        />
+                        <img
+                                th:src="@{/assets/icon/lock.svg}"
+                                alt=""
+                                class="form__input-icon"
+                        />
+                        <img
+                                th:src="@{/assets/icon/error.svg}"
+                                alt=""
+                                class="form__input-icon-error"
+                        />
+                    </div>
+                    <p class="form__error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password
+                        error</p>
+                </div>
+                <div class="form__group">
+                    <div class="form__text-input">
+                        <input
+                                type="password"
+                                th:field="*{confirmPassword}"
+                                class="form__input"
+                                placeholder="Confirm password"
+                                required
+                                minlength="6"
+                        />
+                        <img
+                                th:src="@{/assets/icon/lock.svg}"
+                                alt=""
+                                class="form__input-icon"
+                        />
+                        <img
+                                th:src="@{/assets/icon/error.svg}"
+                                alt=""
+                                class="form__input-icon-error"
+                        />
+                    </div>
+                    <p class="form__error" th:if="${#fields.hasErrors('confirmPassword')}"
+                       th:errors="*{confirmPassword}">Confirm password error</p>
+                </div>
+                <div class="form__group form__group--inline">
+                    <label class="form__checkbox">
+                        <input type="checkbox" name="agreeTerms" class="form__checkbox-input" required/>
+                        <span class="form__checkbox-label">Tôi đồng ý với điều khoản sử dụng</span>
+                    </label>
+                </div>
+                <div class="form__group auth__btn-group">
+                    <button type="submit" class="btn btn--primary auth__btn form__submit-btn">
+                        Sign Up
+                    </button>
+                    <button type="button" class="btn btn--outline auth__btn btn--no-margin">
+                        <img
+                                th:src="@{/assets/icon/google.svg}"
+                                alt=""
+                                class="btn-icon icon"
+                        />
+                        Sign in with Google
+                    </button>
+                </div>
+            </form>
 
-          <p class="auth__text">
-            You have an account yet?
-            <a th:href="@{/sign-in}" class="auth__link">Sign In</a>
-          </p>
+            <p class="auth__text">
+                You have an account yet?
+                <a th:href="@{/sign-in}" class="auth__link">Sign In</a>
+            </p>
         </div>
-      </div>
-    </main>
-    <script>
-      window.dispatchEvent(new Event("template-loaded"));
-    </script>
-  </body>
+    </div>
+</main>
+<script>
+    window.dispatchEvent(new Event("template-loaded"));
+</script>
+</body>
 </html>

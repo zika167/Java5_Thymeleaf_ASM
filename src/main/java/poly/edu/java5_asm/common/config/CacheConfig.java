@@ -10,10 +10,10 @@ import java.util.Arrays;
 
 /**
  * Configuration cho Spring Cache
- * 
+ * <p>
  * Enables caching cho WishlistService
  * Sử dụng ConcurrentMapCacheManager (in-memory cache)
- * 
+ * <p>
  * For production, consider:
  * - Redis cache (distributed)
  * - Caffeine cache (high performance)
@@ -21,7 +21,7 @@ import java.util.Arrays;
 @Configuration
 @EnableCaching
 public class CacheConfig {
-    
+
     /**
      * Configure CacheManager với ConcurrentMapCacheManager
      * Simple in-memory cache implementation
@@ -32,7 +32,7 @@ public class CacheConfig {
         cacheManager.setCacheNames(Arrays.asList("wishlist"));
         return cacheManager;
     }
-    
+
     // For Caffeine cache (better performance), add dependency and configure:
     /*
     @Bean

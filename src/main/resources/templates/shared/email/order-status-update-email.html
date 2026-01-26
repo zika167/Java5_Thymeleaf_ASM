@@ -5,94 +5,199 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cập nhật đơn hàng</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #2196F3; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
-        .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
-        .status-box { background-color: white; padding: 20px; margin: 15px 0; border-radius: 5px; text-align: center; border-left: 4px solid #2196F3; }
-        .status-box h2 { color: #2196F3; margin: 0 0 10px 0; }
-        .order-info { background-color: white; padding: 15px; margin: 15px 0; border-radius: 5px; }
-        .order-items { margin: 20px 0; }
-        .item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .total { font-size: 18px; font-weight: bold; text-align: right; margin-top: 15px; padding-top: 15px; border-top: 2px solid #2196F3; }
-        .footer { text-align: center; padding: 20px; color: #777; font-size: 12px; }
-        .button { display: inline-block; padding: 12px 30px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; margin: 15px 0; }
-        .timeline { margin: 20px 0; }
-        .timeline-item { padding: 10px 0; border-left: 2px solid #ddd; padding-left: 20px; position: relative; }
-        .timeline-item.active { border-left-color: #2196F3; }
-        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 15px; width: 10px; height: 10px; border-radius: 50%; background: #ddd; }
-        .timeline-item.active::before { background: #2196F3; }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .status-box {
+            background-color: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+            text-align: center;
+            border-left: 4px solid #2196F3;
+        }
+
+        .status-box h2 {
+            color: #2196F3;
+            margin: 0 0 10px 0;
+        }
+
+        .order-info {
+            background-color: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .order-items {
+            margin: 20px 0;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #2196F3;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .timeline {
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            padding: 10px 0;
+            border-left: 2px solid #ddd;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .timeline-item.active {
+            border-left-color: #2196F3;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+
+        .timeline-item.active::before {
+            background: #2196F3;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>📦 Cập nhật đơn hàng</h1>
+<div class="header">
+    <h1>📦 Cập nhật đơn hàng</h1>
+</div>
+
+<div class="content">
+    <p>Xin chào <strong th:text="${user.fullName}">Khách hàng</strong>,</p>
+
+    <div class="status-box">
+        <h2 th:text="${statusMessage}">Đơn hàng đã được xác nhận</h2>
+        <p>Mã đơn hàng: <strong th:text="${order.orderNumber}">ORD-123456</strong></p>
     </div>
-    
-    <div class="content">
-        <p>Xin chào <strong th:text="${user.fullName}">Khách hàng</strong>,</p>
-        
-        <div class="status-box">
-            <h2 th:text="${statusMessage}">Đơn hàng đã được xác nhận</h2>
-            <p>Mã đơn hàng: <strong th:text="${order.orderNumber}">ORD-123456</strong></p>
+
+    <div class="timeline">
+        <h3>Trạng thái đơn hàng:</h3>
+        <div class="timeline-item"
+             th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).PENDING || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).CONFIRMED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).PROCESSING || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).SHIPPED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
+            <strong>Đơn hàng đã đặt</strong>
+            <p th:if="${order.orderedAt}" th:text="${#temporals.format(order.orderedAt, 'dd/MM/yyyy HH:mm')}">19/01/2026
+                10:30</p>
         </div>
-        
-        <div class="timeline">
-            <h3>Trạng thái đơn hàng:</h3>
-            <div class="timeline-item" th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).PENDING || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).CONFIRMED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).PROCESSING || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).SHIPPED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
-                <strong>Đơn hàng đã đặt</strong>
-                <p th:if="${order.orderedAt}" th:text="${#temporals.format(order.orderedAt, 'dd/MM/yyyy HH:mm')}">19/01/2026 10:30</p>
-            </div>
-            <div class="timeline-item" th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).CONFIRMED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).PROCESSING || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).SHIPPED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
-                <strong>Đã xác nhận</strong>
-                <p th:if="${order.confirmedAt}" th:text="${#temporals.format(order.confirmedAt, 'dd/MM/yyyy HH:mm')}">19/01/2026 11:00</p>
-            </div>
-            <div class="timeline-item" th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).PROCESSING || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).SHIPPED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
-                <strong>Đang xử lý</strong>
-            </div>
-            <div class="timeline-item" th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).SHIPPED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
-                <strong>Đang giao hàng</strong>
-                <p th:if="${order.shippedAt}" th:text="${#temporals.format(order.shippedAt, 'dd/MM/yyyy HH:mm')}">20/01/2026 09:00</p>
-            </div>
-            <div class="timeline-item" th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
-                <strong>Đã giao hàng</strong>
-                <p th:if="${order.deliveredAt}" th:text="${#temporals.format(order.deliveredAt, 'dd/MM/yyyy HH:mm')}">21/01/2026 14:30</p>
-            </div>
+        <div class="timeline-item"
+             th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).CONFIRMED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).PROCESSING || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).SHIPPED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
+            <strong>Đã xác nhận</strong>
+            <p th:if="${order.confirmedAt}" th:text="${#temporals.format(order.confirmedAt, 'dd/MM/yyyy HH:mm')}">
+                19/01/2026 11:00</p>
         </div>
-        
-        <div class="order-info">
-            <h3>Chi tiết đơn hàng:</h3>
-            <p><strong>Trạng thái thanh toán:</strong> <span th:text="${order.paymentStatus}">PENDING</span></p>
-            <p><strong>Phương thức thanh toán:</strong> <span th:text="${order.paymentMethod}">COD</span></p>
-            <p><strong>Phương thức vận chuyển:</strong> <span th:text="${order.shippingMethod}">Standard</span></p>
+        <div class="timeline-item"
+             th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).PROCESSING || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).SHIPPED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
+            <strong>Đang xử lý</strong>
         </div>
-        
-        <div class="order-items">
-            <h3>Sản phẩm:</h3>
-            <div th:each="item : ${orderItems}" class="item">
-                <div>
-                    <strong th:text="${item.productName}">Tên sản phẩm</strong>
-                    <br>
-                    <span>Số lượng: <span th:text="${item.quantity}">1</span></span>
-                </div>
-                <div>
-                    <span th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">100,000 đ</span>
-                </div>
-            </div>
-            <p class="total">Tổng cộng: <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">570,000 đ</span></p>
+        <div class="timeline-item"
+             th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).SHIPPED || order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
+            <strong>Đang giao hàng</strong>
+            <p th:if="${order.shippedAt}" th:text="${#temporals.format(order.shippedAt, 'dd/MM/yyyy HH:mm')}">20/01/2026
+                09:00</p>
         </div>
-        
-        <div style="text-align: center;">
-            <a href="http://localhost:8080/orders" class="button">Xem chi tiết đơn hàng</a>
+        <div class="timeline-item"
+             th:classappend="${order.status == T(poly.edu.java5_asm.entity.Order$OrderStatus).DELIVERED} ? 'active'">
+            <strong>Đã giao hàng</strong>
+            <p th:if="${order.deliveredAt}" th:text="${#temporals.format(order.deliveredAt, 'dd/MM/yyyy HH:mm')}">
+                21/01/2026 14:30</p>
         </div>
-        
-        <p>Cảm ơn bạn đã mua sắm tại Fat C Grocery Store!</p>
-        
-        <p>Trân trọng,<br><strong>Fat C Grocery Store</strong></p>
     </div>
-    
-    <div class="footer">
-        <p>Email này được gửi tự động, vui lòng không trả lời.</p>
-        <p>&copy; 2026 Fat C Grocery Store. All rights reserved.</p>
+
+    <div class="order-info">
+        <h3>Chi tiết đơn hàng:</h3>
+        <p><strong>Trạng thái thanh toán:</strong> <span th:text="${order.paymentStatus}">PENDING</span></p>
+        <p><strong>Phương thức thanh toán:</strong> <span th:text="${order.paymentMethod}">COD</span></p>
+        <p><strong>Phương thức vận chuyển:</strong> <span th:text="${order.shippingMethod}">Standard</span></p>
     </div>
+
+    <div class="order-items">
+        <h3>Sản phẩm:</h3>
+        <div th:each="item : ${orderItems}" class="item">
+            <div>
+                <strong th:text="${item.productName}">Tên sản phẩm</strong>
+                <br>
+                <span>Số lượng: <span th:text="${item.quantity}">1</span></span>
+            </div>
+            <div>
+                <span th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">100,000 đ</span>
+            </div>
+        </div>
+        <p class="total">Tổng cộng: <span
+                th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">570,000 đ</span>
+        </p>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="http://localhost:8080/orders" class="button">Xem chi tiết đơn hàng</a>
+    </div>
+
+    <p>Cảm ơn bạn đã mua sắm tại Fat C Grocery Store!</p>
+
+    <p>Trân trọng,<br><strong>Fat C Grocery Store</strong></p>
+</div>
+
+<div class="footer">
+    <p>Email này được gửi tự động, vui lòng không trả lời.</p>
+    <p>&copy; 2026 Fat C Grocery Store. All rights reserved.</p>
+</div>
 </body>
 </html>

@@ -12,7 +12,8 @@ public interface VNPayService {
 
     /**
      * Tạo URL thanh toán VNPay
-     * @param order Đơn hàng cần thanh toán
+     *
+     * @param order     Đơn hàng cần thanh toán
      * @param ipAddress IP của khách hàng
      * @param returnUrl URL callback sau khi thanh toán
      * @return URL redirect đến VNPay
@@ -21,6 +22,7 @@ public interface VNPayService {
 
     /**
      * Xác thực chữ ký từ VNPay callback
+     *
      * @param params Các tham số từ VNPay trả về
      * @return true nếu chữ ký hợp lệ
      */
@@ -28,6 +30,7 @@ public interface VNPayService {
 
     /**
      * Xử lý callback từ VNPay sau khi thanh toán
+     *
      * @param params Các tham số từ VNPay trả về
      * @return VNPayResponse chứa kết quả xử lý
      */

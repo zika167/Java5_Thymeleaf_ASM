@@ -249,7 +249,7 @@ public class PaymentController {
         url.append(scheme).append("://").append(serverName);
 
         if ((scheme.equals("http") && serverPort != 80) ||
-            (scheme.equals("https") && serverPort != 443)) {
+                (scheme.equals("https") && serverPort != 443)) {
             url.append(":").append(serverPort);
         }
 

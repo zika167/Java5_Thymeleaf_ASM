@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller xử lý các trang admin UI
- * 
+ * <p>
  * Tất cả endpoints đều yêu cầu role ADMIN
  */
 @Controller

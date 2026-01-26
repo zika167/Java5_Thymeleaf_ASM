@@ -40,14 +40,14 @@ public class ProfileController {
     @GetMapping("/edit-personal-info")
     public String editPersonalInfoPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
         User user = userService.findById(userDetails.getUser().getId());
-        
+
         // Tạo DTO từ thông tin user hiện tại
         ProfileUpdateRequest profileRequest = ProfileUpdateRequest.builder()
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
                 .build();
-        
+
         model.addAttribute("user", user);
         model.addAttribute("profileRequest", profileRequest);
         return "module/user/edit-personal-info";
@@ -62,7 +62,7 @@ public class ProfileController {
                                 BindingResult bindingResult,
                                 RedirectAttributes redirectAttributes,
                                 Model model) {
-        
+
         if (bindingResult.hasErrors()) {
             User user = userService.findById(userDetails.getUser().getId());
             model.addAttribute("user", user);

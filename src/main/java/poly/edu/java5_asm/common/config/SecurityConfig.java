@@ -36,72 +36,72 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // ===== CSRF CONFIGURATION =====
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API endpoints
-            )
-            
-            // ===== SESSION MANAGEMENT =====
-            // IF_REQUIRED: Cho phép tạo session khi cần (OAuth2 flow), nhưng vẫn dùng JWT cho authentication
-            // OAuth2 login flow cần session để lưu authorization request và state
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            )
-            
-            // ===== AUTHORIZATION CONFIGURATION =====
-            .authorizeHttpRequests(auth -> auth
-                // Static resources - MUST be first to bypass all filters
-                .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/*.woff", "/*.woff2").permitAll()
-                
-                // Public endpoints
-                .requestMatchers("/", "/index", "/products/**", "/category/**").permitAll()
-                .requestMatchers("/auth/**", "/sign-in", "/sign-up").permitAll()
-                .requestMatchers("/actuator/health").permitAll() // Health check cho Docker
-                
-                // API endpoints - Review APIs are public for GET, require auth for POST/DELETE
-                .requestMatchers("/api/reviews/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/**").permitAll()
-                
-                // Admin pages
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                
-                // OAuth2 endpoints
-                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                
-                // All other requests require authentication
-                .anyRequest().authenticated()
-            )
-            
-            // ===== FORM LOGIN CONFIGURATION =====
-            .formLogin(form -> form
-                .loginPage("/sign-in")
-                .loginProcessingUrl("/auth/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .successHandler(formLoginSuccessHandler) // Tạo JWT sau khi login thành công
-                .failureUrl("/sign-in?error=true")
-                .permitAll()
-            )
-            
-            // ===== OAUTH2 LOGIN CONFIGURATION =====
-            .oauth2Login(oauth2 -> oauth2
-                .loginPage("/sign-in")
-                .successHandler(oAuth2LoginSuccessHandler) // Tạo JWT sau khi OAuth2 login thành công
-                .failureHandler(oAuth2LoginFailureHandler) // Log chi tiết lỗi OAuth2
-            )
-            
-            // ===== LOGOUT CONFIGURATION =====
-            .logout(logout -> logout
-                .logoutUrl("/auth/logout")
-                .logoutSuccessUrl("/sign-in?logout=true")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "JWT_TOKEN") // Xóa cả session cookie và JWT cookie
-                .permitAll()
-            )
-            
-            // ===== USER DETAILS SERVICE =====
-            .userDetailsService(userDetailsService);
+                // ===== CSRF CONFIGURATION =====
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API endpoints
+                )
+
+                // ===== SESSION MANAGEMENT =====
+                // IF_REQUIRED: Cho phép tạo session khi cần (OAuth2 flow), nhưng vẫn dùng JWT cho authentication
+                // OAuth2 login flow cần session để lưu authorization request và state
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+
+                // ===== AUTHORIZATION CONFIGURATION =====
+                .authorizeHttpRequests(auth -> auth
+                        // Static resources - MUST be first to bypass all filters
+                        .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/*.woff", "/*.woff2").permitAll()
+
+                        // Public endpoints
+                        .requestMatchers("/", "/index", "/products/**", "/category/**").permitAll()
+                        .requestMatchers("/auth/**", "/sign-in", "/sign-up").permitAll()
+                        .requestMatchers("/actuator/health").permitAll() // Health check cho Docker
+
+                        // API endpoints - Review APIs are public for GET, require auth for POST/DELETE
+                        .requestMatchers("/api/reviews/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/**").permitAll()
+
+                        // Admin pages
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // OAuth2 endpoints
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+
+                        // All other requests require authentication
+                        .anyRequest().authenticated()
+                )
+
+                // ===== FORM LOGIN CONFIGURATION =====
+                .formLogin(form -> form
+                        .loginPage("/sign-in")
+                        .loginProcessingUrl("/auth/login")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .successHandler(formLoginSuccessHandler) // Tạo JWT sau khi login thành công
+                        .failureUrl("/sign-in?error=true")
+                        .permitAll()
+                )
+
+                // ===== OAUTH2 LOGIN CONFIGURATION =====
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/sign-in")
+                        .successHandler(oAuth2LoginSuccessHandler) // Tạo JWT sau khi OAuth2 login thành công
+                        .failureHandler(oAuth2LoginFailureHandler) // Log chi tiết lỗi OAuth2
+                )
+
+                // ===== LOGOUT CONFIGURATION =====
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .logoutSuccessUrl("/sign-in?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID", "JWT_TOKEN") // Xóa cả session cookie và JWT cookie
+                        .permitAll()
+                )
+
+                // ===== USER DETAILS SERVICE =====
+                .userDetailsService(userDetailsService);
 
         // ===== ADD JWT FILTER =====
         // Thêm JWT filter trước UsernamePasswordAuthenticationFilter

@@ -13,25 +13,25 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    
+
     // Tìm đơn hàng theo mã đơn hàng
     Optional<Order> findByOrderNumber(String orderNumber);
-    
+
     // Tìm tất cả đơn hàng của user
     List<Order> findByUserOrderByOrderedAtDesc(User user);
-    
+
     // Tìm tất cả đơn hàng của user theo ID
     List<Order> findByUserId(Long userId);
-    
+
     // Tìm đơn hàng của user với phân trang
     Page<Order> findByUserOrderByOrderedAtDesc(User user, Pageable pageable);
-    
+
     // Tìm đơn hàng theo trạng thái
     List<Order> findByStatusOrderByOrderedAtDesc(Order.OrderStatus status);
-    
+
     // Tìm đơn hàng theo trạng thái thanh toán
     List<Order> findByPaymentStatusOrderByOrderedAtDesc(Order.PaymentStatus paymentStatus);
-    
+
     // Tìm đơn hàng trong khoảng thời gian
     List<Order> findByOrderedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -12,26 +12,26 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class AddressResponse {
-    
+
     private Long id;
-    
+
     private String recipientName;
-    
+
     private String phone;
-    
+
     private String addressLine1;
-    
+
     private String addressLine2;
-    
+
     private String city;
-    
+
     private String state;
-    
+
     private String postalCode;
-    
+
     private String country;
-    
+
     private Boolean isDefault;
-    
+
     private LocalDateTime createdAt;
 }

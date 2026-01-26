@@ -19,18 +19,18 @@ public class ProductSearchRequest {
     private Long brandId;           // Lọc theo brand
     private BigDecimal minPrice;    // Giá tối thiểu
     private BigDecimal maxPrice;    // Giá tối đa
-    
+
     // Phân trang
     @Builder.Default
     private Integer page = 0;       // Trang hiện tại (mặc định 0)
-    
+
     @Builder.Default
     private Integer size = 12;      // Số sản phẩm mỗi trang (mặc định 12)
-    
+
     // Sắp xếp
     @Builder.Default
     private String sortBy = "createdAt";  // Sắp xếp theo (mặc định: ngày tạo)
-    
+
     @Builder.Default
     private String sortDirection = "DESC"; // Hướng sắp xếp (ASC/DESC)
 }

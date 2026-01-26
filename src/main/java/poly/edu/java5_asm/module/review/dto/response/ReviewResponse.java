@@ -12,22 +12,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ReviewResponse {
-    
+
     private Long id;
-    
+
     private Long productId;
-    
+
     private Long userId;
-    
+
     private String userName;
-    
+
     private Integer rating;
-    
+
     private String title;
-    
+
     private String comment;
-    
+
     private Boolean isVerifiedPurchase;
-    
+
     private LocalDateTime createdAt;
 }

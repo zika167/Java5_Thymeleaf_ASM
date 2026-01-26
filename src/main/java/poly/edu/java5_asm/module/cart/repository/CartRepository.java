@@ -9,13 +9,13 @@ import java.util.Optional;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
-    
+
     // Tìm giỏ hàng của user
     Optional<Cart> findByUser(User user);
-    
+
     // Tìm giỏ hàng theo session ID (cho guest user)
     Optional<Cart> findBySessionId(String sessionId);
-    
+
     // Kiểm tra giỏ hàng tồn tại cho user
     boolean existsByUser(User user);
 }

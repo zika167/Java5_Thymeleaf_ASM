@@ -37,20 +37,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // Tìm kiếm và lọc tổng hợp
     @Query("SELECT p FROM Product p " +
-           "WHERE (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-           "   OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-           "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
-           "AND (:brandId IS NULL OR p.brand.id = :brandId) " +
-           "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
-           "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
-           "AND p.isActive = true")
+            "WHERE (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "   OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
+            "AND (:brandId IS NULL OR p.brand.id = :brandId) " +
+            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
+            "AND p.isActive = true")
     Page<Product> searchAndFilter(
-        @Param("keyword") String keyword,
-        @Param("categoryId") Long categoryId,
-        @Param("brandId") Long brandId,
-        @Param("minPrice") BigDecimal minPrice,
-        @Param("maxPrice") BigDecimal maxPrice,
-        Pageable pageable
+            @Param("keyword") String keyword,
+            @Param("categoryId") Long categoryId,
+            @Param("brandId") Long brandId,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            Pageable pageable
     );
 
     // Sản phẩm nổi bật

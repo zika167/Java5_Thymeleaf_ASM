@@ -16,7 +16,7 @@ import java.util.Map;
 
 /**
  * REST Controller cho Wishlist
- * 
+ * <p>
  * Improvements:
  * - Exception handling được xử lý bởi GlobalExceptionHandler
  * - Thêm pagination endpoint
@@ -46,7 +46,7 @@ public class WishlistController {
         }
 
         log.info("User {} adding product {} to wishlist", userDetails.getUserId(), productId);
-        
+
         WishlistResponse wishlist = wishlistService.addToWishlist(
                 userDetails.getUserId(),
                 productId
@@ -70,7 +70,7 @@ public class WishlistController {
         }
 
         log.info("User {} removing product {} from wishlist", userDetails.getUserId(), productId);
-        
+
         wishlistService.removeFromWishlist(
                 userDetails.getUserId(),
                 productId
@@ -93,7 +93,7 @@ public class WishlistController {
         }
 
         log.debug("User {} getting wishlist", userDetails.getUserId());
-        
+
         List<WishlistResponse> wishlist = wishlistService.getUserWishlist(
                 userDetails.getUserId()
         );
@@ -116,9 +116,9 @@ public class WishlistController {
                     .body(Map.of("error", "Bạn cần đăng nhập"));
         }
 
-        log.debug("User {} getting paginated wishlist (page: {}, size: {})", 
+        log.debug("User {} getting paginated wishlist (page: {}, size: {})",
                 userDetails.getUserId(), page, size);
-        
+
         Page<WishlistResponse> wishlistPage = wishlistService.getUserWishlistPaginated(
                 userDetails.getUserId(), page, size
         );
@@ -161,7 +161,7 @@ public class WishlistController {
         }
 
         log.info("User {} clearing wishlist", userDetails.getUserId());
-        
+
         wishlistService.clearWishlist(userDetails.getUserId());
 
         return ResponseEntity.ok(Map.of("message", "Đã xóa toàn bộ danh sách yêu thích"));
@@ -199,7 +199,7 @@ public class WishlistController {
         }
 
         log.info("User {} toggling wishlist for product {}", userDetails.getUserId(), productId);
-        
+
         boolean added = wishlistService.toggleWishlist(
                 userDetails.getUserId(),
                 productId
@@ -232,9 +232,9 @@ public class WishlistController {
                     .body(Map.of("error", "Danh sách sản phẩm không được rỗng"));
         }
 
-        log.info("User {} adding {} products to wishlist", 
+        log.info("User {} adding {} products to wishlist",
                 userDetails.getUserId(), productIds.size());
-        
+
         List<WishlistResponse> results = wishlistService.addMultipleToWishlist(
                 userDetails.getUserId(),
                 productIds
@@ -267,9 +267,9 @@ public class WishlistController {
                     .body(Map.of("error", "Danh sách sản phẩm không được rỗng"));
         }
 
-        log.info("User {} removing {} products from wishlist", 
+        log.info("User {} removing {} products from wishlist",
                 userDetails.getUserId(), productIds.size());
-        
+
         wishlistService.removeMultipleFromWishlist(
                 userDetails.getUserId(),
                 productIds

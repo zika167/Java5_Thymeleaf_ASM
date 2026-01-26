@@ -12,7 +12,7 @@
     async function getUserAddresses() {
         try {
             const response = await fetch(`${API_BASE}`);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
@@ -31,7 +31,7 @@
     async function getDefaultAddress() {
         try {
             const response = await fetch(`${API_BASE}/default`);
-            
+
             if (!response.ok) {
                 return null;
             }
@@ -50,7 +50,7 @@
     async function getAddress(addressId) {
         try {
             const response = await fetch(`${API_BASE}/${addressId}`);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
@@ -187,9 +187,9 @@
             z-index: 9999;
             animation: slideIn 0.3s ease-in-out;
         `;
-        
+
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.animation = 'slideOut 0.3s ease-in-out';
             setTimeout(() => toast.remove(), 300);

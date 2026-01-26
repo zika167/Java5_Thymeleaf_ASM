@@ -101,7 +101,7 @@
     async function getProductReviews(productId) {
         try {
             const response = await fetch(`${API_BASE}/product/${productId}`);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
@@ -120,16 +120,16 @@
     async function getProductAverageRating(productId) {
         try {
             const response = await fetch(`${API_BASE}/product/${productId}/average-rating`);
-            
+
             if (!response.ok) {
-                return { averageRating: 0, reviewCount: 0 };
+                return {averageRating: 0, reviewCount: 0};
             }
 
             const data = await response.json();
             return data;
         } catch (error) {
             console.error('❌ Lỗi khi lấy rating trung bình:', error);
-            return { averageRating: 0, reviewCount: 0 };
+            return {averageRating: 0, reviewCount: 0};
         }
     }
 
@@ -151,9 +151,9 @@
             z-index: 9999;
             animation: slideIn 0.3s ease-in-out;
         `;
-        
+
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.animation = 'slideOut 0.3s ease-in-out';
             setTimeout(() => toast.remove(), 300);

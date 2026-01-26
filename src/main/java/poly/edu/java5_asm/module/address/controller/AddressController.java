@@ -36,7 +36,7 @@ public class AddressController {
     public ResponseEntity<List<AddressResponse>> getUserAddresses(Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        
+
         List<AddressResponse> addresses = addressService.getUserAddresses(user);
         return ResponseEntity.ok(addresses);
     }
@@ -49,7 +49,7 @@ public class AddressController {
     public ResponseEntity<AddressResponse> getDefaultAddress(Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        
+
         try {
             AddressResponse address = addressService.getDefaultAddress(user);
             return ResponseEntity.ok(address);
@@ -68,7 +68,7 @@ public class AddressController {
             Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        
+
         try {
             AddressResponse address = addressService.getAddress(user, id);
             return ResponseEntity.ok(address);
@@ -87,7 +87,7 @@ public class AddressController {
             Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        
+
         try {
             AddressResponse address = addressService.createAddress(user, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(address);
@@ -107,7 +107,7 @@ public class AddressController {
             Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        
+
         try {
             AddressResponse address = addressService.updateAddress(user, id, request);
             return ResponseEntity.ok(address);
@@ -126,7 +126,7 @@ public class AddressController {
             Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        
+
         try {
             addressService.deleteAddress(user, id);
             return ResponseEntity.noContent().build();
@@ -145,7 +145,7 @@ public class AddressController {
             Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        
+
         try {
             AddressResponse address = addressService.setDefaultAddress(user, id);
             return ResponseEntity.ok(address);

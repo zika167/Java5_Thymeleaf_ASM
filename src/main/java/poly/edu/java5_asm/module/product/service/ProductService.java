@@ -42,21 +42,21 @@ public class ProductService {
     public ProductListResponse searchAndFilterProducts(ProductSearchRequest request) {
         // Tạo Pageable với sắp xếp
         Sort sort = Sort.by(
-            "DESC".equalsIgnoreCase(request.getSortDirection()) 
-                ? Sort.Direction.DESC 
-                : Sort.Direction.ASC,
-            request.getSortBy()
+                "DESC".equalsIgnoreCase(request.getSortDirection())
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC,
+                request.getSortBy()
         );
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         // Gọi repository tìm kiếm
         Page<Product> productPage = productRepository.searchAndFilter(
-            request.getKeyword(),
-            request.getCategoryId(),
-            request.getBrandId(),
-            request.getMinPrice(),
-            request.getMaxPrice(),
-            pageable
+                request.getKeyword(),
+                request.getCategoryId(),
+                request.getBrandId(),
+                request.getMinPrice(),
+                request.getMaxPrice(),
+                pageable
         );
 
         // Chuyển đổi sang DTO
@@ -68,8 +68,8 @@ public class ProductService {
      */
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
-        
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
+
         return productMapper.toResponse(product);
     }
 
@@ -78,13 +78,13 @@ public class ProductService {
      */
     public ProductListResponse getAllProducts(int page, int size, String sortBy, String sortDirection) {
         Sort sort = Sort.by(
-            "DESC".equalsIgnoreCase(sortDirection) 
-                ? Sort.Direction.DESC 
-                : Sort.Direction.ASC,
-            sortBy
+                "DESC".equalsIgnoreCase(sortDirection)
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC,
+                sortBy
         );
         Pageable pageable = PageRequest.of(page, size, sort);
-        
+
         Page<Product> productPage = productRepository.findByIsActiveTrue(pageable);
         return productMapper.toProductListResponse(productPage);
     }
@@ -121,13 +121,13 @@ public class ProductService {
      */
     public List<CategoryResponse> getAllCategories() {
         List<Category> categories = categoryRepository.findByIsActiveTrueOrderByDisplayOrderAsc();
-        
+
         return categories.stream()
-            .map(category -> {
-                Long productCount = productRepository.countByCategoryId(category.getId());
-                return productMapper.toCategoryResponse(category, productCount);
-            })
-            .collect(Collectors.toList());
+                .map(category -> {
+                    Long productCount = productRepository.countByCategoryId(category.getId());
+                    return productMapper.toCategoryResponse(category, productCount);
+                })
+                .collect(Collectors.toList());
     }
 
     /**
@@ -135,12 +135,12 @@ public class ProductService {
      */
     public List<BrandResponse> getAllBrands() {
         List<Brand> brands = brandRepository.findByIsActiveTrueOrderByNameAsc();
-        
+
         return brands.stream()
-            .map(brand -> {
-                Long productCount = productRepository.countByBrandId(brand.getId());
-                return productMapper.toBrandResponse(brand, productCount);
-            })
-            .collect(Collectors.toList());
+                .map(brand -> {
+                    Long productCount = productRepository.countByBrandId(brand.getId());
+                    return productMapper.toBrandResponse(brand, productCount);
+                })
+                .collect(Collectors.toList());
     }
 }

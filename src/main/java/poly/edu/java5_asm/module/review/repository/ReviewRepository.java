@@ -13,22 +13,22 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    
+
     // Tìm tất cả review của sản phẩm
     List<Review> findByProductOrderByCreatedAtDesc(Product product);
-    
+
     // Tìm review của sản phẩm với phân trang
     Page<Review> findByProductOrderByCreatedAtDesc(Product product, Pageable pageable);
-    
+
     // Tìm review của user cho sản phẩm
     Optional<Review> findByProductAndUser(Product product, User user);
-    
+
     // Tìm tất cả review của user
     List<Review> findByUserOrderByCreatedAtDesc(User user);
-    
+
     // Đếm review của sản phẩm
     Long countByProduct(Product product);
-    
+
     // Tính trung bình rating của sản phẩm
     Double findAverageRatingByProduct(Product product);
 }

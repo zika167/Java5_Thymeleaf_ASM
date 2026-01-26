@@ -26,7 +26,7 @@ public class DotenvConfig implements ApplicationContextInitializer<ConfigurableA
             // Chuyển các biến từ .env vào Spring Environment
             ConfigurableEnvironment environment = applicationContext.getEnvironment();
             Map<String, Object> dotenvMap = new HashMap<>();
-            
+
             dotenv.entries().forEach(entry -> {
                 dotenvMap.put(entry.getKey(), entry.getValue());
             });

@@ -162,7 +162,7 @@ public class OrderService {
         }
 
         order = orderRepository.save(order);
-        log.info("Cập nhật trạng thái thanh toán đơn hàng {} từ {} thành {}", 
+        log.info("Cập nhật trạng thái thanh toán đơn hàng {} từ {} thành {}",
                 order.getOrderNumber(), oldStatus, paymentStatus);
 
         // Gửi email thông báo khi trạng thái thanh toán thay đổi
@@ -189,16 +189,17 @@ public class OrderService {
 
     /**
      * Xử lý callback thanh toán từ payment gateway
-     * @param orderNumber Mã đơn hàng
-     * @param transactionId Mã giao dịch từ payment gateway
-     * @param paymentStatus Trạng thái thanh toán
+     *
+     * @param orderNumber     Mã đơn hàng
+     * @param transactionId   Mã giao dịch từ payment gateway
+     * @param paymentStatus   Trạng thái thanh toán
      * @param gatewayResponse Response gốc từ payment gateway
      * @return OrderResponse
      */
     @Transactional
-    public OrderResponse processPaymentCallback(String orderNumber, String transactionId, 
-                                                 Order.PaymentStatus paymentStatus, String gatewayResponse) {
-        log.info("Xử lý callback thanh toán cho đơn hàng: {}, transactionId: {}, status: {}", 
+    public OrderResponse processPaymentCallback(String orderNumber, String transactionId,
+                                                Order.PaymentStatus paymentStatus, String gatewayResponse) {
+        log.info("Xử lý callback thanh toán cho đơn hàng: {}, transactionId: {}, status: {}",
                 orderNumber, transactionId, paymentStatus);
 
         Order order = orderRepository.findByOrderNumber(orderNumber)
@@ -211,7 +212,7 @@ public class OrderService {
         }
 
         Order.PaymentStatus oldStatus = order.getPaymentStatus();
-        
+
         // Cập nhật thông tin thanh toán
         order.setPaymentTransactionId(transactionId);
         order.setPaymentGatewayResponse(gatewayResponse);
@@ -232,14 +233,14 @@ public class OrderService {
         }
 
         order = orderRepository.save(order);
-        log.info("Đã cập nhật trạng thái thanh toán đơn hàng {} từ {} thành {}", 
+        log.info("Đã cập nhật trạng thái thanh toán đơn hàng {} từ {} thành {}",
                 orderNumber, oldStatus, paymentStatus);
 
         // Gửi email thông báo
         try {
             emailService.sendPaymentStatusUpdate(order, order.getUser());
         } catch (Exception e) {
-            log.error("Failed to send payment notification email for order {}: {}", 
+            log.error("Failed to send payment notification email for order {}: {}",
                     orderNumber, e.getMessage());
         }
 

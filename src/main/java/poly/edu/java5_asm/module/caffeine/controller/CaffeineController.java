@@ -17,34 +17,34 @@ import poly.edu.java5_asm.service.CaffeineService;
 @RequiredArgsConstructor
 @Slf4j
 public class CaffeineController {
-    
+
     private final CaffeineService caffeineService;
-    
+
     @GetMapping
     public String showCalculator(Model model) {
         log.info("Showing CC-Doctor calculator page");
-        
+
         // Add empty request object for form binding
         model.addAttribute("request", new CaffeineCalculationRequest());
-        
+
         // Add drink types for dropdown
         model.addAttribute("drinkTypes", caffeineService.getDrinkTypes());
-        
+
         return "module/caffeine/cc-doctor";
     }
-    
+
     @PostMapping("/calculate")
     public String calculate(@ModelAttribute("request") CaffeineCalculationRequest request, Model model) {
         log.info("Calculating caffeine for: {}", request);
-        
+
         try {
             // Calculate caffeine
             CaffeineCalculationResult result = caffeineService.calculateCaffeine(request);
-            
+
             // Add result to model
             model.addAttribute("result", result);
             model.addAttribute("request", request);
-            
+
         } catch (IllegalArgumentException e) {
             log.error("Validation error: {}", e.getMessage());
             model.addAttribute("error", e.getMessage());
@@ -54,10 +54,10 @@ public class CaffeineController {
             model.addAttribute("error", "Đã xảy ra lỗi khi tính toán. Vui lòng thử lại!");
             model.addAttribute("request", request);
         }
-        
+
         // Add drink types for dropdown
         model.addAttribute("drinkTypes", caffeineService.getDrinkTypes());
-        
+
         return "module/caffeine/cc-doctor";
     }
 }

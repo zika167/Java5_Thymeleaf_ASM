@@ -26,7 +26,7 @@ public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHan
         log.error("Error message: {}", exception.getMessage());
         log.error("Error class: {}", exception.getClass().getName());
         log.error("Stack trace:", exception);
-        
+
         // Redirect về trang login với error message
         setDefaultFailureUrl("/sign-in?error=oauth2");
         super.onAuthenticationFailure(request, response, exception);

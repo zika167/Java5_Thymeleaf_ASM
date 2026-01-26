@@ -35,11 +35,11 @@ public class EmailServiceImpl implements EmailService {
     @Async
     public void sendOrderConfirmation(Order order, User user) {
         log.info("Sending order confirmation email for order {} to {}", order.getOrderNumber(), user.getEmail());
-        
+
         try {
             String subject = "Xác nhận đơn hàng #" + order.getOrderNumber();
             String htmlContent = buildOrderConfirmationEmail(order, user);
-            
+
             sendEmailWithRetry(user.getEmail(), subject, htmlContent);
             log.info("Order confirmation email sent successfully for order {}", order.getOrderNumber());
         } catch (Exception e) {
@@ -51,11 +51,11 @@ public class EmailServiceImpl implements EmailService {
     @Async
     public void sendOrderStatusUpdate(Order order, User user) {
         log.info("Sending order status update email for order {} to {}", order.getOrderNumber(), user.getEmail());
-        
+
         try {
             String subject = "Cập nhật đơn hàng #" + order.getOrderNumber();
             String htmlContent = buildOrderStatusUpdateEmail(order, user);
-            
+
             sendEmailWithRetry(user.getEmail(), subject, htmlContent);
             log.info("Order status update email sent successfully for order {}", order.getOrderNumber());
         } catch (Exception e) {
@@ -67,11 +67,11 @@ public class EmailServiceImpl implements EmailService {
     @Async
     public void sendPaymentStatusUpdate(Order order, User user) {
         log.info("Sending payment status update email for order {} to {}", order.getOrderNumber(), user.getEmail());
-        
+
         try {
             String subject = getPaymentEmailSubject(order);
             String htmlContent = buildPaymentStatusUpdateEmail(order, user);
-            
+
             sendEmailWithRetry(user.getEmail(), subject, htmlContent);
             log.info("Payment status update email sent successfully for order {}", order.getOrderNumber());
         } catch (Exception e) {
@@ -101,7 +101,7 @@ public class EmailServiceImpl implements EmailService {
         context.setVariable("orderItems", orderItemRepository.findByOrder(order));
         context.setVariable("paymentStatusMessage", getPaymentStatusMessage(order.getPaymentStatus()));
         context.setVariable("isPaymentSuccess", order.getPaymentStatus() == Order.PaymentStatus.PAID);
-        
+
         return templateEngine.process("email/payment-status-email", context);
     }
 
@@ -131,11 +131,11 @@ public class EmailServiceImpl implements EmailService {
             } catch (MessagingException e) {
                 lastException = e;
                 attempts++;
-                
+
                 if (attempts < MAX_RETRY_ATTEMPTS) {
                     long delay = RETRY_DELAY_MS * (long) Math.pow(2, attempts - 1); // Exponential backoff
                     log.warn("Email sending failed (attempt {}/{}), retrying in {}ms...", attempts, MAX_RETRY_ATTEMPTS, delay);
-                    
+
                     try {
                         Thread.sleep(delay);
                     } catch (InterruptedException ie) {
@@ -173,7 +173,7 @@ public class EmailServiceImpl implements EmailService {
         context.setVariable("user", user);
         context.setVariable("order", order);
         context.setVariable("orderItems", orderItemRepository.findByOrder(order));
-        
+
         return templateEngine.process("email/order-confirmation-email", context);
     }
 
@@ -186,7 +186,7 @@ public class EmailServiceImpl implements EmailService {
         context.setVariable("order", order);
         context.setVariable("orderItems", orderItemRepository.findByOrder(order));
         context.setVariable("statusMessage", getStatusMessage(order.getStatus()));
-        
+
         return templateEngine.process("email/order-status-update-email", context);
     }
 

@@ -41,22 +41,22 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
      * Lấy wishlist với JOIN FETCH (tối ưu N+1 query)
      */
     @Query("SELECT w FROM Wishlist w " +
-           "JOIN FETCH w.product p " +
-           "LEFT JOIN FETCH p.category " +
-           "LEFT JOIN FETCH p.brand " +
-           "WHERE w.user.id = :userId " +
-           "ORDER BY w.createdAt DESC")
+            "JOIN FETCH w.product p " +
+            "LEFT JOIN FETCH p.category " +
+            "LEFT JOIN FETCH p.brand " +
+            "WHERE w.user.id = :userId " +
+            "ORDER BY w.createdAt DESC")
     List<Wishlist> findByUserIdWithProduct(@Param("userId") Long userId);
 
     /**
      * Lấy wishlist với pagination và JOIN FETCH
      */
     @Query("SELECT w FROM Wishlist w " +
-           "JOIN FETCH w.product p " +
-           "LEFT JOIN FETCH p.category " +
-           "LEFT JOIN FETCH p.brand " +
-           "WHERE w.user.id = :userId " +
-           "ORDER BY w.createdAt DESC")
+            "JOIN FETCH w.product p " +
+            "LEFT JOIN FETCH p.category " +
+            "LEFT JOIN FETCH p.brand " +
+            "WHERE w.user.id = :userId " +
+            "ORDER BY w.createdAt DESC")
     Page<Wishlist> findByUserIdWithProductPaginated(@Param("userId") Long userId, Pageable pageable);
 
     /**

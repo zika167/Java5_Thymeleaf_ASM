@@ -11,13 +11,13 @@ import java.util.Optional;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-    
+
     // Tìm tất cả items trong giỏ hàng
     List<CartItem> findByCart(Cart cart);
-    
+
     // Tìm item theo giỏ hàng và sản phẩm
     Optional<CartItem> findByCartAndProduct(Cart cart, Product product);
-    
+
     // Xóa tất cả items của giỏ hàng
     void deleteByCart(Cart cart);
 }

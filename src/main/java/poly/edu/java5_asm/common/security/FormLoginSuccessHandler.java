@@ -37,15 +37,15 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        
+
         log.info("Form login success for user: {}", authentication.getName());
-        
+
         // Clear any existing JWT cookie first to prevent duplicates
         clearExistingJwtCookie(response);
-        
+
         // Generate new JWT token
         String jwt = jwtUtils.generateToken(authentication);
-        
+
         // Create new HTTP-Only Cookie with JWT
         Cookie jwtCookie = createJwtCookie(jwt);
         response.addCookie(jwtCookie);

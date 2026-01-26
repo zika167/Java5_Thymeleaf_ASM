@@ -1,330 +1,331 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{shared/fragments/head :: head('Grocery Store - Home')}"></head>
+<head th:replace="~{shared/fragments/head :: head('Grocery Store - Home')}"></head>
 
-    <body>
-        <!-- header -->
-        <header th:replace="~{shared/shared/fragments/header :: header}"></header>
+<body>
+<!-- header -->
+<header th:replace="~{shared/fragments/header :: header}"></header>
 
-        <div class="container home">
-            <!-- slideshow -->
-            <div class="home__container">
-                <div class="slideshow">
-                    <div class="slideshow__inner">
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/item-1-md.png" />
-                                    <img th:src="@{/assets/img/slideshow/item-1.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/slider-2.png" />
-                                    <img th:src="@{/assets/img/slideshow/slider-2.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/slider-3.png" />
-                                    <img th:src="@{/assets/img/slideshow/slider-3.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/slider-4.png" />
-                                    <img th:src="@{/assets/img/slideshow/slider-4.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/slider-5.png" />
-                                    <img th:src="@{/assets/img/slideshow/slider-5.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                    </div>
+<div class="container home">
+    <!-- slideshow -->
+    <div class="home__container">
+        <div class="slideshow">
+            <div class="slideshow__inner">
+                <div class="slideshow__item">
+                    <a href="#!" class="slideshow__link">
+                        <picture>
+                            <source
+                                    media="(max-width: 767.98px)"
+                                    srcset="./assets/img/slideshow/item-1-md.png"/>
+                            <img th:src="@{/assets/img/slideshow/item-1.png}" alt="" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+                <div class="slideshow__item">
+                    <a href="#!" class="slideshow__link">
+                        <picture>
+                            <source
+                                    media="(max-width: 767.98px)"
+                                    srcset="./assets/img/slideshow/slider-2.png"/>
+                            <img th:src="@{/assets/img/slideshow/slider-2.png}" alt="" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+                <div class="slideshow__item">
+                    <a href="#!" class="slideshow__link">
+                        <picture>
+                            <source
+                                    media="(max-width: 767.98px)"
+                                    srcset="./assets/img/slideshow/slider-3.png"/>
+                            <img th:src="@{/assets/img/slideshow/slider-3.png}" alt="" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+                <div class="slideshow__item">
+                    <a href="#!" class="slideshow__link">
+                        <picture>
+                            <source
+                                    media="(max-width: 767.98px)"
+                                    srcset="./assets/img/slideshow/slider-4.png"/>
+                            <img th:src="@{/assets/img/slideshow/slider-4.png}" alt="" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+                <div class="slideshow__item">
+                    <a href="#!" class="slideshow__link">
+                        <picture>
+                            <source
+                                    media="(max-width: 767.98px)"
+                                    srcset="./assets/img/slideshow/slider-5.png"/>
+                            <img th:src="@{/assets/img/slideshow/slider-5.png}" alt="" class="slideshow__img"/>
+                        </picture>
+                    </a>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- browse categories -->
-            <section class="home__container">
-                <div class="home__row">
-                    <h2 class="home__heading">Browse Categories</h2>
-                </div>
-                <div class="home__cate row row-cols-3 row-cols-md-1">
-                    <!-- category item 1 -->
-                    <div class="col">
-                        <a href="#!">
-                            <article class="cate-item">
-                                <img th:src="@{/assets/img/category-item/item-1.png}" alt="" class="cate-item__thumb" />
-                                <div class="cate-item__info">
-                                    <h3 class="cate-item__title">$32 - $160</h3>
-                                    <p class="cate-item__desc">Lavazza top class whole bean coffee blend</p>
-                                </div>
-                            </article>
-                        </a>
-                    </div>
-
-                    <!-- category item 2 -->
-                    <div class="col">
-                        <a href="#!">
-                            <article class="cate-item">
-                                <img th:src="@{/assets/img/category-item/item-2.png}" alt="" class="cate-item__thumb" />
-                                <div class="cate-item__info">
-                                    <h3 class="cate-item__title">$24 - $150</h3>
-                                    <p class="cate-item__desc">New sumatra mandeling coffe blend</p>
-                                </div>
-                            </article>
-                        </a>
-                    </div>
-
-                    <!-- category item 3 -->
-                    <div class="col">
-                        <a href="#!">
-                            <article class="cate-item">
-                                <img th:src="@{/assets/img/category-item/item-3.png}" alt="" class="cate-item__thumb" />
-                                <div class="cate-item__info">
-                                    <h3 class="cate-item__title">$37 - $160</h3>
-                                    <p class="cate-item__desc">Espresso arabica and robusta beans</p>
-                                </div>
-                            </article>
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- browse products -->
-            <section class="home__container">
-                <div class="home__row">
-                    <h2 class="home__heading">Total LavAzza 1320</h2>
-                    <div class="filter-wrap">
-                        <button class="filter-btn js-toggle" toggle-target="#home-filter">
-                            Filter
-                            <img th:src="@{/assets/icon/filter.svg}" alt="" class="filter-btn__icon icon" />
-                        </button>
-
-                        <div id="home-filter" class="filter hide">
-                            <img th:src="@{/assets/icon/filter-triangle.svg}" alt="" class="filter__arrow" />
-                            <h3 class="filter__heading">Filter</h3>
-                            <form action="" class="filter__form form">
-                                <div class="filter__row filter__content">
-                                    <!-- filter column 1 -->
-                                    <div class="filter__col">
-                                        <label class="form__label">Price</label>
-                                        <div class="slider-container">
-                                            <div class="range-slider">
-                                                <div class="slider-track"></div>
-                                                <input
-                                                    type="range"
-                                                    id="min-price"
-                                                    min="0"
-                                                    max="200"
-                                                    step="2"
-                                                    value="30"
-                                                    oninput="updatePrice()" />
-                                                <input
-                                                    type="range"
-                                                    id="max-price"
-                                                    min="0"
-                                                    max="200"
-                                                    step="2"
-                                                    value="100"
-                                                    oninput="updatePrice()" />
-                                            </div>
-                                        </div>
-                                        <div class="price-values">
-                                            <div>
-                                                <span>Minimum: </span>
-                                                <span id="min-price-value">$30.00</span>
-                                            </div>
-                                            <div>
-                                                <span>Maximum: </span>
-                                                <span id="max-price-value">$100.00</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="filter__separate"></div>
-
-                                    <!-- filter column 2 -->
-                                    <div class="filter__col">
-                                        <label for="" class="form__label">Weight/Size</label>
-                                        <div class="filter__form-group">
-                                            <div class="form__select-wrap">
-                                                <div class="form__select">
-                                                    <select class="weight-size">
-                                                        <option value="200g">200g</option>
-                                                        <option value="300g">300g</option>
-                                                        <option value="400g">400g</option>
-                                                        <option value="500g" selected>500g</option>
-                                                        <option value="600g">600g</option>
-                                                        <option value="700g">700g</option>
-                                                        <option value="800g">800g</option>
-                                                        <option value="900g">900g</option>
-                                                        <option value="1000g">1000g</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form__select">
-                                                    <select class="weight-size" style="--width: 118px">
-                                                        <option value="gram">Gram</option>
-                                                        <option value="pao">Pao</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="filter__form-group">
-                                            <div class="form__tags">
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn1"
-                                                    onclick="toggleSelected1(this)">
-                                                    Small
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn1"
-                                                    onclick="toggleSelected1(this)">
-                                                    Medium
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn1"
-                                                    onclick="toggleSelected1(this)">
-                                                    Large
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="filter__separate"></div>
-
-                                    <!-- filter column 3 -->
-                                    <div class="filter__col">
-                                        <label for="" class="form__label">Brand</label>
-                                        <div class="filter__form-group">
-                                            <div class="filter__form-text-input">
-                                                <input
-                                                    type="text"
-                                                    name=""
-                                                    id=""
-                                                    placeholder="Search brand name"
-                                                    class="filter__form-input" />
-                                                <img
-                                                    th:src="@{/assets/icon/filter-search.svg}"
-                                                    alt=""
-                                                    class="filter__form-input-icon icon" />
-                                            </div>
-                                        </div>
-                                        <div class="filter__form-group">
-                                            <div class="form__tags">
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn2"
-                                                    onclick="toggleSelected2(this)">
-                                                    Lavazza
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn2"
-                                                    onclick="toggleSelected2(this)">
-                                                    Nescafe
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn2"
-                                                    onclick="toggleSelected2(this)">
-                                                    Starbucks
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="filter__row filter__footer">
-                                    <button class="btn btn--text filter__cancel js-toggle" toggle-target="#home-filter">
-                                        Cancel
-                                    </button>
-                                    <button
-                                        class="btn btn--primary filter__submit js-toggle"
-                                        toggle-target="#home-filter">
-                                        Show Result
-                                    </button>
-                                </div>
-                            </form>
+    <!-- browse categories -->
+    <section class="home__container">
+        <div class="home__row">
+            <h2 class="home__heading">Browse Categories</h2>
+        </div>
+        <div class="home__cate row row-cols-3 row-cols-md-1">
+            <!-- category item 1 -->
+            <div class="col">
+                <a href="#!">
+                    <article class="cate-item">
+                        <img th:src="@{/assets/img/category-item/item-1.png}" alt="" class="cate-item__thumb"/>
+                        <div class="cate-item__info">
+                            <h3 class="cate-item__title">$32 - $160</h3>
+                            <p class="cate-item__desc">Lavazza top class whole bean coffee blend</p>
                         </div>
-                    </div>
-                </div>
+                    </article>
+                </a>
+            </div>
 
-                <div class="row row-cols-4 row-cols-lg-2 row-cols-sm-1 g-3" id="products-container">
-                    <!-- Products will be rendered by JavaScript -->
+            <!-- category item 2 -->
+            <div class="col">
+                <a href="#!">
+                    <article class="cate-item">
+                        <img th:src="@{/assets/img/category-item/item-2.png}" alt="" class="cate-item__thumb"/>
+                        <div class="cate-item__info">
+                            <h3 class="cate-item__title">$24 - $150</h3>
+                            <p class="cate-item__desc">New sumatra mandeling coffe blend</p>
+                        </div>
+                    </article>
+                </a>
+            </div>
+
+            <!-- category item 3 -->
+            <div class="col">
+                <a href="#!">
+                    <article class="cate-item">
+                        <img th:src="@{/assets/img/category-item/item-3.png}" alt="" class="cate-item__thumb"/>
+                        <div class="cate-item__info">
+                            <h3 class="cate-item__title">$37 - $160</h3>
+                            <p class="cate-item__desc">Espresso arabica and robusta beans</p>
+                        </div>
+                    </article>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- browse products -->
+    <section class="home__container">
+        <div class="home__row">
+            <h2 class="home__heading">Total LavAzza 1320</h2>
+            <div class="filter-wrap">
+                <button class="filter-btn js-toggle" toggle-target="#home-filter">
+                    Filter
+                    <img th:src="@{/assets/icon/filter.svg}" alt="" class="filter-btn__icon icon"/>
+                </button>
+
+                <div id="home-filter" class="filter hide">
+                    <img th:src="@{/assets/icon/filter-triangle.svg}" alt="" class="filter__arrow"/>
+                    <h3 class="filter__heading">Filter</h3>
+                    <form action="" class="filter__form form">
+                        <div class="filter__row filter__content">
+                            <!-- filter column 1 -->
+                            <div class="filter__col">
+                                <label class="form__label">Price</label>
+                                <div class="slider-container">
+                                    <div class="range-slider">
+                                        <div class="slider-track"></div>
+                                        <input
+                                                type="range"
+                                                id="min-price"
+                                                min="0"
+                                                max="200"
+                                                step="2"
+                                                value="30"
+                                                oninput="updatePrice()"/>
+                                        <input
+                                                type="range"
+                                                id="max-price"
+                                                min="0"
+                                                max="200"
+                                                step="2"
+                                                value="100"
+                                                oninput="updatePrice()"/>
+                                    </div>
+                                </div>
+                                <div class="price-values">
+                                    <div>
+                                        <span>Minimum: </span>
+                                        <span id="min-price-value">$30.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Maximum: </span>
+                                        <span id="max-price-value">$100.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="filter__separate"></div>
+
+                            <!-- filter column 2 -->
+                            <div class="filter__col">
+                                <label for="" class="form__label">Weight/Size</label>
+                                <div class="filter__form-group">
+                                    <div class="form__select-wrap">
+                                        <div class="form__select">
+                                            <select class="weight-size">
+                                                <option value="200g">200g</option>
+                                                <option value="300g">300g</option>
+                                                <option value="400g">400g</option>
+                                                <option value="500g" selected>500g</option>
+                                                <option value="600g">600g</option>
+                                                <option value="700g">700g</option>
+                                                <option value="800g">800g</option>
+                                                <option value="900g">900g</option>
+                                                <option value="1000g">1000g</option>
+                                            </select>
+                                        </div>
+                                        <div class="form__select">
+                                            <select class="weight-size" style="--width: 118px">
+                                                <option value="gram">Gram</option>
+                                                <option value="pao">Pao</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="filter__form-group">
+                                    <div class="form__tags">
+                                        <button
+                                                type="button"
+                                                class="form__tag btn1"
+                                                onclick="toggleSelected1(this)">
+                                            Small
+                                        </button>
+                                        <button
+                                                type="button"
+                                                class="form__tag btn1"
+                                                onclick="toggleSelected1(this)">
+                                            Medium
+                                        </button>
+                                        <button
+                                                type="button"
+                                                class="form__tag btn1"
+                                                onclick="toggleSelected1(this)">
+                                            Large
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="filter__separate"></div>
+
+                            <!-- filter column 3 -->
+                            <div class="filter__col">
+                                <label for="" class="form__label">Brand</label>
+                                <div class="filter__form-group">
+                                    <div class="filter__form-text-input">
+                                        <input
+                                                type="text"
+                                                name=""
+                                                id=""
+                                                placeholder="Search brand name"
+                                                class="filter__form-input"/>
+                                        <img
+                                                th:src="@{/assets/icon/filter-search.svg}"
+                                                alt=""
+                                                class="filter__form-input-icon icon"/>
+                                    </div>
+                                </div>
+                                <div class="filter__form-group">
+                                    <div class="form__tags">
+                                        <button
+                                                type="button"
+                                                class="form__tag btn2"
+                                                onclick="toggleSelected2(this)">
+                                            Lavazza
+                                        </button>
+                                        <button
+                                                type="button"
+                                                class="form__tag btn2"
+                                                onclick="toggleSelected2(this)">
+                                            Nescafe
+                                        </button>
+                                        <button
+                                                type="button"
+                                                class="form__tag btn2"
+                                                onclick="toggleSelected2(this)">
+                                            Starbucks
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filter__row filter__footer">
+                            <button class="btn btn--text filter__cancel js-toggle" toggle-target="#home-filter">
+                                Cancel
+                            </button>
+                            <button
+                                    class="btn btn--primary filter__submit js-toggle"
+                                    toggle-target="#home-filter">
+                                Show Result
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </section>
+            </div>
         </div>
 
-        <!-- footer -->
-        <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+        <div class="row row-cols-4 row-cols-lg-2 row-cols-sm-1 g-3" id="products-container">
+            <!-- Products will be rendered by JavaScript -->
+        </div>
+    </section>
+</div>
 
-        <!-- API Services -->
-        <script th:src="@{/assets/js/cart-api.js}"></script>
-        <script th:src="@{/assets/js/wishlist-api.js}"></script>
-        <script th:src="@{/assets/js/reviews-api.js}"></script>
-        <script th:src="@{/assets/js/address-api.js}"></script>
+<!-- footer -->
+<footer th:replace="~{shared/fragments/footer :: footer}"></footer>
 
-        <script>
-            function updatePrice(value) {
-                document.getElementById("price-value").innerText = `$${value}.00`;
-            }
+<!-- API Services -->
+<script th:src="@{/assets/js/cart-api.js}"></script>
+<script th:src="@{/assets/js/wishlist-api.js}"></script>
+<script th:src="@{/assets/js/reviews-api.js}"></script>
+<script th:src="@{/assets/js/address-api.js}"></script>
 
-            function toggleSelected1(button) {
-                document.querySelectorAll(".form__tags button.btn1").forEach((btn) => btn.classList.remove("selected"));
-                button.classList.add("selected");
-            }
+<script>
+    function updatePrice(value) {
+        document.getElementById("price-value").innerText = `$${value}.00`;
+    }
 
-            function toggleSelected2(button) {
-                document.querySelectorAll(".form__tags button.btn2").forEach((btn) => btn.classList.remove("selected"));
-                button.classList.add("selected");
-            }
-        </script>
-        <script>
-            function updatePrice() {
-                let minPrice = document.getElementById("min-price");
-                let maxPrice = document.getElementById("max-price");
-                let minValue = parseInt(minPrice.value);
-                let maxValue = parseInt(maxPrice.value);
-                if (minValue > maxValue - 2) {
-                    minPrice.value = maxValue - 2;
-                }
-                if (maxValue < minValue + 2) {
-                    maxPrice.value = minValue + 2;
-                }
-                document.getElementById("min-price-value").innerText = `$${minPrice.value}.00`;
-                document.getElementById("max-price-value").innerText = `$${maxPrice.value}.00`;
+    function toggleSelected1(button) {
+        document.querySelectorAll(".form__tags button.btn1").forEach((btn) => btn.classList.remove("selected"));
+        button.classList.add("selected");
+    }
 
-                let track = document.querySelector(".slider-track");
-                let minPercent = (minValue / 200) * 100;
-                let maxPercent = (maxValue / 200) * 100;
-                track.style.left = minPercent + "%";
-                track.style.width = maxPercent - minPercent + "%";
-            }
-            window.onload = updatePrice;
-        </script>
-    </body>
+    function toggleSelected2(button) {
+        document.querySelectorAll(".form__tags button.btn2").forEach((btn) => btn.classList.remove("selected"));
+        button.classList.add("selected");
+    }
+</script>
+<script>
+    function updatePrice() {
+        let minPrice = document.getElementById("min-price");
+        let maxPrice = document.getElementById("max-price");
+        let minValue = parseInt(minPrice.value);
+        let maxValue = parseInt(maxPrice.value);
+        if (minValue > maxValue - 2) {
+            minPrice.value = maxValue - 2;
+        }
+        if (maxValue < minValue + 2) {
+            maxPrice.value = minValue + 2;
+        }
+        document.getElementById("min-price-value").innerText = `$${minPrice.value}.00`;
+        document.getElementById("max-price-value").innerText = `$${maxPrice.value}.00`;
+
+        let track = document.querySelector(".slider-track");
+        let minPercent = (minValue / 200) * 100;
+        let maxPercent = (maxValue / 200) * 100;
+        track.style.left = minPercent + "%";
+        track.style.width = maxPercent - minPercent + "%";
+    }
+
+    window.onload = updatePrice;
+</script>
+</body>
 </html>

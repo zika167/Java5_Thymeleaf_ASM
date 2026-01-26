@@ -10,14 +10,14 @@ import poly.edu.java5_asm.repository.UserRepository;
 
 /**
  * Service để load thông tin user từ database cho Spring Security.
- * 
+ * <p>
  * Implement UserDetailsService interface - đây là cách Spring Security
  * biết cách lấy thông tin user để xác thực.
- * 
+ * <p>
  * Service này được Spring Security tự động sử dụng khi:
  * - User submit form đăng nhập
  * - Cần verify thông tin user trong các request
- * 
+ *
  * @Service: Đánh dấu là Spring Service bean
  * @RequiredArgsConstructor: Lombok tự động tạo constructor với các field final
  */
@@ -32,24 +32,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     /**
      * Load thông tin user từ database dựa trên username hoặc email.
-     * 
+     * <p>
      * Method này được Spring Security gọi trong quá trình xác thực:
      * 1. User nhập username/email và password vào form đăng nhập
      * 2. Spring Security gọi loadUserByUsername() với giá trị user nhập
      * 3. Method này tìm user trong database
      * 4. Trả về UserDetails để Spring Security so sánh password
-     * 
+     * <p>
      * Hỗ trợ đăng nhập bằng cả username và email:
      * - Tìm theo username trước
      * - Nếu không thấy, tìm theo email
      * - Nếu vẫn không thấy, throw exception
-     * 
+     *
      * @param username Giá trị user nhập vào ô username (có thể là username hoặc email)
      * @return UserDetails object chứa thông tin user để xác thực
      * @throws UsernameNotFoundException Nếu không tìm thấy user với username/email đã cho
-     * 
-     * Lưu ý: Exception này sẽ được Spring Security catch và hiển thị thông báo
-     * "Bad credentials" trên trang đăng nhập (không tiết lộ user có tồn tại hay không)
+     *                                   <p>
+     *                                   Lưu ý: Exception này sẽ được Spring Security catch và hiển thị thông báo
+     *                                   "Bad credentials" trên trang đăng nhập (không tiết lộ user có tồn tại hay không)
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

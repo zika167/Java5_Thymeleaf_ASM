@@ -88,21 +88,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private boolean isStaticResource(String requestPath) {
         return requestPath.startsWith("/assets/") ||
-               requestPath.startsWith("/css/") ||
-               requestPath.startsWith("/js/") ||
-               requestPath.startsWith("/images/") ||
-               requestPath.equals("/favicon.ico") ||
-               requestPath.endsWith(".woff") ||
-               requestPath.endsWith(".woff2") ||
-               requestPath.endsWith(".ttf") ||
-               requestPath.endsWith(".eot") ||
-               requestPath.endsWith(".svg") ||
-               requestPath.endsWith(".png") ||
-               requestPath.endsWith(".jpg") ||
-               requestPath.endsWith(".jpeg") ||
-               requestPath.endsWith(".gif") ||
-               requestPath.endsWith(".css") ||
-               requestPath.endsWith(".js");
+                requestPath.startsWith("/css/") ||
+                requestPath.startsWith("/js/") ||
+                requestPath.startsWith("/images/") ||
+                requestPath.equals("/favicon.ico") ||
+                requestPath.endsWith(".woff") ||
+                requestPath.endsWith(".woff2") ||
+                requestPath.endsWith(".ttf") ||
+                requestPath.endsWith(".eot") ||
+                requestPath.endsWith(".svg") ||
+                requestPath.endsWith(".png") ||
+                requestPath.endsWith(".jpg") ||
+                requestPath.endsWith(".jpeg") ||
+                requestPath.endsWith(".gif") ||
+                requestPath.endsWith(".css") ||
+                requestPath.endsWith(".js");
     }
 
     /**

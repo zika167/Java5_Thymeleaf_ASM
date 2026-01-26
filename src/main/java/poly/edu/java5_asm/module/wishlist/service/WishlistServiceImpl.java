@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  * Implementation của WishlistService
- * 
+ * <p>
  * Improvements:
  * - Custom exceptions thay vì RuntimeException
  * - Product availability validation (isActive, stock)
@@ -45,7 +45,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     /**
      * 1. Thêm sản phẩm vào wishlist
-     * 
+     * <p>
      * Improvements:
      * - Custom exceptions
      * - Product availability validation
@@ -57,7 +57,7 @@ public class WishlistServiceImpl implements WishlistService {
     @CacheEvict(value = "wishlist", key = "#userId")
     public WishlistResponse addToWishlist(Long userId, Long productId) {
         log.info("Adding product {} to wishlist for user {}", productId, userId);
-        
+
         // 1. Kiểm tra đã có trong wishlist chưa
         if (wishlistRepository.existsByUserIdAndProductId(userId, productId)) {
             log.warn("Product {} already in wishlist for user {}", productId, userId);
@@ -95,7 +95,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     /**
      * 2. Xóa sản phẩm khỏi wishlist
-     * 
+     * <p>
      * Improvements:
      * - Custom exceptions
      * - Cache eviction
@@ -106,7 +106,7 @@ public class WishlistServiceImpl implements WishlistService {
     @CacheEvict(value = "wishlist", key = "#userId")
     public void removeFromWishlist(Long userId, Long productId) {
         log.info("Removing product {} from wishlist for user {}", productId, userId);
-        
+
         // Kiểm tra có tồn tại không
         if (!wishlistRepository.existsByUserIdAndProductId(userId, productId)) {
             log.warn("Product {} not found in wishlist for user {}", productId, userId);
@@ -120,7 +120,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     /**
      * 3. Lấy danh sách wishlist của user
-     * 
+     * <p>
      * Improvements:
      * - Custom exceptions
      * - Caching
@@ -130,7 +130,7 @@ public class WishlistServiceImpl implements WishlistService {
     @Cacheable(value = "wishlist", key = "#userId")
     public List<WishlistResponse> getUserWishlist(Long userId) {
         log.debug("Getting wishlist for user {}", userId);
-        
+
         // Validate user tồn tại
         if (!userRepository.existsById(userId)) {
             log.error("User not found: {}", userId);
@@ -148,7 +148,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     /**
      * 3b. Lấy wishlist với pagination
-     * 
+     * <p>
      * Improvements:
      * - Custom exceptions
      * - Logging
@@ -156,7 +156,7 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     public Page<WishlistResponse> getUserWishlistPaginated(Long userId, int page, int size) {
         log.debug("Getting paginated wishlist for user {} (page: {}, size: {})", userId, page, size);
-        
+
         if (!userRepository.existsById(userId)) {
             log.error("User not found: {}", userId);
             throw new UserNotFoundException(userId);
@@ -164,8 +164,8 @@ public class WishlistServiceImpl implements WishlistService {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Wishlist> wishlistPage = wishlistRepository.findByUserIdWithProductPaginated(userId, pageable);
-        
-        log.debug("Found {} items in page {} for user {}", 
+
+        log.debug("Found {} items in page {} for user {}",
                 wishlistPage.getNumberOfElements(), page, userId);
 
         return wishlistPage.map(this::mapToWishlistResponse);
@@ -181,7 +181,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     /**
      * 5. Xóa toàn bộ wishlist
-     * 
+     * <p>
      * Improvements:
      * - Custom exceptions
      * - Cache eviction
@@ -192,7 +192,7 @@ public class WishlistServiceImpl implements WishlistService {
     @CacheEvict(value = "wishlist", key = "#userId")
     public void clearWishlist(Long userId) {
         log.info("Clearing wishlist for user {}", userId);
-        
+
         // Validate user tồn tại
         if (!userRepository.existsById(userId)) {
             log.error("User not found: {}", userId);
@@ -200,7 +200,7 @@ public class WishlistServiceImpl implements WishlistService {
         }
 
         long count = wishlistRepository.countByUserId(userId);
-        
+
         // Xóa tất cả
         wishlistRepository.deleteByUserId(userId);
         log.info("Successfully cleared {} items from wishlist for user {}", count, userId);
@@ -216,7 +216,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     /**
      * Bonus: Toggle wishlist (add nếu chưa có, remove nếu đã có)
-     * 
+     * <p>
      * Improvements:
      * - Cache eviction
      * - Logging
@@ -226,7 +226,7 @@ public class WishlistServiceImpl implements WishlistService {
     @CacheEvict(value = "wishlist", key = "#userId")
     public boolean toggleWishlist(Long userId, Long productId) {
         log.info("Toggling wishlist for user {} and product {}", userId, productId);
-        
+
         if (wishlistRepository.existsByUserIdAndProductId(userId, productId)) {
             // Đã có → Xóa
             removeFromWishlist(userId, productId);
@@ -270,7 +270,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     /**
      * Validate product availability (NEW)
-     * 
+     * <p>
      * Kiểm tra:
      * - Product có active không
      * - Product có out of stock không
@@ -294,13 +294,13 @@ public class WishlistServiceImpl implements WishlistService {
             log.warn("Product {} has no stock (quantity: {})", product.getId(), product.getStockQuantity());
             throw new ProductUnavailableException(product.getId(), "Sản phẩm không còn hàng trong kho");
         }
-        
+
         log.debug("Product {} is available", product.getId());
     }
 
     /**
      * Batch add products to wishlist (NEW)
-     * 
+     * <p>
      * Thêm nhiều sản phẩm cùng lúc
      */
     @Override
@@ -308,7 +308,7 @@ public class WishlistServiceImpl implements WishlistService {
     @CacheEvict(value = "wishlist", key = "#userId")
     public List<WishlistResponse> addMultipleToWishlist(Long userId, List<Long> productIds) {
         log.info("Adding {} products to wishlist for user {}", productIds.size(), userId);
-        
+
         // Validate user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
@@ -332,7 +332,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     /**
      * Batch remove products from wishlist (NEW)
-     * 
+     * <p>
      * Xóa nhiều sản phẩm cùng lúc
      */
     @Override
@@ -340,7 +340,7 @@ public class WishlistServiceImpl implements WishlistService {
     @CacheEvict(value = "wishlist", key = "#userId")
     public void removeMultipleFromWishlist(Long userId, List<Long> productIds) {
         log.info("Removing {} products from wishlist for user {}", productIds.size(), userId);
-        
+
         // Validate user
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
