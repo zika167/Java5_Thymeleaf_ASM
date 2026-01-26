@@ -62,7 +62,7 @@
     async function isInWishlist(productId) {
         try {
             const response = await fetch(`${API_BASE}/products/${productId}/check`);
-            
+
             if (!response.ok) {
                 return false;
             }
@@ -81,7 +81,7 @@
     async function getWishlistCount() {
         try {
             const response = await fetch(`${API_BASE}/count`);
-            
+
             if (!response.ok) {
                 return 0;
             }
@@ -112,9 +112,9 @@
             z-index: 9999;
             animation: slideIn 0.3s ease-in-out;
         `;
-        
+
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.animation = 'slideOut 0.3s ease-in-out';
             setTimeout(() => toast.remove(), 300);
@@ -126,7 +126,7 @@
      */
     async function toggleWishlist(productId) {
         const isIn = await isInWishlist(productId);
-        
+
         if (isIn) {
             return await removeFromWishlist(productId);
         } else {

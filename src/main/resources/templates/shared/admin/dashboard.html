@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Admin Dashboard | grocerystore')}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="admin-body">
+<th:block th:replace="~{shared/fragments/admin-sidebar :: admin-sidebar}"></th:block>
+
+<main class="admin-main">
+    <div class="admin-header">
+        <h1>Dashboard</h1>
+        <div class="admin-user">
+            <img th:src="@{/assets/img/avatar.jpg}" alt="" class="admin-user__avatar"/>
+            <span th:text="${session.user.fullName}">Admin</span>
+        </div>
+    </div>
+
+    <div class="admin-content">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card stat-card--blue">
+                <div class="stat-card__icon">👥</div>
+                <div class="stat-card__content">
+                    <h3 id="totalUsers">0</h3>
+                    <p>Tổng Users</p>
+                </div>
+            </div>
+            <div class="stat-card stat-card--green">
+                <div class="stat-card__icon">🛍️</div>
+                <div class="stat-card__content">
+                    <h3 id="totalOrders">0</h3>
+                    <p>Tổng Orders</p>
+                </div>
+            </div>
+            <div class="stat-card stat-card--orange">
+                <div class="stat-card__icon">💰</div>
+                <div class="stat-card__content">
+                    <h3 id="totalRevenue">0đ</h3>
+                    <p>Doanh Thu</p>
+                </div>
+            </div>
+            <div class="stat-card stat-card--purple">
+                <div class="stat-card__icon">📦</div>
+                <div class="stat-card__content">
+                    <h3 id="activeUsers">0</h3>
+                    <p>Users Hoạt Động</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Đăng Ký Users Theo Ngày</h3>
+                <canvas id="registrationChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Traffic Theo Giờ</h3>
+                <canvas id="trafficChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="table-card">
+            <h3>Đơn Hàng Gần Đây</h3>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>Mã ĐH</th>
+                        <th>Khách Hàng</th>
+                        <th>Ngày</th>
+                        <th>Tổng Tiền</th>
+                        <th>Trạng Thái</th>
+                        <th>Hành Động</th>
+                    </tr>
+                    </thead>
+                    <tbody id="recentOrdersTable">
+                    <tr>
+                        <td colspan="6" class="text-center">Đang tải...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    let registrationChart, trafficChart;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadDashboardStats();
+        loadRegistrationChart();
+        loadTrafficChart();
+        loadRecentOrders();
+    });
+
+    function loadDashboardStats() {
+        fetch('/api/admin/statistics/dashboard')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('totalUsers').textContent = data.totalUsers || 0;
+                document.getElementById('totalOrders').textContent = data.totalOrders || 0;
+                document.getElementById('totalRevenue').textContent =
+                    new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.totalRevenue || 0);
+                document.getElementById('activeUsers').textContent = data.activeUsers || 0;
+            })
+            .catch(e => console.error('Error loading stats:', e));
+    }
+
+    function loadRegistrationChart() {
+        fetch('/api/admin/statistics/users/registration?days=7')
+            .then(r => r.json())
+            .then(data => {
+                const ctx = document.getElementById('registrationChart').getContext('2d');
+                registrationChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(d => new Date(d.date).toLocaleDateString('vi-VN')),
+                        datasets: [{
+                            label: 'Đăng ký mới',
+                            data: data.map(d => d.count),
+                            borderColor: '#77dae6',
+                            backgroundColor: 'rgba(119, 218, 230, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {legend: {display: false}}
+                    }
+                });
+            })
+            .catch(e => console.error('Error loading registration chart:', e));
+    }
+
+    function loadTrafficChart() {
+        fetch('/api/admin/statistics/traffic')
+            .then(r => r.json())
+            .then(data => {
+                const ctx = document.getElementById('trafficChart').getContext('2d');
+                trafficChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                        datasets: [{
+                            label: 'Lượt truy cập',
+                            data: Array(24).fill(0),
+                            backgroundColor: '#77dae6'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {legend: {display: false}}
+                    }
+                });
+            })
+            .catch(e => console.error('Error loading traffic chart:', e));
+    }
+
+    function loadRecentOrders() {
+        fetch('/api/orders/paginated?page=0&size=10')
+            .then(r => r.json())
+            .then(data => {
+                const tbody = document.getElementById('recentOrdersTable');
+                if (data.content && data.content.length > 0) {
+                    tbody.innerHTML = data.content.map(order => `
+                <tr>
+                  <td>${order.orderNumber}</td>
+                  <td>${order.userName || 'N/A'}</td>
+                  <td>${new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
+                  <td>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.totalAmount)}</td>
+                  <td><span class="badge badge--${order.status.toLowerCase()}">${order.status}</span></td>
+                  <td><a href="/admin/orders?id=${order.id}" class="btn btn--small">Chi tiết</a></td>
+                </tr>
+              `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Chưa có đơn hàng</td></tr>';
+                }
+            })
+            .catch(e => {
+                console.error('Error loading orders:', e);
+                document.getElementById('recentOrdersTable').innerHTML =
+                    '<tr><td colspan="6" class="text-center">Lỗi tải dữ liệu</td></tr>';
+            });
+    }
+</script>
+
+<style>
+    .admin-body {
+        margin: 0;
+        padding: 0;
+        background: #f5f7fa;
+        font-family: system-ui, -apple-system, sans-serif
+    }
+
+    .admin-main {
+        margin-left: 260px;
+        min-height: 100vh;
+        padding: 0
+    }
+
+    .admin-header {
+        background: #fff;
+        padding: 20px 32px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center
+    }
+
+    .admin-header h1 {
+        margin: 0;
+        font-size: 24px
+    }
+
+    .admin-user {
+        display: flex;
+        align-items: center;
+        gap: 12px
+    }
+
+    .admin-user__avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%
+    }
+
+    .admin-content {
+        padding: 32px
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05)
+    }
+
+    .stat-card__icon {
+        font-size: 40px
+    }
+
+    .stat-card__content h3 {
+        margin: 0 0 4px;
+        font-size: 32px;
+        font-weight: 600
+    }
+
+    .stat-card__content p {
+        margin: 0;
+        color: #666;
+        font-size: 14px
+    }
+
+    .stat-card--blue {
+        border-left: 4px solid #3b82f6
+    }
+
+    .stat-card--green {
+        border-left: 4px solid #10b981
+    }
+
+    .stat-card--orange {
+        border-left: 4px solid #f59e0b
+    }
+
+    .stat-card--purple {
+        border-left: 4px solid #8b5cf6
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns:repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px
+    }
+
+    .chart-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05)
+    }
+
+    .chart-card h3 {
+        margin: 0 0 20px;
+        font-size: 18px
+    }
+
+    .chart-card canvas {
+        height: 300px !important
+    }
+
+    .table-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05)
+    }
+
+    .table-card h3 {
+        margin: 0 0 20px;
+        font-size: 18px
+    }
+
+    .table-responsive {
+        overflow-x: auto
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse
+    }
+
+    .admin-table th {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 2px solid #e0e0e0;
+        font-weight: 600;
+        color: #666;
+        font-size: 14px
+    }
+
+    .admin-table td {
+        padding: 12px;
+        border-bottom: 1px solid #f0f0f0
+    }
+
+    .badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500
+    }
+
+    .badge--pending {
+        background: #fff3cd;
+        color: #856404
+    }
+
+    .badge--confirmed {
+        background: #d1ecf1;
+        color: #0c5460
+    }
+
+    .badge--delivered {
+        background: #d4edda;
+        color: #155724
+    }
+
+    .btn--small {
+        padding: 6px 12px;
+        font-size: 13px;
+        background: #77dae6;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block
+    }
+
+    .text-center {
+        text-align: center
+    }
+
+    @media (max-width: 768px) {
+        .admin-main {
+            margin-left: 0
+        }
+
+        .charts-grid {
+            grid-template-columns:1fr
+        }
+    }
+</style>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán thất bại - Fat C Grocery Store</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+<!-- Header -->
+<div th:replace="~{shared/fragments/header :: header}"></div>
+
+<!-- Main Content -->
+<main class="payment-result">
+    <div class="container">
+        <div class="result-box result-box--failure">
+            <!-- Error Icon -->
+            <div class="result-icon">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                    <circle cx="50" cy="50" r="48" stroke="#F44336" stroke-width="4" fill="#FFEBEE"/>
+                    <path d="M35 35L65 65M65 35L35 65" stroke="#F44336" stroke-width="6" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <h1>Thanh toán thất bại!</h1>
+            <p class="result-message"
+               th:text="${error} ?: 'Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.'">
+                Đã xảy ra lỗi trong quá trình thanh toán.
+            </p>
+
+            <!-- Order Info -->
+            <div class="failure-info" th:if="${orderNumber}">
+                <div class="failure-info__row">
+                    <span>Mã đơn hàng:</span>
+                    <strong th:text="${orderNumber}">ORD-123456</strong>
+                </div>
+                <div class="failure-info__row" th:if="${order}">
+                    <span>Tổng tiền:</span>
+                    <strong th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">570,000
+                        đ</strong>
+                </div>
+                <div class="failure-info__row">
+                    <span>Trạng thái:</span>
+                    <span class="status-badge status-badge--failed">Chưa thanh toán</span>
+                </div>
+            </div>
+
+            <!-- Common Reasons -->
+            <div class="failure-reasons">
+                <h3>Nguyên nhân có thể:</h3>
+                <ul>
+                    <li>Số dư tài khoản không đủ</li>
+                    <li>Thẻ/Tài khoản bị khóa hoặc hết hạn</li>
+                    <li>Nhập sai thông tin xác thực (OTP, mật khẩu)</li>
+                    <li>Giao dịch bị hủy bởi người dùng</li>
+                    <li>Lỗi kết nối mạng</li>
+                </ul>
+            </div>
+
+            <!-- Actions -->
+            <div class="result-actions">
+                <a th:if="${orderNumber}" th:href="@{/payment/vnpay/create/{orderNumber}(orderNumber=${orderNumber})}"
+                   class="btn btn--primary">
+                    Thử lại với VNPay
+                </a>
+                <a th:if="${orderNumber}" th:href="@{/payment/momo/create/{orderNumber}(orderNumber=${orderNumber})}"
+                   class="btn btn--momo">
+                    Thử lại với Momo
+                </a>
+                <a th:if="${orderNumber}" th:href="@{/order/{orderNumber}(orderNumber=${orderNumber})}"
+                   class="btn btn--secondary">
+                    Xem đơn hàng
+                </a>
+                <a href="/" class="btn btn--outline">Về trang chủ</a>
+            </div>
+
+            <!-- Support -->
+            <div class="support-section">
+                <p>Cần hỗ trợ? Liên hệ với chúng tôi:</p>
+                <div class="support-links">
+                    <a href="tel:1900123456" class="support-link">
+                        <span class="support-icon">📞</span>
+                        <span>Hotline: 1900 123 456</span>
+                    </a>
+                    <a href="mailto:support@fatcgrocery.com" class="support-link">
+                        <span class="support-icon">📧</span>
+                        <span>support@fatcgrocery.com</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{shared/fragments/footer :: footer}"></div>
+
+<style>
+    .payment-result {
+        padding: 60px 0;
+        background: #f5f5f5;
+        min-height: 80vh;
+    }
+
+    .result-box {
+        max-width: 700px;
+        margin: 0 auto;
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .result-box--failure {
+        border-top: 4px solid #F44336;
+    }
+
+    .result-icon {
+        margin-bottom: 30px;
+    }
+
+    .result-box h1 {
+        font-size: 32px;
+        color: #F44336;
+        margin-bottom: 15px;
+    }
+
+    .result-message {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .failure-info {
+        background: #FFEBEE;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+    .failure-info__row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .failure-info__row:last-child {
+        margin-bottom: 0;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+
+    .status-badge--failed {
+        background: #FFCDD2;
+        color: #C62828;
+    }
+
+    .failure-reasons {
+        background: #FFF8E1;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+    .failure-reasons h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+        color: #F57C00;
+    }
+
+    .failure-reasons ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .failure-reasons li {
+        margin-bottom: 8px;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .result-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn--primary {
+        background: #2196F3;
+        color: white;
+    }
+
+    .btn--primary:hover {
+        background: #1976D2;
+    }
+
+    .btn--momo {
+        background: #A50064;
+        color: white;
+    }
+
+    .btn--momo:hover {
+        background: #8B0055;
+    }
+
+    .btn--secondary {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .btn--secondary:hover {
+        background: #45a049;
+    }
+
+    .btn--outline {
+        background: white;
+        color: #333;
+        border: 2px solid #ddd;
+    }
+
+    .btn--outline:hover {
+        background: #f5f5f5;
+    }
+
+    .support-section {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .support-section > p {
+        margin-bottom: 15px;
+        color: #666;
+    }
+
+    .support-links {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .support-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: #333;
+        padding: 10px 16px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        transition: all 0.3s;
+    }
+
+    .support-link:hover {
+        border-color: #4CAF50;
+        background: #E8F5E9;
+    }
+
+    .support-icon {
+        font-size: 18px;
+    }
+
+    @media (max-width: 600px) {
+        .result-box {
+            padding: 25px;
+            margin: 0 15px;
+        }
+
+        .result-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .support-links {
+            flex-direction: column;
+        }
+    }
+</style>
+</body>
+</html>

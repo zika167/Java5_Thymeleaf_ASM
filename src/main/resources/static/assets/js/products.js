@@ -153,24 +153,24 @@ class ProductRenderer {
         this.container = document.querySelector(containerSelector);
         this.products = productsData;
         this.filteredProducts = [...this.products];
-        
+
         this.init();
     }
-    
+
     init() {
         if (!this.container) return;
-        
+
         this.renderProducts();
         this.initLikeButtons();
     }
-    
+
     renderProducts(products = this.filteredProducts) {
         if (!this.container) return;
-        
+
         this.container.innerHTML = products.map(product => this.createProductHTML(product)).join('');
         this.initLikeButtons();
     }
-    
+
     createProductHTML(product) {
         const likeClass = product.isLiked ? 'like-btn__liked' : '';
         return `
@@ -207,7 +207,7 @@ class ProductRenderer {
             </div>
         `;
     }
-    
+
     initLikeButtons() {
         const likeButtons = this.container.querySelectorAll('.like-btn');
         likeButtons.forEach(button => {
@@ -219,28 +219,28 @@ class ProductRenderer {
             };
         });
     }
-    
+
     // Deprecated per viewport bug; logic handled inline above
     handleLikeClick() {
         // no-op
     }
-    
+
     filterProducts(filters = {}) {
         this.filteredProducts = this.products.filter(product => {
             // Price filter
             if (filters.minPrice !== undefined && product.price < filters.minPrice) return false;
             if (filters.maxPrice !== undefined && product.price > filters.maxPrice) return false;
-            
+
             // Brand filter
             if (filters.brand && filters.brand !== 'all' && product.brand.toLowerCase() !== filters.brand.toLowerCase()) return false;
-            
+
             return true;
         });
-        
+
         this.renderProducts();
         this.updateProductCount();
     }
-    
+
     updateProductCount() {
         const countElement = document.querySelector('.home__heading');
         if (countElement) {
@@ -248,24 +248,24 @@ class ProductRenderer {
             countElement.textContent = `Total LavAzza ${totalCount}`;
         }
     }
-    
+
     searchProducts(query) {
         if (!query.trim()) {
             this.filteredProducts = [...this.products];
         } else {
-            this.filteredProducts = this.products.filter(product => 
+            this.filteredProducts = this.products.filter(product =>
                 product.name.toLowerCase().includes(query.toLowerCase()) ||
                 product.brand.toLowerCase().includes(query.toLowerCase())
             );
         }
-        
+
         this.renderProducts();
         this.updateProductCount();
     }
 }
 
 // Initialize product renderer when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const productContainer = document.querySelector('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
     if (productContainer) {
         window.productRenderer = new ProductRenderer('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Also initialize when templates are loaded
-window.addEventListener('template-loaded', function() {
+window.addEventListener('template-loaded', function () {
     const productContainer = document.querySelector('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
     if (productContainer && !window.productRenderer) {
         window.productRenderer = new ProductRenderer('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
@@ -289,7 +289,7 @@ function applyFilters() {
     const maxPrice = parseFloat(document.getElementById('max-price')?.value) || 200;
     const brandSelect = document.querySelector('.weight-size');
     const selectedBrand = brandSelect ? brandSelect.value : 'all';
-    
+
     if (window.productRenderer) {
         window.productRenderer.filterProducts({
             minPrice: minPrice,
@@ -310,10 +310,10 @@ function searchProducts() {
 // ===== Add-to-cart for product cards =====
 function bindAddToCartButtons() {
     document.querySelectorAll('.js-add-to-cart').forEach((btn) => {
-        btn.onclick = async function(e) {
+        btn.onclick = async function (e) {
             e.preventDefault();
             const productId = parseInt(this.dataset.id, 10);
-            
+
             // Gọi API backend thay vì localStorage
             if (window.CartAPI && typeof window.CartAPI.addToCart === 'function') {
                 try {

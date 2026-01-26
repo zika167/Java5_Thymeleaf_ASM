@@ -5,9 +5,9 @@
 
   background-color: var(--footer-bg);
   background-image: linear-gradient(
-    180deg,
-    transparent var(--linear-gradient),
-    var(--footer-linear-gradient) var(--linear-gradient)
+                  180deg,
+                  transparent var(--linear-gradient),
+                  var(--footer-linear-gradient) var(--linear-gradient)
   );
 
   @include abstracts.screen(xl) {

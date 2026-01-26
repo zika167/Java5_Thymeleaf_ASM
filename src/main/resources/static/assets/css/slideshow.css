@@ -66,8 +66,8 @@
 }
 
 .slideshow__nav button {
-    background: var(--slideshow-nav-bg, rgba(255,255,255,0.85));
-    border: 2px solid var(--slideshow-nav-border, rgba(0,0,0,0.08));
+    background: var(--slideshow-nav-bg, rgba(255, 255, 255, 0.85));
+    border: 2px solid var(--slideshow-nav-border, rgba(0, 0, 0, 0.08));
     border-radius: 50%;
     width: 44px;
     height: 44px;
@@ -79,29 +79,30 @@
     transition: background 0.3s, border 0.3s, color 0.3s, box-shadow 0.3s;
     pointer-events: all;
     color: var(--slideshow-nav-color, #222);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .slideshow__nav button:hover {
-    background: var(--slideshow-nav-bg-hover, rgba(255,255,255,1));
+    background: var(--slideshow-nav-bg-hover, rgba(255, 255, 255, 1));
     border-color: var(--slideshow-nav-border-hover, #ffb700);
     color: var(--slideshow-nav-color-hover, #ffb700);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     transform: scale(1.08);
 }
 
 /* Dark mode styles */
 [data-theme="dark"] .slideshow__nav button {
-    background: var(--slideshow-nav-bg-dark, rgba(30,30,30,0.85));
-    border: 2px solid var(--slideshow-nav-border-dark, rgba(255,255,255,0.08));
+    background: var(--slideshow-nav-bg-dark, rgba(30, 30, 30, 0.85));
+    border: 2px solid var(--slideshow-nav-border-dark, rgba(255, 255, 255, 0.08));
     color: var(--slideshow-nav-color-dark, #fff);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
+
 [data-theme="dark"] .slideshow__nav button:hover {
-    background: var(--slideshow-nav-bg-dark-hover, rgba(30,30,30,1));
+    background: var(--slideshow-nav-bg-dark-hover, rgba(30, 30, 30, 1));
     border-color: var(--slideshow-nav-border-dark-hover, #ffb700);
     color: var(--slideshow-nav-color-dark-hover, #ffb700);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.32);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
 }
 
 .slideshow__page {
@@ -143,12 +144,13 @@
         bottom: 12px;
         gap: 12px;
     }
+
     .slideshow__nav button {
         width: 36px;
         height: 36px;
         font-size: 18px;
     }
-    
+
     .slideshow__page {
         bottom: 15px;
         right: 15px;
