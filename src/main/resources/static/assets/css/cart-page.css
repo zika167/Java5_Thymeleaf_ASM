@@ -3,7 +3,7 @@
  * Ẩn icon giỏ hàng khi đang ở trang cart
  */
 
-/* Hide cart icon on cart page */
-.cart-page #cart-dropdown-container {
+/* Hide cart icon on cart page - handled by JS */
+.cart-main #cart-dropdown-container {
     display: none !important;
 }
