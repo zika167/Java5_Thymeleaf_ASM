@@ -245,12 +245,14 @@
 
 .header .navbar .dropdown .sub-menu__column {
     display: flex !important;
-    flex-direction: row !important;
-    gap: 40px !important;
+    flex-direction: column !important;
+    gap: 30px !important;
     flex-wrap: nowrap !important;
     background: transparent !important;
     box-shadow: none !important;
     border: none !important;
+    align-items: flex-start !important;
+    flex: 0 0 auto !important;
 }
 
 .header .navbar .dropdown .sub-menu--not-main .menu-column {
@@ -258,6 +260,111 @@
     max-width: 200px !important;
     flex: 0 0 auto !important;
     background: transparent !important;
+}
+
+/* Beauty dropdown - horizontal layout with aligned columns */
+.header .navbar .dropdown .sub-menu.sub-menu--not-main {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+    gap: 40px !important;
+}
+
+.header .navbar .dropdown .sub-menu--not-main > .sub-menu__column {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 30px !important;
+    align-items: flex-start !important;
+    flex: 0 0 auto !important;
+}
+
+/* Direct menu-column children in sub-menu--not-main */
+.header .navbar .dropdown .sub-menu--not-main > .menu-column {
+    display: block !important;
+    flex: 0 0 auto !important;
+    min-width: 150px !important;
+    max-width: 180px !important;
+}
+
+/* ========================================
+   BEAUTY DROPDOWN - ALIGN ALL COLUMNS TOP
+   ======================================== */
+
+/* Override grid to 6 columns for Beauty dropdown */
+.header .navbar .dropdown .sub-menu--not-main {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 30px !important;
+    align-items: start !important;
+    justify-content: center !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+/* Remove margin-top from all menu-columns in grid */
+.header .navbar .dropdown .sub-menu--not-main .menu-column,
+.header .navbar .dropdown .sub-menu--not-main .menu-column + .menu-column {
+    margin-top: 0 !important;
+}
+
+/* Icon container */
+.header .navbar .dropdown .sub-menu--not-main .menu-column__icon {
+    width: 36px !important;
+    height: 36px !important;
+    display: block !important;
+}
+
+/* Heading alignment */
+.header .navbar .dropdown .sub-menu--not-main .menu-column__heading {
+    margin-top: 4px !important;
+    margin-bottom: 12px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Grocery dropdown - 8 columns in single row */
+.header .navbar .dropdown .sub-menu--grocery {
+    grid-template-columns: repeat(8, minmax(100px, 1fr)) !important;
+    display: grid !important;
+    gap: 15px !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    justify-content: center !important;
+}
+
+/* Force single row for grocery */
+.header .navbar .dropdown .sub-menu--grocery > .menu-column {
+    margin-top: 0 !important;
+    min-width: 0 !important;
+}
+
+.header .navbar .dropdown .sub-menu--grocery > .menu-column + .menu-column {
+    margin-top: 0 !important;
+}
+
+/* Departments dropdown - 8 columns in single row */
+.header .navbar .dropdown .sub-menu--departments {
+    grid-template-columns: repeat(8, minmax(100px, 1fr)) !important;
+    display: grid !important;
+    gap: 15px !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    justify-content: center !important;
+}
+
+/* Force single row for departments */
+.header .navbar .dropdown .sub-menu--departments > .menu-column {
+    margin-top: 0 !important;
+    min-width: 0 !important;
+}
+
+.header .navbar .dropdown .sub-menu--departments > .menu-column + .menu-column {
+    margin-top: 0 !important;
 }
 
 .header .navbar .dropdown .sub-menu--not-main .menu-column__heading {
@@ -990,4 +1097,32 @@ html.dark .cart-dropdown__count {
 
 .row > .col > article {
     width: 100% !important;
+}
+
+
+/* ========================================
+   CART PAGE BUTTON ALIGNMENT FIX
+   ======================================== */
+
+.cart-summary .btn.btn--primary.btn--full {
+    background: #4CAF50 !important;
+    color: white !important;
+    border: 1px solid #4CAF50 !important;
+    border-radius: 8px !important;
+}
+
+.cart-summary .btn.btn--primary.btn--full:hover {
+    background: #45a049 !important;
+    border-color: #45a049 !important;
+}
+
+.cart-summary .btn.btn--secondary.btn--full {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 8px !important;
+}
+
+.cart-summary .btn.btn--secondary.btn--full:hover {
+    background: #f5f5f5 !important;
 }
