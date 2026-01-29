@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Admin Dashboard | grocerystore</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -58,11 +60,15 @@
         <div class="charts-grid">
             <div class="chart-card">
                 <h3>Đăng Ký Users (7 ngày gần nhất)</h3>
-                <canvas id="registrationChart"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="registrationChart"></canvas>
+                </div>
             </div>
             <div class="chart-card">
                 <h3>Doanh Thu (7 ngày gần nhất)</h3>
-                <canvas id="revenueChart"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -93,6 +99,10 @@
 </main>
 
 <script>
+    // CSRF token
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
     let registrationChart, revenueChart;
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -103,8 +113,14 @@
     });
 
     function loadDashboardStats() {
-        fetch('/api/admin/statistics/dashboard')
-            .then(r => r.json())
+        fetch('/api/admin/statistics/dashboard', {
+            headers: { [csrfHeader]: csrfToken },
+            credentials: 'same-origin'
+        })
+            .then(r => {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
             .then(data => {
                 document.getElementById('totalUsers').textContent = data.totalUsers || 0;
                 document.getElementById('totalOrders').textContent = data.totalOrders || 0;
@@ -116,8 +132,14 @@
     }
 
     function loadRegistrationChart() {
-        fetch('/api/admin/statistics/registrations/last-7-days')
-            .then(r => r.json())
+        fetch('/api/admin/statistics/registrations/last-7-days', {
+            headers: { [csrfHeader]: csrfToken },
+            credentials: 'same-origin'
+        })
+            .then(r => {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
             .then(data => {
                 const ctx = document.getElementById('registrationChart').getContext('2d');
                 if (Array.isArray(data) && data.length > 0) {
@@ -165,6 +187,27 @@
             })
             .catch(e => {
                 console.error('Error loading registration chart:', e);
+                // Show empty chart on error
+                const ctx = document.getElementById('registrationChart').getContext('2d');
+                registrationChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: getLast7Days(),
+                        datasets: [{
+                            label: 'Đăng ký mới',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {legend: {display: false}}
+                    }
+                });
             });
     }
 
@@ -201,8 +244,14 @@
     }
 
     function loadRecentOrders() {
-        fetch('/api/orders/paginated?page=0&size=10')
-            .then(r => r.json())
+        fetch('/api/orders/paginated?page=0&size=10', {
+            headers: { [csrfHeader]: csrfToken },
+            credentials: 'same-origin'
+        })
+            .then(r => {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
             .then(data => {
                 const tbody = document.getElementById('recentOrdersTable');
                 if (data.content && data.content.length > 0) {

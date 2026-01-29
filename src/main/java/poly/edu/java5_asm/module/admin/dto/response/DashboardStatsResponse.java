@@ -24,6 +24,7 @@ public class DashboardStatsResponse {
     // Thống kê đơn hàng
     private Long totalOrders;             // Tổng số đơn hàng
     private BigDecimal totalRevenue;      // Tổng doanh thu
+    private Long totalProducts;           // Tổng số sản phẩm
 
     // Thống kê traffic
     private Long totalPageViewsToday;     // Tổng lượt xem hôm nay

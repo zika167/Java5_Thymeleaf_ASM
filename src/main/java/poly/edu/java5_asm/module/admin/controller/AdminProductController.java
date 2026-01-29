@@ -1,8 +1,10 @@
 package poly.edu.java5_asm.module.admin.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import poly.edu.java5_asm.module.admin.dto.request.AdminProductRequest;
 import poly.edu.java5_asm.module.product.dto.response.ProductResponse;
@@ -19,6 +21,7 @@ import java.util.Map;
 /**
  * REST API Controller cho Admin Product Management
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class AdminProductController {
      * Tạo sản phẩm mới
      */
     @PostMapping
+    @Transactional
     public ResponseEntity<ProductResponse> createProduct(@RequestBody AdminProductRequest request) {
         Category category = null;
         if (request.getCategoryId() != null) {
@@ -70,6 +74,7 @@ public class AdminProductController {
      * Cập nhật sản phẩm
      */
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Long id,
             @RequestBody AdminProductRequest request
@@ -110,6 +115,7 @@ public class AdminProductController {
      * Xóa sản phẩm (soft delete - set isActive = false)
      */
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Map<String, Object>> deleteProduct(@PathVariable Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
@@ -128,29 +134,43 @@ public class AdminProductController {
      * Cập nhật số lượng tồn kho
      */
     @PutMapping("/{id}/stock")
+    @Transactional
     public ResponseEntity<Map<String, Object>> updateStock(
             @PathVariable Long id,
             @RequestParam Integer quantity
     ) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
-
-        product.setStockQuantity(quantity);
-        product.setIsOutOfStock(quantity <= 0);
-        productRepository.save(product);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "Đã cập nhật tồn kho");
-        response.put("stockQuantity", quantity);
+        log.info("Updating stock for product {} to quantity {}", id, quantity);
         
-        return ResponseEntity.ok(response);
+        try {
+            Product product = productRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+
+            product.setStockQuantity(quantity);
+            product.setIsOutOfStock(quantity <= 0);
+            Product saved = productRepository.save(product);
+            
+            log.info("Stock updated successfully. New quantity: {}", saved.getStockQuantity());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Đã cập nhật tồn kho: " + quantity);
+            response.put("stockQuantity", saved.getStockQuantity());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error updating stock for product {}: {}", id, e.getMessage(), e);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Lỗi cập nhật tồn kho: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     /**
      * Toggle featured status
      */
     @PutMapping("/{id}/featured")
+    @Transactional
     public ResponseEntity<Map<String, Object>> toggleFeatured(@PathVariable Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));

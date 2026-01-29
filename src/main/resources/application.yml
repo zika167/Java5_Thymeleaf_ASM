@@ -3,6 +3,15 @@ spring:
     name: java5_asm
 
   # ============================================
+  # FILE UPLOAD CONFIGURATION
+  # ============================================
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  # ============================================
   # DATABASE CONFIGURATION
   # ============================================
   # Lấy giá trị từ file .env (KHÔNG commit file .env lên Git)
