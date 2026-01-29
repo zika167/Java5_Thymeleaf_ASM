@@ -234,10 +234,12 @@
                                     ${product.isFeatured ? '⭐' : '☆'}
                                 </button>
                             </td>
-                            <td class="action-buttons">
-                                <button onclick="editProduct(${product.id})" class="btn btn--small btn--info" title="Sửa">✏️</button>
-                                <button onclick="updateStock(${product.id}, ${stock}, '${safeName}')" class="btn btn--small btn--warning" title="Cập nhật tồn kho">📦</button>
-                                <button onclick="deleteProduct(${product.id}, '${safeName}')" class="btn btn--small btn--danger" title="Xóa">🗑️</button>
+                            <td>
+                                <div class="action-buttons">
+                                    <button onclick="editProduct(${product.id})" class="btn btn--small btn--info" title="Sửa">✏️</button>
+                                    <button onclick="updateStock(${product.id}, ${stock}, '${safeName}')" class="btn btn--small btn--warning" title="Cập nhật tồn kho">📦</button>
+                                    <button onclick="deleteProduct(${product.id}, '${safeName}')" class="btn btn--small btn--danger" title="Xóa">🗑️</button>
+                                </div>
                             </td>
                         </tr>
                     `}).join('');
@@ -610,7 +612,7 @@
         flex-wrap: nowrap;
         gap: 4px;
         align-items: center;
-        white-space: nowrap;
+        justify-content: flex-start;
     }
     .btn--info { background: #17a2b8; }
     .btn--warning { background: #ffc107; color: #333; }
@@ -627,10 +629,16 @@
         align-items: center;
         justify-content: center;
         min-width: 32px;
+        height: 32px;
+        vertical-align: middle;
     }
     
     /* Fix table alignment */
     .admin-table td {
+        vertical-align: middle;
+    }
+    
+    .admin-table td.action-buttons {
         vertical-align: middle;
     }
     
