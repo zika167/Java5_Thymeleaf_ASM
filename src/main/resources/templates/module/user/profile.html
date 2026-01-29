@@ -75,7 +75,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/addresses}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/location.svg}"
@@ -87,7 +87,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/edit-personal-info}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/message-2.svg}"
@@ -106,7 +106,7 @@
                             <h3 class="profile-menu__title">My items</h3>
                             <ul class="profile-menu__list">
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/my-orders}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/download.svg}"
@@ -118,7 +118,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/favourite}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/heart.svg}"
@@ -130,7 +130,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/cart}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/gift-2.svg}"
@@ -149,7 +149,7 @@
                             <h3 class="profile-menu__title">Subscriptions & plans</h3>
                             <ul class="profile-menu__list">
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/my-orders}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/shield.svg}"
@@ -168,7 +168,7 @@
                             <h3 class="profile-menu__title">Customer Service</h3>
                             <ul class="profile-menu__list">
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/info.svg}"
@@ -180,7 +180,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/danger.svg}"
@@ -335,7 +335,7 @@
 
                                     <!-- Account info 3 -->
                                     <div class="col">
-                                        <a th:href="@{/edit-personal-info}">
+                                        <a th:href="@{/addresses}">
                                             <article class="account-info">
                                                 <div class="account-info__icon">
                                                     <img
@@ -345,10 +345,11 @@
                                                     />
                                                 </div>
                                                 <div>
-                                                    <h3 class="account-info__title">
+                                                    <h3 class="account-info__title" th:text="${defaultAddress != null ? 'Địa chỉ mặc định' : 'Thêm địa chỉ'}">
                                                         Add an address
                                                     </h3>
-                                                    <p class="account-info__desc">
+                                                    <p class="account-info__desc" 
+                                                       th:text="${defaultAddress != null ? defaultAddress.addressLine1 + ', ' + defaultAddress.city : 'Chưa có địa chỉ'}">
                                                         Chưa có địa chỉ
                                                     </p>
                                                 </div>

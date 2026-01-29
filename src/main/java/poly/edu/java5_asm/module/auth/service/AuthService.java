@@ -1,12 +1,12 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.request.RegisterRequest;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.UserRepository;
+import poly.edu.java5_asm.module.auth.dto.request.RegisterRequest;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 

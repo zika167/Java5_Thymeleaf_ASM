@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/fragments/head :: head('Địa Chỉ Giao Hàng | grocerystore')}">
-</head>
+<head th:replace="~{shared/fragments/head :: head('Địa Chỉ Giao Hàng | grocerystore')}"></head>
 <body>
 <th:block th:replace="~{shared/fragments/header :: header}"></th:block>
 
@@ -12,9 +11,10 @@
                 <div class="col-12 col-md-3">
                     <aside class="profile__sidebar">
                         <div class="profile-user">
-                            <img th:src="@{/assets/img/avatar.jpg}" alt="" class="profile-user__avatar"/>
-                            <h1 class="profile-user__name" th:text="${session.user.fullName}">John Smith</h1>
-                            <p class="profile-user__desc" th:text="'@' + ${session.user.username}">@johnsmith</p>
+                            <img th:src="${session.user != null ? session.user.avatarUrlOrGravatar : 'https://www.gravatar.com/avatar/?d=mp&s=200'}" 
+                                 alt="" class="profile-user__avatar" id="user-avatar"/>
+                            <h1 class="profile-user__name" th:text="${session.user != null ? session.user.fullName : 'Guest'}">John Smith</h1>
+                            <p class="profile-user__desc" th:text="${session.user != null ? '@' + session.user.username : ''}">@johnsmith</p>
                         </div>
                         <div class="profile-menu">
                             <h3 class="profile-menu__title">Quản lý tài khoản</h3>
@@ -44,7 +44,7 @@
                     <div class="cart-info">
                         <div class="cart-info__top">
                             <h1 class="cart-info__heading">Địa Chỉ Giao Hàng</h1>
-                            <button onclick="showAddAddressModal()" class="btn btn--primary">+ Thêm địa chỉ mới</button>
+                            <button type="button" onclick="showAddAddressModal()" class="btn btn--primary">+ Thêm địa chỉ mới</button>
                         </div>
 
                         <div id="addressesList" class="addresses-grid">
@@ -58,289 +58,84 @@
 </main>
 
 <!-- Add/Edit Address Modal -->
-<div id="addressModal" class="modal" style="display:none">
+<div id="addressModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="modalTitle">Thêm Địa Chỉ Mới</h2>
-            <button onclick="closeModal()" class="modal-close">&times;</button>
+            <h2 id="modalTitle">Địa chỉ mới</h2>
+            <button type="button" onclick="closeModal()" class="modal-close">&times;</button>
         </div>
         <form id="addressForm" onsubmit="saveAddress(event)">
             <input type="hidden" id="addressId"/>
-            <div class="form-group">
-                <label>Họ và tên *</label>
-                <input type="text" id="fullName" required class="form-control"/>
+            
+            <!-- Row 1: Name and Phone -->
+            <div class="form-row">
+                <div class="form-group form-group--half">
+                    <input type="text" id="fullName" required class="form-control" placeholder="Họ và tên"/>
+                </div>
+                <div class="form-group form-group--half">
+                    <input type="tel" id="phone" required class="form-control" 
+                           pattern="[0-9]{10,11}" 
+                           title="Số điện thoại phải từ 10-11 chữ số"
+                           placeholder="Số điện thoại"/>
+                </div>
             </div>
+            
+            <!-- Row 2: Location Dropdown -->
             <div class="form-group">
-                <label>Số điện thoại *</label>
-                <input type="tel" id="phone" required class="form-control"/>
+                <select id="city" required class="form-control">
+                    <option value="">Tỉnh/ Thành phố, Quận/Huyện, Phường/Xã</option>
+                    <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                    <option value="Hà Nội">Hà Nội</option>
+                    <option value="Đà Nẵng">Đà Nẵng</option>
+                    <option value="Bình Dương">Bình Dương</option>
+                    <option value="Đồng Nai">Đồng Nai</option>
+                    <option value="Cần Thơ">Cần Thơ</option>
+                    <option value="Hải Phòng">Hải Phòng</option>
+                    <option value="Bình Định">Bình Định</option>
+                    <option value="Khánh Hòa">Khánh Hòa</option>
+                    <option value="Long An">Long An</option>
+                </select>
             </div>
+            
+            <!-- Row 3: Detailed Address -->
             <div class="form-group">
-                <label>Địa chỉ chi tiết *</label>
-                <textarea id="addressLine" required class="form-control" rows="3"></textarea>
+                <textarea id="addressLine" required class="form-control" rows="3" placeholder="Địa chỉ cụ thể"></textarea>
             </div>
+            
+            <!-- Row 4: Address Type -->
             <div class="form-group">
-                <label>Thành phố *</label>
-                <input type="text" id="city" required class="form-control"/>
+                <label class="form-label">Loại địa chỉ:</label>
+                <div class="address-type-group">
+                    <label class="address-type-btn">
+                        <input type="radio" name="addressType" value="home" checked/>
+                        <span>Nhà Riêng</span>
+                    </label>
+                    <label class="address-type-btn">
+                        <input type="radio" name="addressType" value="office"/>
+                        <span>Văn Phòng</span>
+                    </label>
+                </div>
             </div>
+            
+            <!-- Row 5: Default Checkbox -->
             <div class="form-group">
-                <label><input type="checkbox" id="isDefault"/> Đặt làm địa chỉ mặc định</label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="isDefault"/>
+                    <span>Đặt làm địa chỉ mặc định</span>
+                </label>
             </div>
+            
             <div class="modal-footer">
-                <button type="button" onclick="closeModal()" class="btn btn--outline">Hủy</button>
-                <button type="submit" class="btn btn--primary">Lưu</button>
+                <button type="button" onclick="closeModal()" class="btn btn--outline">Trở Lại</button>
+                <button type="submit" class="btn btn--primary btn--orange">Hoàn thành</button>
             </div>
         </form>
     </div>
 </div>
 
 <th:block th:replace="~{shared/fragments/footer :: footer}"></th:block>
-<script th:src="@{/assets/js/scripts.js}"></script>
+<link rel="stylesheet" th:href="@{/assets/css/addresses.css}"/>
 <script th:src="@{/assets/js/address-api.js}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', loadAddresses);
-
-    async function loadAddresses() {
-        const addresses = await AddressAPI.getUserAddresses();
-        const container = document.getElementById('addressesList');
-
-        if (!addresses || addresses.length === 0) {
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #999;">Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ mới.</p>';
-            return;
-        }
-
-        container.innerHTML = addresses.map(addr => `
-          <div class="address-card ${addr.isDefault ? 'address-card--default' : ''}">
-            ${addr.isDefault ? '<span class="address-badge">Mặc định</span>' : ''}
-            <h3>${addr.recipientName}</h3>
-            <p>${addr.phone}</p>
-            <p>${addr.addressLine1}</p>
-            <p>${addr.city}, ${addr.state} ${addr.postalCode}</p>
-            <div class="address-actions">
-              <button onclick="editAddress(${addr.id})" class="btn btn--outline btn--small">Sửa</button>
-              ${!addr.isDefault ? `<button onclick="deleteAddress(${addr.id})" class="btn btn--danger btn--small">Xóa</button>` : ''}
-              ${!addr.isDefault ? `<button onclick="setDefault(${addr.id})" class="btn btn--primary btn--small">Đặt mặc định</button>` : ''}
-            </div>
-          </div>
-        `).join('');
-    }
-
-    function showAddAddressModal() {
-        document.getElementById('modalTitle').textContent = 'Thêm Địa Chỉ Mới';
-        document.getElementById('addressForm').reset();
-        document.getElementById('addressId').value = '';
-        document.getElementById('addressModal').style.display = 'flex';
-    }
-
-    async function editAddress(id) {
-        const address = await AddressAPI.getAddress(id);
-        if (!address) {
-            alert('Không thể tải địa chỉ');
-            return;
-        }
-
-        document.getElementById('modalTitle').textContent = 'Chỉnh Sửa Địa Chỉ';
-        document.getElementById('addressId').value = address.id;
-        document.getElementById('fullName').value = address.recipientName;
-        document.getElementById('phone').value = address.phone;
-        document.getElementById('addressLine').value = address.addressLine1;
-        document.getElementById('city').value = address.city;
-        document.getElementById('isDefault').checked = address.isDefault;
-        document.getElementById('addressModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('addressModal').style.display = 'none';
-    }
-
-    async function saveAddress(e) {
-        e.preventDefault();
-
-        const addressId = document.getElementById('addressId').value;
-        const data = {
-            recipientName: document.getElementById('fullName').value,
-            phone: document.getElementById('phone').value,
-            addressLine1: document.getElementById('addressLine').value,
-            city: document.getElementById('city').value,
-            state: '',
-            postalCode: '',
-            country: 'Vietnam',
-            isDefault: document.getElementById('isDefault').checked
-        };
-
-        try {
-            if (addressId) {
-                await AddressAPI.updateAddress(addressId, data);
-            } else {
-                await AddressAPI.createAddress(data);
-            }
-            closeModal();
-            await loadAddresses();
-        } catch (error) {
-            console.error('Error saving address:', error);
-        }
-    }
-
-    async function deleteAddress(id) {
-        if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
-            try {
-                await AddressAPI.deleteAddress(id);
-                await loadAddresses();
-            } catch (error) {
-                console.error('Error deleting address:', error);
-            }
-        }
-    }
-
-    async function setDefault(id) {
-        try {
-            await AddressAPI.setDefaultAddress(id);
-            await loadAddresses();
-        } catch (error) {
-            console.error('Error setting default address:', error);
-        }
-    }
-</script>
-<style>
-    .cart-info__top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px
-    }
-
-    .addresses-grid {
-        display: grid;
-        grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px
-    }
-
-    .address-card {
-        background: #fff;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 20px;
-        position: relative;
-        transition: all 0.3s
-    }
-
-    .address-card:hover {
-        border-color: #77dae6;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)
-    }
-
-    .address-card--default {
-        border-color: #77dae6;
-        background: #f0fbfc
-    }
-
-    .address-badge {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        background: #77dae6;
-        color: #fff;
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 12px
-    }
-
-    .address-card h3 {
-        font-size: 18px;
-        margin-bottom: 8px
-    }
-
-    .address-card p {
-        margin-bottom: 4px;
-        color: #666;
-        font-size: 14px
-    }
-
-    .address-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid #f0f0f0
-    }
-
-    .btn--small {
-        padding: 6px 12px;
-        font-size: 13px
-    }
-
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        align-items: center;
-        justify-content: center;
-        z-index: 1000
-    }
-
-    .modal-content {
-        background: #fff;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 500px;
-        max-height: 90vh;
-        overflow-y: auto
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        border-bottom: 1px solid #e0e0e0
-    }
-
-    .modal-close {
-        background: none;
-        border: none;
-        font-size: 28px;
-        cursor: pointer;
-        color: #666
-    }
-
-    .modal-footer {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        padding: 20px;
-        border-top: 1px solid #e0e0e0
-    }
-
-    .form-group {
-        padding: 0 20px;
-        margin-bottom: 16px
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 14px
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #77dae6
-    }
-
-    textarea.form-control {
-        resize: vertical
-    }
-</style>
+<script th:src="@{/assets/js/addresses.js}"></script>
 </body>
 </html>

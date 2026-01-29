@@ -10,7 +10,7 @@
         <h1>Quản Lý Products</h1>
         <div class="admin-user">
             <img th:src="@{/assets/img/avatar.jpg}" alt="" class="admin-user__avatar"/>
-            <span th:text="${session.user.fullName}">Admin</span>
+            <span th:text="${session.user != null ? session.user.fullName : 'Admin'}">Admin</span>
         </div>
     </div>
 
@@ -18,7 +18,7 @@
         <div class="table-card">
             <div class="table-card__header">
                 <input type="text" id="searchInput" placeholder="Tìm sản phẩm..." class="search-input"/>
-                <button onclick="alert('Thêm sản phẩm - Đang phát triển')" class="btn btn--primary">+ Thêm Sản Phẩm
+                <button onclick="showAddModal()" class="btn btn--primary">+ Thêm Sản Phẩm
                 </button>
             </div>
 
@@ -48,6 +48,39 @@
         </div>
     </div>
 </main>
+
+<!-- Product Modal -->
+<div id="productModal" class="modal" style="display:none">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Thông Tin Sản Phẩm</h2>
+            <button onclick="closeModal()" class="modal-close">&times;</button>
+        </div>
+        <form id="productForm" onsubmit="saveProduct(event)">
+            <input type="hidden" id="productId"/>
+            <div class="form-group">
+                <label>Tên sản phẩm</label>
+                <input type="text" id="productName" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label>Giá (VND)</label>
+                <input type="number" id="productPrice" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label>Số lượng tồn kho</label>
+                <input type="number" id="productStock" class="form-control" value="0"/>
+            </div>
+            <div class="form-group">
+                <label>Mô tả</label>
+                <textarea id="productDescription" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="closeModal()" class="btn btn--outline">Hủy</button>
+                <button type="submit" class="btn btn--primary">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
     let currentPage = 0;
@@ -87,13 +120,69 @@
     }
 
     function editProduct(id) {
-        alert('Sửa sản phẩm ' + id + ' - Đang phát triển');
+        fetch(`/api/products/${id}`)
+            .then(r => r.json())
+            .then(product => {
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productName').value = product.name || '';
+                document.getElementById('productPrice').value = product.price || '';
+                document.getElementById('productStock').value = product.stockQuantity || 0;
+                document.getElementById('productDescription').value = product.description || '';
+                document.getElementById('productModal').style.display = 'flex';
+            })
+            .catch(e => alert('Lỗi tải thông tin sản phẩm'));
     }
 
     function deleteProduct(id) {
         if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-            alert('Xóa sản phẩm ' + id + ' - Đang phát triển');
+            fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+                .then(r => r.json())
+                .then(data => {
+                    alert(data.message);
+                    loadProducts();
+                })
+                .catch(e => alert('Có lỗi xảy ra'));
         }
+    }
+
+    function showAddModal() {
+        document.getElementById('productId').value = '';
+        document.getElementById('productName').value = '';
+        document.getElementById('productPrice').value = '';
+        document.getElementById('productStock').value = 0;
+        document.getElementById('productDescription').value = '';
+        document.getElementById('productModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('productModal').style.display = 'none';
+    }
+
+    function saveProduct(e) {
+        e.preventDefault();
+        const id = document.getElementById('productId').value;
+        const data = {
+            name: document.getElementById('productName').value,
+            price: parseFloat(document.getElementById('productPrice').value),
+            stockQuantity: parseInt(document.getElementById('productStock').value),
+            description: document.getElementById('productDescription').value
+        };
+
+        const url = id ? `/api/admin/products/${id}` : '/api/admin/products';
+        const method = id ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(r => r.json())
+            .then(() => {
+                alert(id ? 'Đã cập nhật sản phẩm' : 'Đã thêm sản phẩm');
+                closeModal();
+                loadProducts();
+            })
+            .catch(e => alert('Có lỗi xảy ra'));
     }
 </script>
 
@@ -230,6 +319,76 @@
 
     .text-center {
         text-align: center
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000
+    }
+
+    .modal-content {
+        background: #fff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding: 20px;
+        border-top: 1px solid #e0e0e0
+    }
+
+    .form-group {
+        padding: 10px 20px
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-sizing: border-box
+    }
+
+    .btn--outline {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        color: #333;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer
     }
 
     @media (max-width: 768px) {

@@ -5,8 +5,16 @@
 <!-- Header -->
 <header th:replace="~{shared/fragments/header :: header}"></header>
 
+<!-- Error message when product not found -->
+<div th:if="${product == null}" class="container" style="padding: 100px 20px; text-align: center;">
+    <h1 style="font-size: 48px; color: #ccc; margin-bottom: 20px;">404</h1>
+    <h2 style="margin-bottom: 16px;">Không tìm thấy sản phẩm</h2>
+    <p style="color: #666; margin-bottom: 24px;">Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+    <a th:href="@{/}" class="btn btn--primary">Quay về trang chủ</a>
+</div>
+
 <!-- MAIN -->
-<main class="product-page" th:data-product-id="${product.id}">
+<main class="product-page" th:if="${product != null}" th:data-product-id="${product.id}">
     <div class="container">
         <!-- Search bar -->
         <div class="product-container">

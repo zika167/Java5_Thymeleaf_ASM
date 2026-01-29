@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.service.impl;
+package poly.edu.java5_asm.module.wishlist.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,15 +9,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.response.WishlistResponse;
-import poly.edu.java5_asm.entity.Product;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.entity.Wishlist;
-import poly.edu.java5_asm.exception.*;
-import poly.edu.java5_asm.repository.ProductRepository;
-import poly.edu.java5_asm.repository.UserRepository;
-import poly.edu.java5_asm.repository.WishlistRepository;
-import poly.edu.java5_asm.service.WishlistService;
+import poly.edu.java5_asm.module.wishlist.dto.response.WishlistResponse;
+import poly.edu.java5_asm.module.product.entity.Product;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.wishlist.entity.Wishlist;
+import poly.edu.java5_asm.common.exception.*;
+import poly.edu.java5_asm.module.product.repository.ProductRepository;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
+import poly.edu.java5_asm.module.wishlist.repository.WishlistRepository;
+import poly.edu.java5_asm.module.wishlist.service.WishlistService;
 
 import java.util.List;
 import java.util.stream.Collectors;

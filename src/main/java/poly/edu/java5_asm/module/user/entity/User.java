@@ -1,8 +1,16 @@
-package poly.edu.java5_asm.entity;
+package poly.edu.java5_asm.module.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import poly.edu.java5_asm.module.address.entity.Address;
+import poly.edu.java5_asm.module.cart.entity.Cart;
+import poly.edu.java5_asm.module.order.entity.Order;
+import poly.edu.java5_asm.module.review.entity.Review;
+import poly.edu.java5_asm.module.wishlist.entity.Wishlist;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,13 +77,12 @@ public class User {
     private Integer loginCount = 0; // Số lần đăng nhập
 
     // OAuth2 fields
-    // Hiện tại thì trong database không có 2 cột này
-    // dẫn đến khi đăng kí tài khoản Insert không có cột bị lỗi dữ liệu không cho tạo tài khoản
-    // @Column(name = "provider", length = 20)
-    // private String provider; // google, facebook, local
+    @Builder.Default
+    @Column(name = "provider", length = 20)
+    private String provider = "local"; // google, facebook, local
 
-    // @Column(name = "provider_id", length = 100)
-    // private String providerId; // ID từ OAuth2 provider
+    @Column(name = "provider_id", length = 100)
+    private String providerId; // ID từ OAuth2 provider
 
     // Quan hệ: 1 user có nhiều địa chỉ
     @Builder.Default
@@ -119,5 +126,38 @@ public class User {
     // Enum cho Role
     public enum Role {
         USER, ADMIN
+    }
+
+    /**
+     * Lấy avatar URL - ưu tiên avatarUrl đã set, nếu không có thì dùng Gravatar
+     */
+    public String getAvatarUrlOrGravatar() {
+        // Nếu đã có avatarUrl custom (không phải default) thì dùng
+        if (avatarUrl != null && !avatarUrl.equals("/assets/img/avatar.jpg") && !avatarUrl.isEmpty()) {
+            return avatarUrl;
+        }
+        // Nếu không có email thì trả về default Gravatar
+        if (email == null || email.isEmpty()) {
+            return "https://www.gravatar.com/avatar/?d=mp&s=200";
+        }
+        // Generate Gravatar URL từ email
+        return "https://www.gravatar.com/avatar/" + md5(email.trim().toLowerCase()) + "?d=identicon&s=200";
+    }
+
+    /**
+     * MD5 hash cho Gravatar
+     */
+    private String md5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return "";
+        }
     }
 }

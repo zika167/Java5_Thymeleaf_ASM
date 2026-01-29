@@ -1,7 +1,9 @@
-package poly.edu.java5_asm.entity;
+package poly.edu.java5_asm.module.order.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import poly.edu.java5_asm.module.address.entity.Address;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

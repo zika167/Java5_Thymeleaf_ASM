@@ -1,8 +1,8 @@
-package poly.edu.java5_asm.repository;
+package poly.edu.java5_asm.module.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import poly.edu.java5_asm.entity.User;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -98,9 +98,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param provider Tên provider (google, facebook, etc.)
      * @param providerId ID từ provider
      * @return Optional chứa User nếu tìm thấy
-     *
-     * COMMENTED OUT: User entity không còn có field provider và providerId
-     * Sẽ implement OAuth2 ở phiên bản sau
      */
-    // Optional<User> findByProviderAndProviderId(String provider, String providerId);
+    Optional<User> findByProviderAndProviderId(String provider, String providerId);
 }

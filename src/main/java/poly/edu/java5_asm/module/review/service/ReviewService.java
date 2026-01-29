@@ -1,10 +1,10 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.review.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import poly.edu.java5_asm.dto.request.CreateReviewRequest;
-import poly.edu.java5_asm.dto.response.ReviewResponse;
-import poly.edu.java5_asm.entity.User;
+import poly.edu.java5_asm.module.review.dto.request.CreateReviewRequest;
+import poly.edu.java5_asm.module.review.dto.response.ReviewResponse;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.util.List;
 

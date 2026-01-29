@@ -295,7 +295,7 @@ function toggleSelected2(button) {
         if (index >= 0) {
             items[index].quantity += 1;
         } else {
-            items.push({...product, quantity: 1});
+            items.push({ ...product, quantity: 1 });
         }
         setCartItems(items);
         showCartToast('Đã thêm vào giỏ hàng');
@@ -321,7 +321,7 @@ function toggleSelected2(button) {
         const items = getCartItems();
         const itemCount = items.reduce((sum, it) => sum + it.quantity, 0);
         const subtotal = items.reduce((sum, it) => sum + it.price * it.quantity, 0);
-        return {itemCount, subtotal};
+        return { itemCount, subtotal };
     }
 
     function formatCurrency(value) {
@@ -353,7 +353,7 @@ function toggleSelected2(button) {
     }
 
     function updateHeaderCartUI() {
-        const {itemCount, subtotal} = getCartTotals();
+        const { itemCount, subtotal } = getCartTotals();
         // Header badge count
         document.querySelectorAll('.nav-btn__qnt').forEach((el) => {
             el.textContent = String(itemCount);
@@ -371,7 +371,7 @@ function toggleSelected2(button) {
     }
 
     function updateHeaderCartDropdownUI() {
-        const {itemCount, subtotal} = getCartTotals();
+        const { itemCount, subtotal } = getCartTotals();
         const shipping = itemCount > 0 ? 10 : 0;
         const estimated = subtotal + shipping;
         const cartWrap = Array.from(document.querySelectorAll('.top-act__btn-wrap')).find((wrap) =>
@@ -424,7 +424,7 @@ function toggleSelected2(button) {
         const price = parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
         // Use a stable id from image path + name
         const id = `${name}__${image}`;
-        return {id, name, price, image};
+        return { id, name, price, image };
     }
 
     function bindAddToCartOnDetail() {
@@ -452,13 +452,13 @@ function toggleSelected2(button) {
                     const lineTotal = it.price * it.quantity;
                     return `
           <article class="cart-item" data-id="${it.id}" data-price="${it.price}">
-            <a href="./product-detail.html">
+            <a href="/product/${it.id}">
               <img src="${it.image}" alt="" class="cart-item__thumb" />
             </a>
             <div class="cart-item__content">
               <div class="cart-item__content-left">
                 <h3 class="cart-item__title">
-                  <a href="./product-detail.html">${it.name}</a>
+                  <a href="/product/${it.id}">${it.name}</a>
                 </h3>
                 <p class="cart-item__price-wrap">
                   ${formatCurrency(it.price)} |
@@ -534,7 +534,7 @@ function toggleSelected2(button) {
     }
 
     function updateCheckoutSummary() {
-        const {itemCount, subtotal} = getCartTotals();
+        const { itemCount, subtotal } = getCartTotals();
         const shipping = itemCount > 0 ? 10 : 0;
         const estimatedTotal = subtotal + shipping;
 
@@ -581,7 +581,10 @@ function toggleSelected2(button) {
         updateHeaderCartUI();
         updateHeaderCartDropdownUI();
         bindAddToCartOnDetail();
-        if (window.location.pathname.endsWith('checkout.html') || window.location.pathname.endsWith('cart.html')) {
+        // Support both Thymeleaf routes (/checkout, /cart) and static HTML files
+        const pathname = window.location.pathname;
+        if (pathname.endsWith('/checkout') || pathname.endsWith('checkout.html') ||
+            pathname.endsWith('/cart') || pathname.endsWith('cart.html')) {
             renderCheckoutPage();
         }
         injectAddToCartToProductCards();
@@ -642,7 +645,7 @@ function injectAddToCartToProductCards() {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
             if (window.CartService && typeof window.CartService.add === 'function') {
-                window.CartService.add({id, name, price, image});
+                window.CartService.add({ id, name, price, image });
             }
         });
         row.appendChild(btn);
@@ -734,7 +737,7 @@ function ensureHomeLinksForLoggedIn() {
         if (!name || !image) return null;
         const price = priceText ? parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0 : 0;
         const id = `fav_${name}__${image}`;
-        return {id, name, price, image};
+        return { id, name, price, image };
     }
 
     function updateHeaderFavoritesUI() {
@@ -771,13 +774,51 @@ function ensureHomeLinksForLoggedIn() {
         });
     }
 
-    // Document-level handler to sync likes → favorites + header dropdown
+    // Document-level handler to sync likes → favorites + call backend API
     document.addEventListener(
         'click',
-        function (e) {
+        async function (e) {
             const btn = e.target.closest('.product-card .like-btn');
             if (!btn) return;
-            // Wait for UI toggle to settle (other handlers)
+            
+            const productId = btn.getAttribute('data-product-id');
+            
+            // If has product ID, call backend API
+            if (productId && window.WishlistAPI) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                try {
+                    const response = await fetch(`/api/wishlist/products/${productId}/toggle`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        btn.classList.toggle('like-btn__liked', data.inWishlist);
+                        
+                        // Show toast
+                        const toast = document.createElement('div');
+                        toast.textContent = data.message;
+                        toast.style.cssText = `
+                            position: fixed; bottom: 20px; right: 20px;
+                            background: #28a745; color: white;
+                            padding: 15px 20px; border-radius: 4px; z-index: 9999;
+                        `;
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3000);
+                    } else if (response.status === 401) {
+                        // Not logged in - redirect to sign-in
+                        window.location.href = '/sign-in';
+                    }
+                } catch (error) {
+                    console.error('Wishlist toggle error:', error);
+                }
+                return;
+            }
+            
+            // Fallback for static cards - use localStorage
             setTimeout(() => {
                 const product = extractProductFromCard(btn);
                 if (!product) return;
@@ -789,13 +830,35 @@ function ensureHomeLinksForLoggedIn() {
     );
 
     function syncLikeButtonsWithFavorites() {
-        const favs = getFavorites();
-        document.querySelectorAll('.product-card .like-btn').forEach((btn) => {
-            const product = extractProductFromCard(btn);
-            if (!product) return;
-            const liked = favs.some((it) => it.id === product.id);
-            btn.classList.toggle('like-btn__liked', liked);
-        });
+        // Sync from backend API first
+        syncLikeButtonsFromAPI();
+    }
+    
+    async function syncLikeButtonsFromAPI() {
+        try {
+            const response = await fetch('/api/wishlist');
+            if (response.ok) {
+                const wishlistItems = await response.json();
+                const wishlistProductIds = wishlistItems.map(item => item.productId);
+                
+                document.querySelectorAll('.product-card .like-btn').forEach((btn) => {
+                    const productId = btn.getAttribute('data-product-id');
+                    if (productId) {
+                        const isLiked = wishlistProductIds.includes(parseInt(productId));
+                        btn.classList.toggle('like-btn__liked', isLiked);
+                    }
+                });
+            }
+        } catch (error) {
+            // Fallback to localStorage if API fails
+            const favs = getFavorites();
+            document.querySelectorAll('.product-card .like-btn').forEach((btn) => {
+                const product = extractProductFromCard(btn);
+                if (!product) return;
+                const liked = favs.some((it) => it.id === product.id);
+                btn.classList.toggle('like-btn__liked', liked);
+            });
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -834,13 +897,13 @@ function renderFavouritePage() {
         .map((it) => {
             return `
       <article class="cart-item" data-id="${it.id}" data-price="${it.price}">
-        <a href="./product-detail.html">
+        <a href="/product/${it.id}">
           <img src="${it.image}" alt="" class="cart-item__thumb" />
         </a>
         <div class="cart-item__content">
           <div class="cart-item__content-left">
             <h3 class="cart-item__title">
-              <a href="./product-detail.html">${it.name}</a>
+              <a href="/product/${it.id}">${it.name}</a>
             </h3>
             <p class="cart-item__price-wrap">
               ${`$${Number(it.price).toFixed(2)}`} |
@@ -868,7 +931,7 @@ function renderFavouritePage() {
             const price = parseFloat(article.getAttribute('data-price')) || 0;
             const image = article.querySelector('.cart-item__thumb')?.getAttribute('src');
             const name = article.querySelector('.cart-item__title a')?.textContent?.trim();
-            window.CartService.add({id, name, price, image});
+            window.CartService.add({ id, name, price, image });
         });
     });
     // Bind unlike/remove
@@ -887,15 +950,18 @@ function renderFavouritePage() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.location.pathname.endsWith('favourite.html')) {
+    // Support both Thymeleaf route (/favourite) and static HTML files
+    const pathname = window.location.pathname;
+    if (pathname.endsWith('/favourite') || pathname.endsWith('favourite.html')) {
         renderFavouritePage();
     }
     // Handle pending action after login success (on index-logined)
-    if (window.location.pathname.endsWith('index-logined.html')) {
+    // Support both Thymeleaf route (/index-logined) and static HTML files
+    if (pathname.endsWith('/index-logined') || pathname.endsWith('index-logined.html')) {
         try {
             const raw = localStorage.getItem('pendingAction');
             if (raw) {
-                const {type, product} = JSON.parse(raw);
+                const { type, product } = JSON.parse(raw);
                 if (type === 'fav' && window.FavoriteService) {
                     window.FavoriteService.add(product);
                     window.FavoriteService.refreshHeader();
@@ -910,7 +976,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 window.addEventListener('favorites-updated', () => {
-    if (window.location.pathname.endsWith('favourite.html')) {
+    const pathname = window.location.pathname;
+    if (pathname.endsWith('/favourite') || pathname.endsWith('favourite.html')) {
         renderFavouritePage();
     }
     // Also sync like buttons across the site
@@ -922,7 +989,7 @@ window.addEventListener('favorites-updated', () => {
 
 // === PRODUCT IMAGE PASSING BETWEEN PAGES (Generic for all listing pages) ===
 (function initSelectedProductPassing() {
-    if (window.location.pathname.endsWith('product-detail.html')) return;
+    if (window.location.pathname.startsWith('/product/')) return;
     document.addEventListener('DOMContentLoaded', function () {
         // Clear stale selection on each listing-like page load
         ['selectedProductImg', 'selectedProductImgSetTime', 'selectedProductTitle', 'selectedProductBrand', 'selectedProductPrice', 'selectedProductScore']
@@ -944,8 +1011,8 @@ window.addEventListener('favorites-updated', () => {
                 const price = priceText ? parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0 : 0;
                 const id = `guest_${name}__${image}`;
                 const pending = likeBtn
-                    ? {type: 'fav', product: {id, name, price, image}}
-                    : {type: 'cart', product: {id, name, price, image}};
+                    ? { type: 'fav', product: { id, name, price, image } }
+                    : { type: 'cart', product: { id, name, price, image } };
                 localStorage.setItem('pendingAction', JSON.stringify(pending));
                 // Prevent any UI side-effects (toast, toggle) on guest
                 e.preventDefault();
@@ -983,7 +1050,7 @@ window.addEventListener('favorites-updated', () => {
     }, true);
 })();
 
-if (window.location.pathname.endsWith('product-detail.html')) {
+if (window.location.pathname.startsWith('/product/')) {
     document.addEventListener('DOMContentLoaded', function () {
         var selectedImg = localStorage.getItem('selectedProductImg');
         var selectedTitle = localStorage.getItem('selectedProductTitle');
@@ -1277,3 +1344,8 @@ if (window.location.pathname.endsWith('test-product-image.html')) {
         }, 10 * 60 * 1000); // 10 phút
     });
 }
+
+
+// ===================== USER MENU DROPDOWN =====================
+// User menu dropdown is now handled by CSS hover only
+// Click on avatar navigates to profile page via <a> link in HTML

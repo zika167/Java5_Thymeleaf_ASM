@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.dto.request;
+package poly.edu.java5_asm.module.product.dto.request;
 
 import lombok.*;
 

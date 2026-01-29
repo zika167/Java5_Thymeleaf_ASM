@@ -1,7 +1,7 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.wishlist.service;
 
 import org.springframework.data.domain.Page;
-import poly.edu.java5_asm.dto.response.WishlistResponse;
+import poly.edu.java5_asm.module.wishlist.dto.response.WishlistResponse;
 
 import java.util.List;
 

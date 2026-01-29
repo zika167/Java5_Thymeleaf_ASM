@@ -1,20 +1,21 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.cart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.request.AddToCartRequest;
-import poly.edu.java5_asm.dto.request.UpdateCartItemRequest;
-import poly.edu.java5_asm.dto.response.CartItemResponse;
-import poly.edu.java5_asm.dto.response.CartResponse;
-import poly.edu.java5_asm.entity.Cart;
-import poly.edu.java5_asm.entity.CartItem;
-import poly.edu.java5_asm.entity.Product;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.CartItemRepository;
-import poly.edu.java5_asm.repository.CartRepository;
-import poly.edu.java5_asm.repository.ProductRepository;
+import poly.edu.java5_asm.module.cart.dto.request.AddToCartRequest;
+import poly.edu.java5_asm.module.cart.dto.request.UpdateCartItemRequest;
+import poly.edu.java5_asm.module.cart.dto.response.CartItemResponse;
+import poly.edu.java5_asm.module.cart.dto.response.CartResponse;
+import poly.edu.java5_asm.module.cart.entity.Cart;
+import poly.edu.java5_asm.module.cart.entity.CartItem;
+import poly.edu.java5_asm.module.product.entity.Product;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.cart.repository.CartItemRepository;
+import poly.edu.java5_asm.module.cart.repository.CartRepository;
+import poly.edu.java5_asm.module.product.repository.ProductRepository;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,6 +30,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     /**
      * Lấy hoặc tạo giỏ hàng cho user
@@ -64,10 +66,13 @@ public class CartService {
     @Transactional
     public Cart getOrCreateCartByIdentifier(String identifier) {
         if (identifier.startsWith("user_")) {
-            // Đây là user đã đăng nhập
+            // Đây là user đã đăng nhập - lấy cart của user
             Long userId = Long.parseLong(identifier.substring(5));
-            // Tìm user từ ID (giả sử có method này)
-            // Tạm thời trả về giỏ hàng theo session
+            Optional<User> userOpt = userRepository.findById(userId);
+            if (userOpt.isPresent()) {
+                return getOrCreateCart(userOpt.get());
+            }
+            // Fallback nếu không tìm thấy user
             return getOrCreateGuestCart(identifier);
         } else {
             // Đây là guest user

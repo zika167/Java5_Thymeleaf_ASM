@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.dto.response;
+package poly.edu.java5_asm.module.payment.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

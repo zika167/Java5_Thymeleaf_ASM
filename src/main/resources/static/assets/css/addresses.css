@@ -1,0 +1,320 @@
+/* ========================================
+   ADDRESS PAGE STYLES
+   ======================================== */
+
+.cart-info__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+/* ========================================
+   ADDRESS LIST STYLES
+   ======================================== */
+
+.addresses-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.address-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.address-item:first-child {
+    padding-top: 0;
+}
+
+.address-item__content {
+    flex: 1;
+}
+
+.address-item__header {
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.address-item__name {
+    font-weight: 600;
+    color: #333;
+}
+
+.address-item__divider {
+    margin: 0 8px;
+    color: #999;
+}
+
+.address-item__phone {
+    color: #666;
+}
+
+.address-item__line,
+.address-item__city {
+    margin: 0 0 4px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.address-item__badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 8px;
+    border: 1px solid #ee4d2d;
+    color: #ee4d2d;
+    font-size: 12px;
+    border-radius: 2px;
+}
+
+.address-item__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    min-width: 140px;
+}
+
+.address-action-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.address-action-link:hover {
+    text-decoration: underline;
+}
+
+.address-action-link--danger {
+    color: #0066cc;
+}
+
+.btn--outline-dark {
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn--outline-dark:hover {
+    background: #f5f5f5;
+}
+
+.btn--small {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* ========================================
+   MODAL STYLES
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+.modal.show {
+    display: flex !important;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    position: relative;
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* ========================================
+   FORM STYLES
+   ======================================== */
+
+.form-row {
+    display: flex;
+    gap: 12px;
+    padding: 0 24px;
+    margin-bottom: 16px;
+    margin-top: 16px;
+}
+
+.form-group {
+    padding: 0 24px;
+    margin-bottom: 16px;
+}
+
+.form-group--half {
+    flex: 1;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #999;
+}
+
+.form-control::placeholder {
+    color: #999;
+}
+
+select.form-control {
+    appearance: none;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ========================================
+   ADDRESS TYPE TOGGLE
+   ======================================== */
+
+.address-type-group {
+    display: flex;
+    gap: 12px;
+}
+
+.address-type-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.address-type-btn input {
+    display: none;
+}
+
+.address-type-btn:has(input:checked) {
+    border-color: #ee4d2d;
+    color: #ee4d2d;
+}
+
+.address-type-btn:hover {
+    border-color: #ccc;
+}
+
+/* ========================================
+   CHECKBOX LABEL
+   ======================================== */
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+}
+
+.checkbox-label input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* ========================================
+   BUTTON STYLES
+   ======================================== */
+
+.btn--orange {
+    background: #ee4d2d !important;
+    border-color: #ee4d2d !important;
+    cursor: pointer;
+}
+
+.btn--orange:hover {
+    background: #d73211 !important;
+}
+
+.btn--outline {
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #333;
+    cursor: pointer;
+}
+
+.btn--outline:hover {
+    background: #f5f5f5;
+}

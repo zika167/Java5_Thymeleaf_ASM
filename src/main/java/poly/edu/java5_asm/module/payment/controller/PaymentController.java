@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.payment.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -7,12 +7,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import poly.edu.java5_asm.dto.response.MomoResponse;
-import poly.edu.java5_asm.dto.response.VNPayResponse;
-import poly.edu.java5_asm.entity.Order;
-import poly.edu.java5_asm.repository.OrderRepository;
-import poly.edu.java5_asm.service.MomoService;
-import poly.edu.java5_asm.service.VNPayService;
+import poly.edu.java5_asm.module.payment.dto.response.MomoResponse;
+import poly.edu.java5_asm.module.payment.dto.response.VNPayResponse;
+import poly.edu.java5_asm.module.order.entity.Order;
+import poly.edu.java5_asm.module.order.repository.OrderRepository;
+import poly.edu.java5_asm.module.payment.service.MomoService;
+import poly.edu.java5_asm.module.payment.service.VNPayService;
 
 import java.util.HashMap;
 import java.util.Map;

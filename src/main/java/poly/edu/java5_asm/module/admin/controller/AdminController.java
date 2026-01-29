@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.admin.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

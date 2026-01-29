@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.auth.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import poly.edu.java5_asm.dto.request.RegisterRequest;
-import poly.edu.java5_asm.service.AuthService;
+import poly.edu.java5_asm.module.auth.dto.request.RegisterRequest;
+import poly.edu.java5_asm.module.auth.service.AuthService;
 
 /**
  * Controller xử lý các request liên quan đến xác thực người dùng.

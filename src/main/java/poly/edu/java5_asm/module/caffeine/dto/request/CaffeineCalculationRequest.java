@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.dto.request;
+package poly.edu.java5_asm.module.caffeine.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

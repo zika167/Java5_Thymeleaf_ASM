@@ -142,6 +142,4 @@
         getWishlistCount,
         toggleWishlist
     };
-
-    console.log('✅ Wishlist API Service initialized');
 })();

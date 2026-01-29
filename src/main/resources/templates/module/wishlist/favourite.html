@@ -1,274 +1,45 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/fragments/head :: head('Favourite - Grocery Store')}"></head>
+<head th:replace="~{shared/fragments/head :: head('Danh Sách Yêu Thích | grocerystore')}"></head>
 <body>
 <!-- Header -->
 <header th:replace="~{shared/fragments/header :: header}"></header>
 
-
 <!-- MAIN -->
 <main class="checkout-page">
     <div class="container">
-        <!-- Search bar -->
-        <div class="checkout-container">
-            <div class="search-bar d-none d-md-flex">
-                <input type="text" name="" id="" placeholder="Search for item" class="search-bar__input"/>
-                <button class="search-bar__submit">
-                    <img th:src="@{/assets/icon/search.svg}" alt="" class="search-bar__icon icon"/>
-                </button>
-            </div>
-        </div>
-
         <!-- Breadcrumbs -->
         <div class="checkout-container">
             <ul class="breadcrumbs checkout-page__breadcrumbs">
                 <li>
                     <a th:href="@{/}" class="breadcrumbs__link">
-                        Home
+                        Trang chủ
                         <img th:src="@{/assets/icon/arrow-right.svg}" alt=""/>
                     </a>
                 </li>
                 <li>
-                    <a href="#!" class="breadcrumbs__link breadcrumbs__link--current">Favorite</a>
+                    <a href="#!" class="breadcrumbs__link breadcrumbs__link--current">Danh sách yêu thích</a>
                 </li>
             </ul>
         </div>
 
-        <!-- Checkout content -->
+        <!-- Wishlist content -->
         <div class="checkout-container">
             <div class="row gy-xl-3">
                 <div class="col-12">
                     <div class="cart-info">
-                        <h1 class="cart-info__heading">Favourite List</h1>
-                        <div class="cart-info__check-all" style="display: flex; gap: 10px;">
-                        </div>
-                        <div class="cart-info__list">
-                            <!-- Cart item 1 -->
-                            <article class="cart-item">
-                                <label class="cart-info__checkbox">
-                                    <input
-                                            type="checkbox"
-                                            name="shipping-address"
-                                            class="cart-info__checkbox-input"/>
-                                </label>
-                                <a th:href="@{/product-detail}">
-                                    <img
-                                            th:src="@{/assets/img/product/item-1.png}"
-                                            alt=""
-                                            class="cart-item__thumb"/>
-                                </a>
-                                <div class="cart-item__content">
-                                    <div class="cart-item__content-left">
-                                        <h3 class="cart-item__title">
-                                            <a th:href="@{/product-detail}">
-                                                Coffee Beans - Espresso Arabica and Robusta Beans
-                                            </a>
-                                        </h3>
-                                        <p class="cart-item__price-wrap">
-                                            $47.00 |
-                                            <span class="cart-item__status">In Stock</span>
-                                        </p>
-                                        <div class="cart-item__ctrl-wrap">
-                                            <div class="cart-item__ctrl cart-item__ctrl--md-block">
-                                                <div class="cart-item__input">
-                                                    LavAzza
-                                                    <img
-                                                            class="icon"
-                                                            th:src="@{/assets/icon/arrow-down-2.svg}"
-                                                            alt=""/>
-                                                </div>
-                                                <div class="cart-item__input">
-                                                    <button class="cart-item__input-btn">
-                                                        <img
-                                                                class="icon"
-                                                                th:src="@{/assets/icon/minus.svg}"
-                                                                alt=""/>
-                                                    </button>
-                                                    <span>1</span>
-                                                    <button class="cart-item__input-btn">
-                                                        <img class="icon" th:src="@{/assets/icon/plus.svg}" alt=""/>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="cart-item__ctrl">
-                                                <button class="cart-item__ctrl-btn">
-                                                    <img th:src="@{/assets/icon/heart-2.svg}" alt=""/>
-                                                    Save
-                                                </button>
-                                                <button
-                                                        class="cart-item__ctrl-btn delete-btnn">
-                                                    <!-- nếu cần hiển thị lại bảng thì thêm class js-toggle và toggle-target="#delete-confirm" -->
-                                                    <img th:src="@{/assets/icon/trash.svg}" alt=""/>
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="cart-item__content-right">
-                                        <p class="cart-item__total-price">$47.00</p>
-                                        <button class="cart-item__checkout-btn btn btn--primary btn--rounded">
-                                            Check Out
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-
-                            <!-- Cart item 2 -->
-                            <article class="cart-item">
-                                <label class="cart-info__checkbox">
-                                    <input
-                                            type="checkbox"
-                                            name="shipping-address"
-                                            class="cart-info__checkbox-input"/>
-                                </label>
-                                <a th:href="@{/product-detail}">
-                                    <img
-                                            th:src="@{/assets/img/product/item-2.png}"
-                                            alt=""
-                                            class="cart-item__thumb"/>
-                                </a>
-                                <div class="cart-item__content">
-                                    <div class="cart-item__content-left">
-                                        <h3 class="cart-item__title">
-                                            <a th:href="@{/product-detail}">
-                                                Lavazza Coffee Blends - Try the Italian Espresso
-                                            </a>
-                                        </h3>
-                                        <p class="cart-item__price-wrap">
-                                            $53.00 |
-                                            <span class="cart-item__status">In Stock</span>
-                                        </p>
-                                        <div class="cart-item__ctrl-wrap">
-                                            <div class="cart-item__ctrl cart-item__ctrl--md-block">
-                                                <div class="cart-item__input">
-                                                    LavAzza
-                                                    <img
-                                                            class="icon"
-                                                            th:src="@{/assets/icon/arrow-down-2.svg}"
-                                                            alt=""/>
-                                                </div>
-                                                <div class="cart-item__input">
-                                                    <button class="cart-item__input-btn">
-                                                        <img
-                                                                class="icon"
-                                                                th:src="@{/assets/icon/minus.svg}"
-                                                                alt=""/>
-                                                    </button>
-                                                    <span>1</span>
-                                                    <button class="cart-item__input-btn">
-                                                        <img class="icon" th:src="@{/assets/icon/plus.svg}" alt=""/>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="cart-item__ctrl">
-                                                <button class="cart-item__ctrl-btn">
-                                                    <img th:src="@{/assets/icon/heart-2.svg}" alt=""/>
-                                                    Save
-                                                </button>
-                                                <button
-                                                        class="cart-item__ctrl-btn delete-btnn">
-                                                    <!-- nếu cần hiển thị lại bảng thì thêm class js-toggle và toggle-target="#delete-confirm" -->
-                                                    <img th:src="@{/assets/icon/trash.svg}" alt=""/>
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="cart-item__content-right">
-                                        <p class="cart-item__total-price">$106.00</p>
-                                        <button class="cart-item__checkout-btn btn btn--primary btn--rounded">
-                                            Check Out
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-
-                            <!-- Cart item 3 -->
-                            <article class="cart-item">
-                                <label class="cart-info__checkbox">
-                                    <input
-                                            type="checkbox"
-                                            name="shipping-address"
-                                            class="cart-info__checkbox-input"/>
-                                </label>
-                                <a th:href="@{/product-detail}">
-                                    <img
-                                            th:src="@{/assets/img/product/item-3.png}"
-                                            alt=""
-                                            class="cart-item__thumb"/>
-                                </a>
-                                <div class="cart-item__content">
-                                    <div class="cart-item__content-left">
-                                        <h3 class="cart-item__title">
-                                            <a th:href="@{/product-detail}">
-                                                Qualità Oro Mountain Grown - Espresso Coffee Beans
-                                            </a>
-                                        </h3>
-                                        <p class="cart-item__price-wrap">
-                                            $38.65 |
-                                            <span class="cart-item__status">In Stock</span>
-                                        </p>
-                                        <div class="cart-item__ctrl-wrap">
-                                            <div class="cart-item__ctrl cart-item__ctrl--md-block">
-                                                <div class="cart-item__input">
-                                                    LavAzza
-                                                    <img
-                                                            class="icon"
-                                                            th:src="@{/assets/icon/arrow-down-2.svg}"
-                                                            alt=""/>
-                                                </div>
-                                                <div class="cart-item__input">
-                                                    <button class="cart-item__input-btn">
-                                                        <img
-                                                                class="icon"
-                                                                th:src="@{/assets/icon/minus.svg}"
-                                                                alt=""/>
-                                                    </button>
-                                                    <span>1</span>
-                                                    <button class="cart-item__input-btn">
-                                                        <img class="icon" th:src="@{/assets/icon/plus.svg}" alt=""/>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="cart-item__ctrl">
-                                                <button class="cart-item__ctrl-btn">
-                                                    <img th:src="@{/assets/icon/heart-2.svg}" alt=""/>
-                                                    Save
-                                                </button>
-                                                <button
-                                                        class="cart-item__ctrl-btn delete-btnn">
-                                                    <!-- nếu cần hiển thị lại bảng thì thêm class js-toggle và toggle-target="#delete-confirm" -->
-                                                    <img th:src="@{/assets/icon/trash.svg}" alt=""/>
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="cart-item__content-right">
-                                        <p class="cart-item__total-price">$38.65</p>
-                                        <button class="cart-item__checkout-btn btn btn--primary btn--rounded">
-                                            Check Out
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
+                        <h1 class="cart-info__heading">Danh Sách Yêu Thích</h1>
+                        <div id="wishlistContainer" class="cart-info__list">
+                            <div class="loading-state"><p>Đang tải danh sách yêu thích...</p></div>
                         </div>
                         <div class="cart-info__bottom">
                             <div class="cart-info__row cart-info__row-md--block">
                                 <div class="cart-info__continue">
                                     <a th:href="@{/}" class="cart-info__continue-link">
-                                        <img
-                                                class="cart-info__continue-icon icon"
-                                                th:src="@{/assets/icon/arrow-down-2.svg}"
-                                                alt=""/>
-                                        Continue Shopping
+                                        <img class="cart-info__continue-icon icon" th:src="@{/assets/icon/arrow-down-2.svg}" alt=""/>
+                                        Tiếp tục mua sắm
                                     </a>
                                 </div>
-                                <a
-                                        th:href="@{/checkout}"
-                                        class="cart-info__checkout-all btn btn--primary btn--rounded">
-                                    Check Out
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -281,22 +52,159 @@
 <!-- Footer -->
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
 
-<!-- Modal: confirm remove shopping cart item -->
-<!-- <div id="delete-confirm" class="modal modal--small hide">
-    <div class="modal__content">
-        <p class="modal__text">Do you want to remove this item from shopping cart?</p>
-        <div class="modal__bottom">
-            <button class="btn btn--small btn--outline modal__btn js-toggle" toggle-target="#delete-confirm">
-                Cancel
-            </button>
-            <button
-                class="btn btn--small btn--danger btn--primary modal__btn btn--no-margin js-toggle"
-                toggle-target="#delete-confirm">
-                Delete
-            </button>
-        </div>
-    </div>
-    <div class="modal__overlay js-toggle" toggle-target="#delete-confirm"></div> -->
-</div>
+<script th:src="@{/assets/js/wishlist-api.js}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', loadWishlist);
+
+async function loadWishlist() {
+    const container = document.getElementById('wishlistContainer');
+    
+    try {
+        const response = await fetch('/api/wishlist');
+        
+        if (response.status === 401) {
+            container.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 60px 20px;">
+                    <p style="color: #666; margin-bottom: 20px;">Bạn cần đăng nhập để xem danh sách yêu thích</p>
+                    <a href="/sign-in" class="btn btn--primary">Đăng nhập</a>
+                </div>`;
+            return;
+        }
+        
+        if (!response.ok) {
+            throw new Error('Lỗi tải dữ liệu');
+        }
+        
+        const wishlistItems = await response.json();
+        
+        if (!wishlistItems || wishlistItems.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 60px 20px;">
+                    <p style="color: #666; margin-bottom: 20px;">Bạn chưa có sản phẩm yêu thích nào</p>
+                    <a href="/category" class="btn btn--primary">Khám phá sản phẩm</a>
+                </div>`;
+            return;
+        }
+        
+        container.innerHTML = wishlistItems.map(item => `
+            <article class="cart-item" data-product-id="${item.productId}">
+                <a href="/product/${item.productId}">
+                    <img src="${item.productImageUrl || '/assets/img/product/default.jpg'}" alt="${item.productName}" class="cart-item__thumb"/>
+                </a>
+                <div class="cart-item__content">
+                    <div class="cart-item__content-left">
+                        <h3 class="cart-item__title">
+                            <a href="/product/${item.productId}">${item.productName}</a>
+                        </h3>
+                        <p class="cart-item__price-wrap">
+                            ${formatPrice(item.productPrice)} |
+                            <span class="cart-item__status">${item.productStock > 0 ? 'Còn hàng' : 'Hết hàng'}</span>
+                        </p>
+                        <div class="cart-item__ctrl-wrap">
+                            <div class="cart-item__ctrl">
+                                <button onclick="addToCart(${item.productId})" class="cart-item__ctrl-btn">
+                                    <img src="/assets/icon/bag.svg" alt=""/>
+                                    Thêm vào giỏ
+                                </button>
+                                <button onclick="removeFromWishlist(${item.productId})" class="cart-item__ctrl-btn">
+                                    <img src="/assets/icon/trash.svg" alt=""/>
+                                    Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cart-item__content-right">
+                        <p class="cart-item__total-price">${formatPrice(item.productPrice)}</p>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Error loading wishlist:', error);
+        container.innerHTML = '<p style="text-align: center; padding: 40px; color: #dc3545;">Lỗi tải danh sách yêu thích</p>';
+    }
+}
+
+function formatPrice(price) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price || 0);
+}
+
+async function removeFromWishlist(productId) {
+    if (!confirm('Bạn có chắc muốn xóa sản phẩm này khỏi danh sách yêu thích?')) return;
+    
+    try {
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        
+        const headers = { 'Content-Type': 'application/json' };
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+        
+        const response = await fetch(`/api/wishlist/products/${productId}`, { 
+            method: 'DELETE',
+            headers: headers
+        });
+        if (response.ok) {
+            await loadWishlist();
+            showToast('Đã xóa khỏi danh sách yêu thích');
+        }
+    } catch (error) {
+        console.error('Error removing from wishlist:', error);
+        showToast('Có lỗi xảy ra', 'error');
+    }
+}
+
+async function addToCart(productId) {
+    try {
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        
+        const headers = { 'Content-Type': 'application/json' };
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+        
+        const response = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ productId: productId, quantity: 1 })
+        });
+        
+        if (response.ok) {
+            const cartData = await response.json();
+            showToast('Đã thêm vào giỏ hàng');
+            // Update cart badge and dropdown
+            if (window.CartUI) {
+                window.CartUI.updateBadge();
+                window.CartUI.loadDropdown();
+            }
+        } else {
+            const errorText = await response.text();
+            console.error('Add to cart error:', errorText);
+            showToast('Có lỗi xảy ra', 'error');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showToast('Có lỗi xảy ra', 'error');
+    }
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed; bottom: 20px; right: 20px;
+        background: ${type === 'error' ? '#dc3545' : '#28a745'};
+        color: white; padding: 15px 20px; border-radius: 8px;
+        z-index: 9999; animation: slideIn 0.3s ease;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>
 </body>
 </html>

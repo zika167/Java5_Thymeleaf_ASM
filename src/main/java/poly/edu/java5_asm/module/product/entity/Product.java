@@ -1,7 +1,13 @@
-package poly.edu.java5_asm.entity;
+package poly.edu.java5_asm.module.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import poly.edu.java5_asm.module.brand.entity.Brand;
+import poly.edu.java5_asm.module.cart.entity.CartItem;
+import poly.edu.java5_asm.module.category.entity.Category;
+import poly.edu.java5_asm.module.order.entity.OrderItem;
+import poly.edu.java5_asm.module.review.entity.Review;
+import poly.edu.java5_asm.module.wishlist.entity.Wishlist;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.security;
+package poly.edu.java5_asm.common.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,8 +20,8 @@ public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHan
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        AuthenticationException exception) throws IOException, ServletException {
+            HttpServletResponse response,
+            AuthenticationException exception) throws IOException, ServletException {
         log.error("=== OAuth2 Login Failed ===");
         log.error("Error message: {}", exception.getMessage());
         log.error("Error class: {}", exception.getClass().getName());

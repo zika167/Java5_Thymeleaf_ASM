@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.review.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import poly.edu.java5_asm.dto.request.CreateReviewRequest;
-import poly.edu.java5_asm.dto.response.ReviewResponse;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.security.CustomUserDetails;
-import poly.edu.java5_asm.service.ReviewService;
+import poly.edu.java5_asm.module.review.dto.request.CreateReviewRequest;
+import poly.edu.java5_asm.module.review.dto.response.ReviewResponse;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.common.security.CustomUserDetails;
+import poly.edu.java5_asm.module.review.service.ReviewService;
 
 import java.util.List;
 
@@ -33,6 +33,9 @@ public class ReviewController {
             Authentication authentication,
             @Valid @RequestBody CreateReviewRequest request) {
         try {
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
             ReviewResponse review = reviewService.createReview(user, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(review);
@@ -54,6 +57,9 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @Valid @RequestBody CreateReviewRequest request) {
         try {
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
             ReviewResponse review = reviewService.updateReview(user, reviewId, request);
             return ResponseEntity.ok(review);
@@ -74,6 +80,9 @@ public class ReviewController {
             Authentication authentication,
             @PathVariable Long reviewId) {
         try {
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
             reviewService.deleteReview(user, reviewId);
             return ResponseEntity.ok().build();
@@ -130,6 +139,9 @@ public class ReviewController {
     public ResponseEntity<List<ReviewResponse>> getUserReviews(
             Authentication authentication) {
         try {
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
             List<ReviewResponse> reviews = reviewService.getUserReviews(user);
             return ResponseEntity.ok(reviews);

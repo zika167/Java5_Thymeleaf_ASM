@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.dto.request;
+package poly.edu.java5_asm.module.address.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.dto.request;
+package poly.edu.java5_asm.module.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

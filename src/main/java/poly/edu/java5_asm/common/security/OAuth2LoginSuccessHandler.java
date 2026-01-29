@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.security;
+package poly.edu.java5_asm.common.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -12,8 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.UserRepository;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -47,8 +47,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+            HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
         log.info("=== OAuth2 Login Success Handler Started ===");
         log.info("Authentication class: {}", authentication.getClass().getName());
         log.info("Authentication principal class: {}", authentication.getPrincipal().getClass().getName());
@@ -80,8 +80,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                             .password(encodedPassword) // Set password để tránh lỗi NOT NULL
                             .fullName(name)
                             .avatarUrl(picture)
-//                            .provider("google")
-//                            .providerId(googleId)
+                            .provider("google")
+                            .providerId(googleId)
                             .isActive(true)
                             .role(User.Role.USER)
                             .registeredDate(LocalDate.now())

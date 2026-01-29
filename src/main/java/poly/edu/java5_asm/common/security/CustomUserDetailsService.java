@@ -1,12 +1,12 @@
-package poly.edu.java5_asm.security;
+package poly.edu.java5_asm.common.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.UserRepository;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
 
 /**
  * Service để load thông tin user từ database cho Spring Security.
@@ -44,19 +44,23 @@ public class CustomUserDetailsService implements UserDetailsService {
      * - Nếu không thấy, tìm theo email
      * - Nếu vẫn không thấy, throw exception
      *
-     * @param username Giá trị user nhập vào ô username (có thể là username hoặc email)
+     * @param username Giá trị user nhập vào ô username (có thể là username hoặc
+     *                 email)
      * @return UserDetails object chứa thông tin user để xác thực
-     * @throws UsernameNotFoundException Nếu không tìm thấy user với username/email đã cho
+     * @throws UsernameNotFoundException Nếu không tìm thấy user với username/email
+     *                                   đã cho
      *                                   <p>
-     *                                   Lưu ý: Exception này sẽ được Spring Security catch và hiển thị thông báo
-     *                                   "Bad credentials" trên trang đăng nhập (không tiết lộ user có tồn tại hay không)
+     *                                   Lưu ý: Exception này sẽ được Spring
+     *                                   Security catch và hiển thị thông báo
+     *                                   "Bad credentials" trên trang đăng nhập
+     *                                   (không tiết lộ user có tồn tại hay không)
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Tìm user theo username, nếu không thấy thì tìm theo email
         // Sử dụng Optional.or() để chain 2 query một cách elegant
         User user = userRepository.findByUsername(username)
-                .or(() -> userRepository.findByEmail(username))  // Fallback: tìm theo email
+                .or(() -> userRepository.findByEmail(username)) // Fallback: tìm theo email
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
         // Wrap User entity trong CustomUserDetails để Spring Security sử dụng

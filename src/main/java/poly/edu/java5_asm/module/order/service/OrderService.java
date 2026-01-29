@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.order.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,11 +6,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.request.CheckoutRequest;
-import poly.edu.java5_asm.dto.response.OrderItemResponse;
-import poly.edu.java5_asm.dto.response.OrderResponse;
-import poly.edu.java5_asm.entity.*;
-import poly.edu.java5_asm.repository.*;
+import poly.edu.java5_asm.module.order.dto.request.CheckoutRequest;
+import poly.edu.java5_asm.module.order.dto.response.OrderItemResponse;
+import poly.edu.java5_asm.module.order.dto.response.OrderResponse;
+import poly.edu.java5_asm.module.cart.entity.Cart;
+import poly.edu.java5_asm.module.cart.entity.CartItem;
+import poly.edu.java5_asm.module.cart.repository.CartRepository;
+import poly.edu.java5_asm.module.cart.repository.CartItemRepository;
+import poly.edu.java5_asm.module.order.entity.Order;
+import poly.edu.java5_asm.module.order.entity.OrderItem;
+import poly.edu.java5_asm.module.order.repository.OrderRepository;
+import poly.edu.java5_asm.module.order.repository.OrderItemRepository;
+import poly.edu.java5_asm.module.product.entity.Product;
+import poly.edu.java5_asm.module.product.repository.ProductRepository;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.email.service.EmailService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

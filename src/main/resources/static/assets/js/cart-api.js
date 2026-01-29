@@ -7,15 +7,38 @@
     const API_BASE = '/api/cart';
 
     /**
+     * Get CSRF token from meta tags
+     */
+    function getCsrfToken() {
+        const tokenMeta = document.querySelector('meta[name="_csrf"]');
+        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+        if (tokenMeta && headerMeta) {
+            return { token: tokenMeta.content, header: headerMeta.content };
+        }
+        return null;
+    }
+
+    /**
+     * Add CSRF headers to request
+     */
+    function addCsrfHeaders(headers = {}) {
+        const csrf = getCsrfToken();
+        if (csrf) {
+            headers[csrf.header] = csrf.token;
+        }
+        return headers;
+    }
+
+    /**
      * Thêm sản phẩm vào giỏ hàng (gọi backend API)
      */
     async function addToCart(productId, quantity = 1) {
         try {
             const response = await fetch(`${API_BASE}/add`, {
                 method: 'POST',
-                headers: {
+                headers: addCsrfHeaders({
                     'Content-Type': 'application/json',
-                },
+                }),
                 body: JSON.stringify({
                     productId: productId,
                     quantity: quantity
@@ -69,9 +92,9 @@
         try {
             const response = await fetch(`${API_BASE}/update`, {
                 method: 'PUT',
-                headers: {
+                headers: addCsrfHeaders({
                     'Content-Type': 'application/json',
-                },
+                }),
                 body: JSON.stringify({
                     cartItemId: cartItemId,
                     quantity: quantity
@@ -99,9 +122,9 @@
         try {
             const response = await fetch(`${API_BASE}/remove/${cartItemId}`, {
                 method: 'DELETE',
-                headers: {
+                headers: addCsrfHeaders({
                     'Content-Type': 'application/json',
-                }
+                })
             });
 
             if (!response.ok) {
@@ -126,9 +149,9 @@
         try {
             const response = await fetch(`${API_BASE}/clear`, {
                 method: 'DELETE',
-                headers: {
+                headers: addCsrfHeaders({
                     'Content-Type': 'application/json',
-                }
+                })
             });
 
             if (!response.ok) {
@@ -213,6 +236,37 @@
             el.textContent = String(totalItems);
         });
 
+        // Cập nhật header cart count (new badge)
+        const headerCartCount = document.getElementById('header-cart-count');
+        if (headerCartCount) {
+            if (totalItems > 0) {
+                headerCartCount.textContent = String(totalItems);
+                headerCartCount.style.display = 'flex';
+                // Thêm animation bounce
+                headerCartCount.classList.remove('bounce');
+                void headerCartCount.offsetWidth; // Force reflow
+                headerCartCount.classList.add('bounce');
+            } else {
+                headerCartCount.textContent = '0';
+                headerCartCount.style.display = 'none';
+            }
+        }
+
+        // Cập nhật cart-badge với animation (legacy support)
+        const cartBadge = document.getElementById('cart-badge');
+        if (cartBadge) {
+            if (totalItems > 0) {
+                cartBadge.textContent = String(totalItems);
+                cartBadge.style.display = 'flex';
+                // Thêm animation bounce
+                cartBadge.classList.remove('bounce');
+                void cartBadge.offsetWidth; // Force reflow
+                cartBadge.classList.add('bounce');
+            } else {
+                cartBadge.style.display = 'none';
+            }
+        }
+
         // Cập nhật cart icon title
         const cartWrap = Array.from(document.querySelectorAll('.top-act__btn-wrap')).find((wrap) =>
             wrap.querySelector('img.top-act__icon[src*="buy"]')
@@ -267,7 +321,7 @@
      */
     function bindAddToCartButtons() {
         document.addEventListener('click', async (e) => {
-            const btn = e.target.closest('.btn--primary[data-product-id], .js-add-to-cart-btn');
+            const btn = e.target.closest('.btn--primary[data-product-id], .js-add-to-cart-btn, .js-add-to-cart[data-product-id]');
             if (!btn) return;
 
             e.preventDefault();
@@ -294,6 +348,29 @@
             document.querySelectorAll('.nav-btn__qnt').forEach((el) => {
                 el.textContent = String(count);
             });
+            
+            // Initialize header cart count (new badge)
+            const headerCartCount = document.getElementById('header-cart-count');
+            if (headerCartCount) {
+                if (count > 0) {
+                    headerCartCount.textContent = String(count);
+                    headerCartCount.style.display = 'flex';
+                } else {
+                    headerCartCount.textContent = '0';
+                    headerCartCount.style.display = 'none';
+                }
+            }
+            
+            // Initialize cart badge (legacy)
+            const cartBadge = document.getElementById('cart-badge');
+            if (cartBadge) {
+                if (count > 0) {
+                    cartBadge.textContent = String(count);
+                    cartBadge.style.display = 'flex';
+                } else {
+                    cartBadge.style.display = 'none';
+                }
+            }
         });
     });
 

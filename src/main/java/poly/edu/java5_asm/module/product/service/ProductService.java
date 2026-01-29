@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.product.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -7,18 +7,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.request.ProductSearchRequest;
-import poly.edu.java5_asm.dto.response.BrandResponse;
-import poly.edu.java5_asm.dto.response.CategoryResponse;
-import poly.edu.java5_asm.dto.response.ProductListResponse;
-import poly.edu.java5_asm.dto.response.ProductResponse;
-import poly.edu.java5_asm.entity.Brand;
-import poly.edu.java5_asm.entity.Category;
-import poly.edu.java5_asm.entity.Product;
-import poly.edu.java5_asm.repository.BrandRepository;
-import poly.edu.java5_asm.repository.CategoryRepository;
-import poly.edu.java5_asm.repository.ProductRepository;
-import poly.edu.java5_asm.util.ProductMapper;
+import poly.edu.java5_asm.module.product.dto.request.ProductSearchRequest;
+import poly.edu.java5_asm.module.brand.dto.response.BrandResponse;
+import poly.edu.java5_asm.module.category.dto.response.CategoryResponse;
+import poly.edu.java5_asm.module.product.dto.response.ProductListResponse;
+import poly.edu.java5_asm.module.product.dto.response.ProductResponse;
+import poly.edu.java5_asm.module.brand.entity.Brand;
+import poly.edu.java5_asm.module.category.entity.Category;
+import poly.edu.java5_asm.module.product.entity.Product;
+import poly.edu.java5_asm.module.brand.repository.BrandRepository;
+import poly.edu.java5_asm.module.category.repository.CategoryRepository;
+import poly.edu.java5_asm.module.product.repository.ProductRepository;
+import poly.edu.java5_asm.common.util.ProductMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;

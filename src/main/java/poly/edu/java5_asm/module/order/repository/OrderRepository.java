@@ -1,11 +1,11 @@
-package poly.edu.java5_asm.repository;
+package poly.edu.java5_asm.module.order.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import poly.edu.java5_asm.entity.Order;
-import poly.edu.java5_asm.entity.User;
+import poly.edu.java5_asm.module.order.entity.Order;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;

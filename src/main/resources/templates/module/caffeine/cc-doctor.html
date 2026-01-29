@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/fragments/head :: head('CC-Doctor - Caffeine Calculator')}"></head>
+<head th:replace="~{shared/fragments/head :: head('Caffeine Calculator')}"></head>
 
 <body>
 <!-- Header -->
@@ -17,257 +17,226 @@
                 </a>
             </li>
             <li>
-                <a href="#!" class="breadcrumbs__link breadcrumbs__link--current">CC-Doctor</a>
+                <a href="#!" class="breadcrumbs__link breadcrumbs__link--current">Caffeine Calculator</a>
             </li>
         </ul>
 
         <!-- Page Heading -->
-        <div class="checkout__heading-wrap">
-            <h1 class="checkout__heading">
-                <img th:src="@{/assets/icon/gift.svg}" alt="" class="icon"
-                     style="width: 40px; height: 40px; margin-right: 12px;"/>
-                CC-Doctor - Caffeine Calculator
+        <div class="checkout__heading-wrap" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+            <h1 class="checkout__heading" style="display: flex; align-items: center; gap: 10px; margin: 0;">
+                <i class="bi bi-calculator" style="font-size: 28px; color: #ffb700;"></i>
+                <span>Caffeine Calculator</span>
             </h1>
-            <p class="checkout__desc">Tính toán lượng caffeine an toàn cho cơ thể bạn</p>
+            <span style="color: #9e9da8; font-size: 14px;">|</span>
+            <p class="checkout__desc" style="margin: 0; font-size: 14px;">Tính toán lượng caffeine an toàn cho cơ thể bạn</p>
         </div>
 
         <!-- Main Content -->
-        <div class="row gy-xl-3">
+        <div class="row gy-xl-3" style="align-items: flex-start; margin-bottom: 60px; min-height: 400px;">
             <!-- Left Column - Form -->
-            <div class="col-8 col-xl-12">
-                <div class="cart-info">
-                    <div class="cart-info__top">
-                        <h2 class="cart-info__heading">Thông tin của bạn</h2>
-                        <p class="cart-info__desc">Vui lòng điền đầy đủ thông tin để tính toán chính xác</p>
-                    </div>
-
-                    <!-- Error Message -->
-                    <div th:if="${error}" class="alert"
-                         style="color: #dc3545; background: #f8d7da; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-                        <img th:src="@{/assets/icon/error.svg}" alt=""
-                             style="width: 20px; height: 20px; margin-right: 8px;"/>
-                        <span th:text="${error}"></span>
+            <div class="col-7 col-xl-12" id="formSection">
+                <div class="cart-info" style="padding: 24px;">
+                    <div style="border-bottom: 1px solid #ededf6; padding-bottom: 16px; margin-bottom: 20px;">
+                        <h2 class="cart-info__heading" style="margin: 0 0 6px 0; font-size: 18px; font-weight: 700; color: #1a162e;">Thông tin của bạn</h2>
+                        <p style="margin: 0; font-size: 13px; color: #9e9da8;">Vui lòng điền đầy đủ thông tin để tính toán chính xác</p>
                     </div>
 
                     <!-- Form -->
-                    <form th:action="@{/cc-doctor/calculate}" method="post" th:object="${request}" class="form">
-                        <div class="cart-info__row">
+                    <form id="caffeineForm" class="form" onsubmit="return false;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px;">
                             <!-- Age -->
-                            <div class="form__group">
-                                <label for="age" class="form__label form__label--small">Tuổi <span
-                                        style="color: #dc3545;">*</span></label>
-                                <div class="form__text-input">
-                                    <input type="number"
-                                           th:field="*{age}"
-                                           id="age"
-                                           class="form__input"
-                                           placeholder="Nhập tuổi của bạn"
-                                           required
-                                           min="1"
-                                           max="120"/>
+                            <div class="form__group" style="margin: 0;">
+                                <label for="age" style="display: block; font-size: 14px; font-weight: 600; color: #1a162e; margin-bottom: 8px;">Tuổi</label>
+                                <div class="form__text-input" style="height: 44px; border: 1px solid #d2d1d6; border-radius: 8px;">
+                                    <input type="number" name="age" id="age" class="form__input" placeholder="Nhập tuổi" required min="1" max="120" style="padding: 10px 14px; font-size: 14px;"/>
                                 </div>
                             </div>
 
                             <!-- Gender -->
-                            <div class="form__group">
-                                <label class="form__label form__label--small">Giới tính <span
-                                        style="color: #dc3545;">*</span></label>
-                                <div style="display: flex; gap: 24px; margin-top: 12px;">
-                                    <label style="display: flex; align-items: center; cursor: pointer;">
-                                        <input type="radio" th:field="*{gender}" value="MALE" required
-                                               style="margin-right: 8px;"/>
+                            <div class="form__group" style="margin: 0;">
+                                <label style="display: block; font-size: 14px; font-weight: 600; color: #1a162e; margin-bottom: 8px;">Giới tính</label>
+                                <div style="display: flex; gap: 24px; height: 44px; align-items: center; background: #f8f8fb; border-radius: 8px; padding: 0 16px;">
+                                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #1a162e;">
+                                        <input type="radio" name="gender" value="MALE" required style="margin-right: 8px; width: 18px; height: 18px; accent-color: #ffb700;"/>
                                         <span>Nam</span>
                                     </label>
-                                    <label style="display: flex; align-items: center; cursor: pointer;">
-                                        <input type="radio" th:field="*{gender}" value="FEMALE" required
-                                               style="margin-right: 8px;"/>
+                                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #1a162e;">
+                                        <input type="radio" name="gender" value="FEMALE" required style="margin-right: 8px; width: 18px; height: 18px; accent-color: #ffb700;"/>
                                         <span>Nữ</span>
                                     </label>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="cart-info__row">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px;">
                             <!-- Pregnant -->
-                            <div class="form__group">
-                                <label style="display: flex; align-items: center; cursor: pointer; margin-top: 12px;">
-                                    <input type="checkbox" th:field="*{isPregnant}"
-                                           style="margin-right: 8px; width: 18px; height: 18px;"/>
-                                    <span class="form__label form__label--small"
-                                          style="margin: 0;">Đang mang thai</span>
-                                </label>
-                                <p style="font-size: 14px; color: #9e9da8; margin-top: 8px;">Chỉ áp dụng cho nữ giới</p>
-                            </div>
-                        </div>
-
-                        <div class="cart-info__row">
-                            <!-- Drink Type -->
-                            <div class="form__group">
-                                <label for="drinkType" class="form__label form__label--small">Loại đồ uống <span
-                                        style="color: #dc3545;">*</span></label>
-                                <div class="form__text-input">
-                                    <select th:field="*{drinkType}" id="drinkType" class="form__input" required>
-                                        <option value="">-- Chọn loại đồ uống --</option>
-                                        <optgroup label="☕ Cà phê">
-                                            <option th:each="drink : ${drinkTypes}"
-                                                    th:if="${drink.key.contains('Cà phê') or drink.key.contains('Espresso') or drink.key.contains('Americano') or drink.key.contains('Cappuccino') or drink.key.contains('Latte')}"
-                                                    th:value="${drink.key}"
-                                                    th:text="${drink.key + ' - ' + drink.value + 'mg'}"></option>
-                                        </optgroup>
-                                        <optgroup label="🍵 Trà">
-                                            <option th:each="drink : ${drinkTypes}"
-                                                    th:if="${drink.key.contains('Trà')}"
-                                                    th:value="${drink.key}"
-                                                    th:text="${drink.key + ' - ' + drink.value + 'mg'}"></option>
-                                        </optgroup>
-                                        <optgroup label="⚡ Nước tăng lực">
-                                            <option th:each="drink : ${drinkTypes}"
-                                                    th:if="${drink.key.contains('Red Bull') or drink.key.contains('Monster') or drink.key.contains('Sting') or drink.key.contains('Number')}"
-                                                    th:value="${drink.key}"
-                                                    th:text="${drink.key + ' - ' + drink.value + 'mg'}"></option>
-                                        </optgroup>
-                                        <optgroup label="🥤 Nước ngọt & Khác">
-                                            <option th:each="drink : ${drinkTypes}"
-                                                    th:if="${drink.key.contains('Coca') or drink.key.contains('Pepsi') or drink.key.contains('Sô-cô-la')}"
-                                                    th:value="${drink.key}"
-                                                    th:text="${drink.key + ' - ' + drink.value + 'mg'}"></option>
-                                        </optgroup>
-                                    </select>
+                            <div class="form__group" style="margin: 0;">
+                                <label style="display: block; font-size: 14px; font-weight: 600; color: #1a162e; margin-bottom: 8px;">Thai sản</label>
+                                <div class="form__text-input" style="height: 44px; border: 1px solid #d2d1d6; border-radius: 8px; display: flex; align-items: center; padding: 0 14px; background: #f8f8fb;">
+                                    <label style="display: flex; align-items: center; cursor: not-allowed; opacity: 0.5; margin: 0;" id="pregnantLabel">
+                                        <input type="checkbox" name="isPregnant" id="isPregnant" disabled style="margin-right: 10px; width: 18px; height: 18px; accent-color: #ffb700;"/>
+                                        <span style="font-size: 14px; color: #1a162e;">Đang mang thai</span>
+                                    </label>
                                 </div>
+                                <p style="font-size: 12px; color: #9e9da8; margin: 6px 0 0 0;">Chỉ áp dụng cho nữ giới</p>
                             </div>
 
                             <!-- Quantity -->
-                            <div class="form__group">
-                                <label for="quantity" class="form__label form__label--small">Số lượng <span
-                                        style="color: #dc3545;">*</span></label>
-                                <div class="form__text-input">
-                                    <input type="number"
-                                           th:field="*{quantity}"
-                                           id="quantity"
-                                           class="form__input"
-                                           placeholder="Số lượng"
-                                           required
-                                           min="1"
-                                           max="20"
-                                           value="1"/>
+                            <div class="form__group" style="margin: 0;">
+                                <label for="quantity" style="display: block; font-size: 14px; font-weight: 600; color: #1a162e; margin-bottom: 8px;">Số lượng</label>
+                                <div class="form__text-input" style="height: 44px; border: 1px solid #d2d1d6; border-radius: 8px;">
+                                    <input type="number" name="quantity" id="quantity" class="form__input" placeholder="Số lượng" required min="1" max="20" value="1" style="padding: 10px 14px; font-size: 14px;"/>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Drink Type - Full Width -->
+                        <div class="form__group" style="margin-bottom: 24px;">
+                            <label for="drinkType" style="display: block; font-size: 14px; font-weight: 600; color: #1a162e; margin-bottom: 8px;">Loại đồ uống</label>
+                            <div class="form__text-input" style="height: 44px; border: 1px solid #d2d1d6; border-radius: 8px;">
+                                <select name="drinkType" id="drinkType" class="form__input" required style="padding: 10px 14px; font-size: 14px;">
+                                    <option value="">-- Chọn loại đồ uống --</option>
+                                    <optgroup label="☕ Cà phê">
+                                        <option th:each="drink : ${drinkTypes}"
+                                                th:if="${drink.key.contains('Cà phê') or drink.key.contains('Espresso') or drink.key.contains('Americano') or drink.key.contains('Cappuccino') or drink.key.contains('Latte')}"
+                                                th:value="${drink.key}"
+                                                th:text="${drink.key + ' - ' + drink.value + 'mg'}"></option>
+                                    </optgroup>
+                                    <optgroup label="🍵 Trà">
+                                        <option th:each="drink : ${drinkTypes}"
+                                                th:if="${drink.key.contains('Trà')}"
+                                                th:value="${drink.key}"
+                                                th:text="${drink.key + ' - ' + drink.value + 'mg'}"></option>
+                                    </optgroup>
+                                    <optgroup label="⚡ Nước tăng lực">
+                                        <option th:each="drink : ${drinkTypes}"
+                                                th:if="${drink.key.contains('Red Bull') or drink.key.contains('Monster') or drink.key.contains('Sting') or drink.key.contains('Number')}"
+                                                th:value="${drink.key}"
+                                                th:text="${drink.key + ' - ' + drink.value + 'mg'}"></option>
+                                    </optgroup>
+                                    <optgroup label="🥤 Nước ngọt & Khác">
+                                        <option th:each="drink : ${drinkTypes}"
+                                                th:if="${drink.key.contains('Coca') or drink.key.contains('Pepsi') or drink.key.contains('Sô-cô-la')}"
+                                                th:value="${drink.key}"
+                                                th:text="${drink.key + ' - ' + drink.value + 'mg'}"></option>
+                                    </optgroup>
+                                </select>
                             </div>
                         </div>
 
                         <!-- Submit Button -->
-                        <div class="cart-info__row">
-                            <button type="submit" class="btn btn--primary btn--rounded" style="min-width: 200px;">
-                                Tính toán
-                            </button>
-                        </div>
+                        <button type="button" id="calculateBtn" class="btn btn--primary btn--rounded" style="min-width: 180px; padding: 12px 28px; font-size: 15px; font-weight: 600;">
+                            ☕ Tính toán
+                        </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Right Column - Result -->
-            <div class="col-4 col-xl-12">
-                <div class="cart-info" th:if="${result}">
-                    <h2 class="cart-info__heading">Kết quả</h2>
-
-                    <!-- Status Badge -->
-                    <div style="text-align: center; padding: 24px 0;">
-                        <div th:style="'display: inline-block; padding: 12px 24px; border-radius: 99rem; font-size: 18px; font-weight: 600; background: ' + 
-                                       ${result.statusColor == 'green' ? '#d4edda' : (result.statusColor == 'yellow' ? '#fff3cd' : '#f8d7da')} + '; color: ' + 
-                                       ${result.statusColor == 'green' ? '#155724' : (result.statusColor == 'yellow' ? '#856404' : '#721c24')}">
-                            <span th:text="${result.status == 'SAFE' ? '✓ An toàn' : (result.status == 'WARNING' ? '⚠ Cảnh báo' : '✗ Nguy hiểm')}"></span>
-                        </div>
+            <!-- Right Column - Info -->
+            <div class="col-5 col-xl-12" id="infoSection">
+                <div class="cart-info" style="padding: 48px;">
+                    <div style="border-bottom: 1px solid #ededf6; padding-bottom: 14px; margin-bottom: 18px;">
+                        <h2 class="cart-info__heading" style="font-size: 18px; margin: 0; font-weight: 700; color: #1a162e;">📖 Thông tin</h2>
                     </div>
-
-                    <!-- Caffeine Amount -->
-                    <div class="cart-info__row"
-                         style="border-bottom: 1px solid #d2d1d6; padding-bottom: 16px; margin-bottom: 16px;">
-                        <div style="text-align: center;">
-                            <p style="font-size: 14px; color: #9e9da8; margin-bottom: 8px;">Lượng caffeine đã nạp</p>
-                            <p style="font-size: 32px; font-weight: 700; color: #1a162e; margin: 0;">
-                                <span th:text="${result.totalCaffeine}"></span>mg
-                            </p>
-                            <p style="font-size: 14px; color: #9e9da8; margin-top: 4px;">
-                                / <span th:text="${result.safeLimit}"></span>mg an toàn
-                            </p>
-                        </div>
+                    <p style="font-size: 14px; color: #67666e; line-height: 1.7; margin-bottom: 20px;">
+                        Caffeine Calculator giúp bạn tính toán lượng caffeine đã nạp vào cơ thể và so sánh với mức an toàn được khuyến nghị.
+                    </p>
+                    
+                    <div style="background: #f8f8fb; border-radius: 12px; padding: 18px;">
+                        <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 16px 0; color: #1a162e;">📊 Giới hạn an toàn</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr style="border-bottom: 1px solid #e8e8e8;">
+                                <td style="padding: 10px 0; font-size: 14px; color: #67666e;">Người lớn (18+)</td>
+                                <td style="padding: 10px 0; font-size: 14px; font-weight: 700; color: #1a162e; text-align: right;">400mg/ngày</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e8e8e8;">
+                                <td style="padding: 10px 0; font-size: 14px; color: #67666e;">Phụ nữ mang thai</td>
+                                <td style="padding: 10px 0; font-size: 14px; font-weight: 700; color: #1a162e; text-align: right;">200mg/ngày</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e8e8e8;">
+                                <td style="padding: 10px 0; font-size: 14px; color: #67666e;">Thanh thiếu niên (12-18)</td>
+                                <td style="padding: 10px 0; font-size: 14px; font-weight: 700; color: #1a162e; text-align: right;">100mg/ngày</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 0; font-size: 14px; color: #67666e;">Trẻ em (&lt;12 tuổi)</td>
+                                <td style="padding: 10px 0; font-size: 14px; font-weight: 700; color: #dc3545; text-align: right;">0mg/ngày</td>
+                            </tr>
+                        </table>
                     </div>
-
-                    <!-- Progress Bar -->
-                    <div style="margin: 24px 0;">
-                        <div style="width: 100%; height: 24px; background: #f8f8fb; border-radius: 12px; overflow: hidden;">
-                            <div th:style="'width: ' + ${result.percentage > 100 ? 100 : result.percentage} + '%; height: 100%; background: ' + 
-                                           ${result.statusColor == 'green' ? '#28a745' : (result.statusColor == 'yellow' ? '#ffc107' : '#dc3545')} + 
-                                           '; transition: width 0.5s ease;'"></div>
-                        </div>
-                        <p style="text-align: center; margin-top: 8px; font-size: 14px; font-weight: 600;">
-                            <span th:text="${#numbers.formatDecimal(result.percentage, 1, 1)}"></span>%
-                        </p>
-                    </div>
-
-                    <!-- Message -->
-                    <div class="cart-info__row"
-                         style="background: #f8f8fb; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                        <p style="font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #1a162e;"
-                           th:text="${result.message}"></p>
-                        <p style="font-size: 14px; color: #67666e; line-height: 1.6; margin: 0;"
-                           th:text="${result.recommendation}"></p>
-                    </div>
-
-                    <!-- Safe Limits Info -->
-                    <div class="cart-info__separate"></div>
-                    <div style="padding: 16px 0;">
-                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">📊 Giới hạn an toàn</h3>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="padding: 8px 0; border-bottom: 1px solid #ededf6; font-size: 14px;">
-                                <span style="color: #67666e;">Người lớn (18+):</span>
-                                <span style="float: right; font-weight: 600;">400mg/ngày</span>
-                            </li>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #ededf6; font-size: 14px;">
-                                <span style="color: #67666e;">Phụ nữ mang thai:</span>
-                                <span style="float: right; font-weight: 600;">200mg/ngày</span>
-                            </li>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #ededf6; font-size: 14px;">
-                                <span style="color: #67666e;">Thanh thiếu niên (12-18):</span>
-                                <span style="float: right; font-weight: 600;">100mg/ngày</span>
-                            </li>
-                            <li style="padding: 8px 0; font-size: 14px;">
-                                <span style="color: #67666e;">Trẻ em (<12 tuổi):</span>
-                                <span style="float: right; font-weight: 600; color: #dc3545;">0mg/ngày</span>
-                            </li>
-                        </ul>
-                    </div>
+                    
+                    <p style="font-size: 12px; color: #9e9da8; margin-top: 14px; font-style: italic;">
+                        * Dữ liệu tham khảo từ FDA và các tổ chức y tế quốc tế
+                    </p>
                 </div>
+            </div>
 
-                <!-- Info Box (when no result) -->
-                <div class="cart-info" th:unless="${result}">
-                    <h2 class="cart-info__heading">Thông tin</h2>
-                    <div style="padding: 16px 0;">
-                        <p style="font-size: 14px; color: #67666e; line-height: 1.8; margin-bottom: 16px;">
-                            CC-Doctor giúp bạn tính toán lượng caffeine đã nạp vào cơ thể và so sánh với mức an toàn
-                            được khuyến nghị.
-                        </p>
-                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">📊 Giới hạn an toàn</h3>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="padding: 8px 0; border-bottom: 1px solid #ededf6; font-size: 14px;">
-                                <span style="color: #67666e;">Người lớn (18+):</span>
-                                <span style="float: right; font-weight: 600;">400mg/ngày</span>
-                            </li>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #ededf6; font-size: 14px;">
-                                <span style="color: #67666e;">Phụ nữ mang thai:</span>
-                                <span style="float: right; font-weight: 600;">200mg/ngày</span>
-                            </li>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #ededf6; font-size: 14px;">
-                                <span style="color: #67666e;">Thanh thiếu niên (12-18):</span>
-                                <span style="float: right; font-weight: 600;">100mg/ngày</span>
-                            </li>
-                            <li style="padding: 8px 0; font-size: 14px;">
-                                <span style="color: #67666e;">Trẻ em (<12 tuổi):</span>
-                                <span style="float: right; font-weight: 600; color: #dc3545;">0mg/ngày</span>
-                            </li>
-                        </ul>
-                        <p style="font-size: 12px; color: #9e9da8; margin-top: 16px; font-style: italic;">
-                            * Dữ liệu tham khảo từ FDA và các tổ chức y tế quốc tế
-                        </p>
+            <!-- Result Section (Hidden by default) -->
+            <div class="col-12" id="resultSection" style="display: none;">
+                <div class="cart-info" style="padding: 28px;">
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ededf6; padding-bottom: 18px; margin-bottom: 24px;">
+                        <h2 class="cart-info__heading" style="margin: 0; font-size: 22px; font-weight: 700; color: #1a162e;">☕ Kết quả tính toán</h2>
+                        <button type="button" id="recalculateBtn" class="btn btn--rounded" style="padding: 10px 24px; background: #fff; color: #1a162e; border: 2px solid #d2d1d6; font-weight: 600; font-size: 14px;">
+                            ← Tính lại
+                        </button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0;">
+                        <!-- Left: Status & Amount -->
+                        <div style="padding-right: 28px;">
+                            <div id="statusBadge" style="display: inline-block; padding: 10px 24px; border-radius: 99rem; font-size: 16px; font-weight: 700; margin-bottom: 20px;"></div>
+                            
+                            <div style="text-align: center; padding: 24px; background: linear-gradient(135deg, #f8f8fb 0%, #fff 100%); border-radius: 16px; border: 1px solid #ededf6; margin-bottom: 20px;">
+                                <p style="font-size: 14px; color: #9e9da8; margin-bottom: 8px; font-weight: 500;">Lượng caffeine đã nạp</p>
+                                <p style="font-size: 42px; font-weight: 800; color: #1a162e; margin: 0; line-height: 1;">
+                                    <span id="totalCaffeine">0</span><span style="font-size: 20px; font-weight: 600;">mg</span>
+                                </p>
+                                <p style="font-size: 14px; color: #9e9da8; margin-top: 8px;">/ <span id="safeLimit">400</span>mg an toàn</p>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div>
+                                <div style="width: 100%; height: 14px; background: #ededf6; border-radius: 7px; overflow: hidden;">
+                                    <div id="progressBar" style="width: 0%; height: 100%; transition: width 0.6s ease; border-radius: 7px;"></div>
+                                </div>
+                                <p style="text-align: right; margin-top: 8px; font-size: 15px; font-weight: 700; color: #1a162e;">
+                                    <span id="percentage">0</span>%
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Divider -->
+                        <div style="background: #ededf6;"></div>
+                        
+                        <!-- Right: Message & Limits -->
+                        <div style="padding-left: 28px;">
+                            <div style="background: linear-gradient(135deg, #f8f8fb 0%, #fff 100%); padding: 20px; border-radius: 16px; border: 1px solid #ededf6; margin-bottom: 20px;">
+                                <p id="resultMessage" style="font-size: 17px; font-weight: 700; margin-bottom: 10px; color: #1a162e;"></p>
+                                <p id="resultRecommendation" style="font-size: 14px; color: #67666e; line-height: 1.7; margin: 0;"></p>
+                            </div>
+                            
+                            <div style="background: #f8f8fb; padding: 18px; border-radius: 12px;">
+                                <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 14px 0; color: #1a162e;">📊 Giới hạn an toàn</h3>
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                                        <td style="padding: 8px 0; font-size: 13px; color: #67666e;">Người lớn (18+)</td>
+                                        <td style="padding: 8px 0; font-size: 13px; font-weight: 700; color: #1a162e; text-align: right;">400mg/ngày</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                                        <td style="padding: 8px 0; font-size: 13px; color: #67666e;">Phụ nữ mang thai</td>
+                                        <td style="padding: 8px 0; font-size: 13px; font-weight: 700; color: #1a162e; text-align: right;">200mg/ngày</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                                        <td style="padding: 8px 0; font-size: 13px; color: #67666e;">Thanh thiếu niên (12-18)</td>
+                                        <td style="padding: 8px 0; font-size: 13px; font-weight: 700; color: #1a162e; text-align: right;">100mg/ngày</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; font-size: 13px; color: #67666e;">Trẻ em (&lt;12 tuổi)</td>
+                                        <td style="padding: 8px 0; font-size: 13px; font-weight: 700; color: #dc3545; text-align: right;">0mg/ngày</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -280,5 +249,174 @@
 
 <!-- Scripts -->
 <script th:src="@{/assets/js/scripts.js}"></script>
+<script th:src="@{/assets/js/cart-api.js}"></script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Drink types from server
+        const drinkTypes = /*[[${drinkTypes}]]*/ {};
+        
+        const genderRadios = document.querySelectorAll('input[name="gender"]');
+        const pregnantCheckbox = document.getElementById('isPregnant');
+        const pregnantLabel = document.getElementById('pregnantLabel');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const recalculateBtn = document.getElementById('recalculateBtn');
+        
+        const formSection = document.getElementById('formSection');
+        const infoSection = document.getElementById('infoSection');
+        const resultSection = document.getElementById('resultSection');
+        
+        function updatePregnantState() {
+            const selectedGender = document.querySelector('input[name="gender"]:checked');
+            const isFemale = selectedGender && selectedGender.value === 'FEMALE';
+            
+            if (isFemale) {
+                pregnantCheckbox.disabled = false;
+                pregnantLabel.style.cursor = 'pointer';
+                pregnantLabel.style.opacity = '1';
+            } else {
+                pregnantCheckbox.disabled = true;
+                pregnantCheckbox.checked = false;
+                pregnantLabel.style.cursor = 'not-allowed';
+                pregnantLabel.style.opacity = '0.5';
+            }
+        }
+        
+        genderRadios.forEach(radio => {
+            radio.addEventListener('change', updatePregnantState);
+        });
+        updatePregnantState();
+        
+        // Calculate function
+        function calculateCaffeine() {
+            const age = parseInt(document.getElementById('age').value);
+            const gender = document.querySelector('input[name="gender"]:checked')?.value;
+            const isPregnant = pregnantCheckbox.checked;
+            const drinkType = document.getElementById('drinkType').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            
+            // Debug log
+            console.log('Debug info:', {
+                age: age,
+                gender: gender,
+                isPregnant: isPregnant,
+                drinkType: drinkType,
+                quantity: quantity
+            });
+            
+            // Validation
+            if (!age || age < 1 || age > 120) {
+                alert('Vui lòng nhập tuổi hợp lệ (1-120)');
+                return;
+            }
+            if (!gender) {
+                alert('Vui lòng chọn giới tính');
+                return;
+            }
+            if (!drinkType) {
+                alert('Vui lòng chọn loại đồ uống');
+                return;
+            }
+            if (!quantity || quantity < 1) {
+                alert('Vui lòng nhập số lượng hợp lệ');
+                return;
+            }
+            
+            // Get caffeine amount from drink type
+            const caffeinePerUnit = drinkTypes[drinkType] || 0;
+            const totalCaffeine = caffeinePerUnit * quantity;
+            
+            // Determine safe limit based on age and conditions
+            let safeLimit;
+            if (age < 12) {
+                safeLimit = 0;
+            } else if (age < 18) {
+                safeLimit = 100;
+            } else if (gender === 'FEMALE' && isPregnant) {
+                safeLimit = 200;
+            } else {
+                safeLimit = 400;
+            }
+            
+            console.log('Safe limit calculation:', {
+                condition: age < 12 ? 'child' : age < 18 ? 'teen' : (gender === 'FEMALE' && isPregnant) ? 'pregnant' : 'adult',
+                safeLimit: safeLimit
+            });
+            
+            const percentage = safeLimit > 0 ? (totalCaffeine / safeLimit) * 100 : (totalCaffeine > 0 ? 100 : 0);
+            
+            // Determine status
+            let status, statusColor, message, recommendation;
+            if (safeLimit === 0 && totalCaffeine > 0) {
+                status = 'DANGER';
+                statusColor = 'red';
+                message = 'Không nên sử dụng caffeine!';
+                recommendation = 'Trẻ em dưới 12 tuổi không nên tiêu thụ caffeine. Hãy chọn các đồ uống không chứa caffeine.';
+            } else if (percentage <= 50) {
+                status = 'SAFE';
+                statusColor = 'green';
+                message = 'Mức an toàn!';
+                recommendation = 'Lượng caffeine của bạn nằm trong mức an toàn. Hãy tiếp tục duy trì!';
+            } else if (percentage <= 100) {
+                status = 'WARNING';
+                statusColor = 'yellow';
+                message = 'Cẩn thận!';
+                recommendation = 'Bạn đang tiến gần giới hạn an toàn. Hãy cân nhắc trước khi uống thêm.';
+            } else {
+                status = 'DANGER';
+                statusColor = 'red';
+                message = 'Vượt quá giới hạn!';
+                recommendation = 'Bạn đã vượt quá mức caffeine an toàn. Hãy ngừng sử dụng và uống nhiều nước.';
+            }
+            
+            // Update UI
+            document.getElementById('totalCaffeine').textContent = totalCaffeine;
+            document.getElementById('safeLimit').textContent = safeLimit;
+            document.getElementById('percentage').textContent = percentage.toFixed(1);
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultRecommendation').textContent = recommendation;
+            
+            // Force update safeLimit display
+            setTimeout(() => {
+                document.getElementById('safeLimit').textContent = safeLimit;
+                console.log('UI updated - safeLimit:', safeLimit);
+            }, 100);
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = Math.min(percentage, 100) + '%';
+            
+            const statusBadge = document.getElementById('statusBadge');
+            if (statusColor === 'green') {
+                statusBadge.style.background = '#d4edda';
+                statusBadge.style.color = '#155724';
+                statusBadge.textContent = '✓ An toàn';
+                progressBar.style.background = '#28a745';
+            } else if (statusColor === 'yellow') {
+                statusBadge.style.background = '#fff3cd';
+                statusBadge.style.color = '#856404';
+                statusBadge.textContent = '⚠ Cảnh báo';
+                progressBar.style.background = '#ffc107';
+            } else {
+                statusBadge.style.background = '#f8d7da';
+                statusBadge.style.color = '#721c24';
+                statusBadge.textContent = '✗ Nguy hiểm';
+                progressBar.style.background = '#dc3545';
+            }
+            
+            // Show result, hide form
+            formSection.style.display = 'none';
+            infoSection.style.display = 'none';
+            resultSection.style.display = 'block';
+        }
+        
+        function showForm() {
+            formSection.style.display = 'block';
+            infoSection.style.display = 'block';
+            resultSection.style.display = 'none';
+        }
+        
+        calculateBtn.addEventListener('click', calculateCaffeine);
+        recalculateBtn.addEventListener('click', showForm);
+    });
+</script>
 </body>
 </html>

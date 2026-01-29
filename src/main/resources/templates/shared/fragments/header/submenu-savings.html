@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Savings & Featured Shops Submenu -->
+<div th:fragment="submenuSavings" class="sub-menu">
+    <div class="sub-menu__column">
+        <!-- Fashion Deals -->
+        <div class="menu-column">
+            <div class="menu-column__icon">
+                <img th:src="@{/assets/img/category/cate-4.1.svg}" alt="" class="menu-column__icon-1" />
+                <img th:src="@{/assets/img/category/cate-4.2.svg}" alt="" class="menu-column__icon-2" />
+            </div>
+            <div class="menu-column__content">
+                <h2 class="menu-column__heading"><a href="#!">Fashion Deals</a></h2>
+                <ul class="menu-column__list">
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Clothing</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Shoes</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Accessories</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Bags</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Jewelry</a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Electronics Discounts -->
+        <div class="menu-column">
+            <div class="menu-column__icon">
+                <img th:src="@{/assets/img/category/cate-2.1.svg}" alt="" class="menu-column__icon-1" />
+                <img th:src="@{/assets/img/category/cate-2.2.svg}" alt="" class="menu-column__icon-2" />
+            </div>
+            <div class="menu-column__content">
+                <h2 class="menu-column__heading"><a href="#!">Electronics Discounts</a></h2>
+                <ul class="menu-column__list">
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Smartphones</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Laptops</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Headphones</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Cameras</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Tablets</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Speakers</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Wearable Tech</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-menu__column">
+        <!-- Home & Living Specials -->
+        <div class="menu-column">
+            <div class="menu-column__icon">
+                <img th:src="@{/assets/img/category/cate-1.1.svg}" alt="" class="menu-column__icon-1" />
+                <img th:src="@{/assets/img/category/cate-1.2.svg}" alt="" class="menu-column__icon-2" />
+            </div>
+            <div class="menu-column__content">
+                <h2 class="menu-column__heading"><a href="#!">Home & Living Specials</a></h2>
+                <ul class="menu-column__list">
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Furniture</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Kitchenware</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Decor</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Bedding</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Appliances</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Lighting</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Outdoor Furniture</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Home Office</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Bathroom</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Storage</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Cleaning Supplies</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-menu__column">
+        <!-- Beauty Bargains -->
+        <div class="menu-column">
+            <div class="menu-column__icon">
+                <img th:src="@{/assets/img/category/cate-6.1.svg}" alt="" class="menu-column__icon-1" />
+                <img th:src="@{/assets/img/category/cate-6.2.svg}" alt="" class="menu-column__icon-2" />
+            </div>
+            <div class="menu-column__content">
+                <h2 class="menu-column__heading"><a href="#!">Beauty Bargains</a></h2>
+                <ul class="menu-column__list">
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Skincare</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Makeup</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Haircare</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Fragrances</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Nail Care</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Beauty Tools</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Men's Grooming</a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Sports & Outdoors Deals -->
+        <div class="menu-column">
+            <div class="menu-column__icon">
+                <img th:src="@{/assets/img/category/cate-5.1.svg}" alt="" class="menu-column__icon-1" />
+                <img th:src="@{/assets/img/category/cate-5.2.svg}" alt="" class="menu-column__icon-2" />
+            </div>
+            <div class="menu-column__content">
+                <h2 class="menu-column__heading"><a href="#!">Sports & Outdoors Deals</a></h2>
+                <ul class="menu-column__list">
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Fitness Equipment</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Outdoor Gear</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Sportswear</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Camping</a></li>
+                    <li class="menu-column__item"><a href="#!" class="menu-column__link">Biking</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

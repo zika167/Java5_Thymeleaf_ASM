@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- User Actions Fragment -->
+<div th:fragment="userActions" class="top-act">
+    <!-- User NOT logged in -->
+    <div th:if="${session.user == null}">
+        <a th:href="@{/sign-in}" class="btn btn--text d-md-none">Sign in</a>
+        <a th:href="@{/sign-up}" class="top-act__sign-up btn btn--primary btn--no-margin">Sign up</a>
+    </div>
+
+    <!-- User logged in -->
+    <th:block th:if="${session.user != null}">
+        <!-- User Avatar with Dropdown -->
+        <div class="top-act__user" id="user-menu-container">
+            <!-- User Avatar - Link to profile -->
+            <a th:href="@{/profile}" class="top-act__avatar-link">
+                <img th:src="${session.user.avatarUrlOrGravatar}" alt="" 
+                     class="top-act__avatar" id="user-avatar-toggle" />
+            </a>
+
+            <!-- User Dropdown -->
+            <div class="act-dropdown top-act__dropdown">
+                <div class="act-dropdown__inner user-menu">
+                    <img th:src="@{/assets/icon/filter-triangle.svg}" alt=""
+                        class="act-dropdown__arrow top-act__dropdown-arrow" />
+
+                    <div class="user-menu__top">
+                        <img th:src="${session.user.avatarUrlOrGravatar}" alt="" class="user-menu__avatar" />
+                        <div>
+                            <p class="user-menu__name" th:text="${session.user.fullName}">John Smith</p>
+                            <p th:text="'@' + ${session.user.email != null ? session.user.email.split('@')[0] : session.user.username}">@johnsmith</p>
+                        </div>
+                    </div>
+
+                    <ul class="user-menu__list">
+                        <li>
+                            <a th:href="@{/profile}" class="user-menu__link">Profile</a>
+                        </li>
+                        <li>
+                            <a th:href="@{/favourite}" class="user-menu__link">Favourite list</a>
+                        </li>
+                        <li class="user-menu__separate">
+                            <a href="#!" class="user-menu__link" id="switch-theme-btn">
+                                <span>Dark mode</span>
+                                <img th:src="@{/assets/icon/theme.svg}" alt="" class="icon user-menu__icon" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#!" class="user-menu__link">Settings</a>
+                        </li>
+                        <li class="user-menu__separate">
+                            <form th:action="@{/auth/logout}" method="post" style="margin: 0;">
+                                <button type="submit" class="user-menu__link" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 0; font: inherit; color: inherit;">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cart Icon with Dropdown -->
+        <div class="top-act__cart-wrap" id="cart-dropdown-container">
+            <a th:href="@{/cart}" class="top-act__cart" id="header-cart-icon">
+                <i class="bi bi-cart3 top-act__cart-icon"></i>
+                <span class="top-act__cart-badge" id="header-cart-count">0</span>
+            </a>
+            
+            <!-- Cart Dropdown Preview -->
+            <div class="cart-dropdown" id="cart-dropdown">
+                <div class="cart-dropdown__inner">
+                    <div class="cart-dropdown__header">
+                        <span class="cart-dropdown__title">Sản Phẩm Mới Thêm</span>
+                    </div>
+                    <div class="cart-dropdown__list" id="cart-dropdown-list">
+                        <!-- Items will be loaded via JS -->
+                        <div class="cart-dropdown__empty">Giỏ hàng trống</div>
+                    </div>
+                    <div class="cart-dropdown__footer">
+                        <span class="cart-dropdown__count" id="cart-dropdown-count">0 Sản Phẩm</span>
+                        <a th:href="@{/cart}" class="cart-dropdown__btn">Xem Giỏ Hàng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</div>
+
+</html>

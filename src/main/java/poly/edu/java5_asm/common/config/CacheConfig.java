@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.config;
+package poly.edu.java5_asm.common.config;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -35,14 +35,14 @@ public class CacheConfig {
 
     // For Caffeine cache (better performance), add dependency and configure:
     /*
-    @Bean
-    public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("wishlist");
-        cacheManager.setCaffeine(Caffeine.newBuilder()
-                .maximumSize(1000)
-                .expireAfterWrite(10, TimeUnit.MINUTES)
-                .recordStats());
-        return cacheManager;
-    }
-    */
+     * @Bean
+     * public CacheManager cacheManager() {
+     * CaffeineCacheManager cacheManager = new CaffeineCacheManager("wishlist");
+     * cacheManager.setCaffeine(Caffeine.newBuilder()
+     * .maximumSize(1000)
+     * .expireAfterWrite(10, TimeUnit.MINUTES)
+     * .recordStats());
+     * return cacheManager;
+     * }
+     */
 }

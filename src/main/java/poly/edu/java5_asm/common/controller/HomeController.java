@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.common.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -6,12 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import poly.edu.java5_asm.dto.response.ProductListResponse;
-import poly.edu.java5_asm.dto.response.ProductResponse;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.security.CustomUserDetails;
-import poly.edu.java5_asm.service.CartService;
-import poly.edu.java5_asm.service.ProductService;
+import poly.edu.java5_asm.module.product.dto.response.ProductListResponse;
+import poly.edu.java5_asm.module.product.dto.response.ProductResponse;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.common.security.CustomUserDetails;
+import poly.edu.java5_asm.module.cart.service.CartService;
+import poly.edu.java5_asm.module.product.service.ProductService;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,6 +22,15 @@ public class HomeController {
 
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return loadHomePage(model, userDetails, "index");
+    }
+
+    @GetMapping("/index-logined")
+    public String indexLogined(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return loadHomePage(model, userDetails, "index");
+    }
+
+    private String loadHomePage(Model model, CustomUserDetails userDetails, String viewName) {
         // Featured products
         ProductListResponse featuredProducts = productService.getFeaturedProducts(0, 8);
         model.addAttribute("featuredProducts", featuredProducts.getProducts());
@@ -40,7 +49,7 @@ public class HomeController {
             model.addAttribute("cartCount", cartCount);
         }
 
-        return "index";
+        return viewName;
     }
 
     @GetMapping("/category")
@@ -64,13 +73,24 @@ public class HomeController {
             model.addAttribute("cartCount", cartCount);
         }
 
-        return "category";
+        return "module/product/category";
+    }
+
+    @GetMapping("/product/deltail")
+    public String productDeltailTypo() {
+        return "redirect:/category";
     }
 
     @GetMapping("/product/{id}")
-    public String productDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        // Product details
-        ProductResponse product = productService.getProductById(id);
+    public String productDetail(@PathVariable Long id, Model model,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // Product details - có thể null nếu không tìm thấy
+        ProductResponse product = null;
+        try {
+            product = productService.getProductById(id);
+        } catch (Exception e) {
+            // Product not found - template sẽ hiển thị thông báo lỗi
+        }
         model.addAttribute("product", product);
 
         // Related products (same category)
@@ -84,7 +104,7 @@ public class HomeController {
             model.addAttribute("cartCount", cartCount);
         }
 
-        return "product-detail";
+        return "module/product/product-detail";
     }
 
     @GetMapping("/cart")
@@ -96,7 +116,7 @@ public class HomeController {
             model.addAttribute("cartCount", cartCount);
         }
 
-        return "cart";
+        return "module/cart/cart";
     }
 
     @GetMapping("/checkout")
@@ -110,32 +130,32 @@ public class HomeController {
             model.addAttribute("cartCount", cartCount);
         }
 
-        return "checkout";
+        return "module/order/checkout";
     }
 
     @GetMapping("/shipping")
     public String shipping(Model model) {
-        return "shipping";
+        return "module/order/shipping";
     }
 
     @GetMapping("/favourite")
     public String favourite(Model model) {
-        return "favourite";
+        return "module/wishlist/favourite";
     }
 
     @GetMapping("/add-new-card")
     public String addNewCard(Model model) {
-        return "add-new-card";
+        return "module/payment/add-new-card";
     }
 
     @GetMapping("/reset-password")
     public String resetPassword() {
-        return "reset-password";
+        return "module/auth/reset-password";
     }
 
     @GetMapping("/reset-password-emailed")
     public String resetPasswordEmailed() {
-        return "reset-password-emailed";
+        return "module/auth/reset-password-emailed";
     }
 
     @GetMapping("/my-orders")
@@ -145,18 +165,19 @@ public class HomeController {
             Integer cartCount = cartService.getCartItemCount(user);
             model.addAttribute("cartCount", cartCount);
         }
-        return "my-orders";
+        return "module/order/my-orders";
     }
 
     @GetMapping("/order-detail/{id}")
-    public String orderDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String orderDetail(@PathVariable Long id, Model model,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails != null) {
             User user = userDetails.getUser();
             Integer cartCount = cartService.getCartItemCount(user);
             model.addAttribute("cartCount", cartCount);
         }
         model.addAttribute("orderId", id);
-        return "order-detail";
+        return "module/order/order-detail";
     }
 
     @GetMapping("/addresses")
@@ -166,6 +187,6 @@ public class HomeController {
             Integer cartCount = cartService.getCartItemCount(user);
             model.addAttribute("cartCount", cartCount);
         }
-        return "addresses";
+        return "module/address/addresses";
     }
 }

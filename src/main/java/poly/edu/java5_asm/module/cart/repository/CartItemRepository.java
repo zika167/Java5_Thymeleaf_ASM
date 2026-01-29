@@ -1,10 +1,10 @@
-package poly.edu.java5_asm.repository;
+package poly.edu.java5_asm.module.cart.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import poly.edu.java5_asm.entity.Cart;
-import poly.edu.java5_asm.entity.CartItem;
-import poly.edu.java5_asm.entity.Product;
+import poly.edu.java5_asm.module.cart.entity.Cart;
+import poly.edu.java5_asm.module.cart.entity.CartItem;
+import poly.edu.java5_asm.module.product.entity.Product;
 
 import java.util.List;
 import java.util.Optional;

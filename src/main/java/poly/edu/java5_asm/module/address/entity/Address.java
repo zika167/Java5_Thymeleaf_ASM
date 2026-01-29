@@ -1,10 +1,11 @@
-package poly.edu.java5_asm.entity;
+package poly.edu.java5_asm.module.address.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.time.LocalDateTime;
 

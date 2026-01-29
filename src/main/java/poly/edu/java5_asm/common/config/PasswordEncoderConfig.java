@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.config;
+package poly.edu.java5_asm.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

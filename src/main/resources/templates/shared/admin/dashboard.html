@@ -11,7 +11,7 @@
         <h1>Dashboard</h1>
         <div class="admin-user">
             <img th:src="@{/assets/img/avatar.jpg}" alt="" class="admin-user__avatar"/>
-            <span th:text="${session.user.fullName}">Admin</span>
+            <span th:text="${session.user != null ? session.user.fullName : 'Admin'}">Admin</span>
         </div>
     </div>
 
@@ -110,7 +110,7 @@
     }
 
     function loadRegistrationChart() {
-        fetch('/api/admin/statistics/users/registration?days=7')
+        fetch('/api/admin/statistics/registrations/last-7-days')
             .then(r => r.json())
             .then(data => {
                 const ctx = document.getElementById('registrationChart').getContext('2d');
@@ -138,7 +138,7 @@
     }
 
     function loadTrafficChart() {
-        fetch('/api/admin/statistics/traffic')
+        fetch('/api/admin/statistics/traffic/last-7-days')
             .then(r => r.json())
             .then(data => {
                 const ctx = document.getElementById('trafficChart').getContext('2d');

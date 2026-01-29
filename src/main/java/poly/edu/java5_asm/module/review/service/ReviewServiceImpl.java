@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.review.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,13 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.request.CreateReviewRequest;
-import poly.edu.java5_asm.dto.response.ReviewResponse;
-import poly.edu.java5_asm.entity.Product;
-import poly.edu.java5_asm.entity.Review;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.ProductRepository;
-import poly.edu.java5_asm.repository.ReviewRepository;
+import poly.edu.java5_asm.module.review.dto.request.CreateReviewRequest;
+import poly.edu.java5_asm.module.review.dto.response.ReviewResponse;
+import poly.edu.java5_asm.module.product.entity.Product;
+import poly.edu.java5_asm.module.review.entity.Review;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.order.repository.OrderItemRepository;
+import poly.edu.java5_asm.module.product.repository.ProductRepository;
+import poly.edu.java5_asm.module.review.repository.ReviewRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     @Transactional
@@ -37,6 +39,10 @@ public class ReviewServiceImpl implements ReviewService {
             throw new RuntimeException("Bạn đã đánh giá sản phẩm này rồi");
         }
 
+        // Kiểm tra user đã mua sản phẩm này chưa (verified purchase)
+        boolean isVerifiedPurchase = orderItemRepository
+                .existsByUserIdAndProductIdAndOrderDelivered(user.getId(), product.getId());
+
         // Tạo review mới
         Review review = Review.builder()
                 .product(product)
@@ -44,11 +50,12 @@ public class ReviewServiceImpl implements ReviewService {
                 .rating(request.getRating())
                 .title(request.getTitle())
                 .comment(request.getComment())
-                .isVerifiedPurchase(false) // TODO: Kiểm tra user đã mua sản phẩm này chưa
+                .isVerifiedPurchase(isVerifiedPurchase)
                 .build();
 
         review = reviewRepository.save(review);
-        log.info("Tạo đánh giá mới cho sản phẩm {} từ user {}", product.getId(), user.getId());
+        log.info("Tạo đánh giá mới cho sản phẩm {} từ user {} (verified: {})", 
+                product.getId(), user.getId(), isVerifiedPurchase);
 
         return convertToResponse(review);
     }

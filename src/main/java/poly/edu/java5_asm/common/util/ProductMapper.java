@@ -1,14 +1,14 @@
-package poly.edu.java5_asm.util;
+package poly.edu.java5_asm.common.util;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-import poly.edu.java5_asm.dto.response.BrandResponse;
-import poly.edu.java5_asm.dto.response.CategoryResponse;
-import poly.edu.java5_asm.dto.response.ProductListResponse;
-import poly.edu.java5_asm.dto.response.ProductResponse;
-import poly.edu.java5_asm.entity.Brand;
-import poly.edu.java5_asm.entity.Category;
-import poly.edu.java5_asm.entity.Product;
+import poly.edu.java5_asm.module.brand.dto.response.BrandResponse;
+import poly.edu.java5_asm.module.category.dto.response.CategoryResponse;
+import poly.edu.java5_asm.module.product.dto.response.ProductListResponse;
+import poly.edu.java5_asm.module.product.dto.response.ProductResponse;
+import poly.edu.java5_asm.module.brand.entity.Brand;
+import poly.edu.java5_asm.module.category.entity.Category;
+import poly.edu.java5_asm.module.product.entity.Product;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Departments Dropdown Fragment -->
+<div th:fragment="dropdownDepartments" class="dropdown js-dropdown">
+    <div class="dropdown__inner">
+        <div class="top-menu">
+            <div class="top-menu__main">
+                <!-- menu column -->
+                <div class="menu-column">
+                    <div class="menu-column__icon d-lg-none">
+                        <img th:src="@{/assets/img/category/cate-1.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-1.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading d-lg-none">
+                            <a href="#!">All Departments</a>
+                        </h2>
+                        <ul class="menu-column__list js-menu-list">
+                            <!-- Savings & Featured Shops -->
+                            <li class="menu-column__item">
+                                <a th:href="@{/category}" class="menu-column__link">Savings & Featured Shops</a>
+                                <div th:replace="~{shared/fragments/header/submenu-savings :: submenuSavings}"></div>
+                            </li>
+                            <!-- Electronics -->
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Electronics</a>
+                                <div th:replace="~{shared/fragments/header/submenu-electronics :: submenuElectronics}"></div>
+                            </li>
+                            <!-- Other menu items -->
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Clothing, Shoes & Accessories</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Home, Furniture & Appliances</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Toys & Video Games</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Home Improvement</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Baby</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Household Essentials</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Personal Care</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Patio & Garden</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Sports & Outdoors</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Gift Cards</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Auto, Tires and Industrial</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                            <li class="menu-column__item">
+                                <a href="#!" class="menu-column__link">Movies, Music & Books</a>
+                                <div class="sub-menu"><h2 class="menu-column__heading">Coming Soon...</h2></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

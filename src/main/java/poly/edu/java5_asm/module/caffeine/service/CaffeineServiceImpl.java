@@ -1,10 +1,10 @@
-package poly.edu.java5_asm.service.impl;
+package poly.edu.java5_asm.module.caffeine.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import poly.edu.java5_asm.dto.request.CaffeineCalculationRequest;
-import poly.edu.java5_asm.dto.result.CaffeineCalculationResult;
-import poly.edu.java5_asm.service.CaffeineService;
+import poly.edu.java5_asm.module.caffeine.dto.request.CaffeineCalculationRequest;
+import poly.edu.java5_asm.module.caffeine.dto.response.CaffeineCalculationResult;
+import poly.edu.java5_asm.module.caffeine.service.CaffeineService;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

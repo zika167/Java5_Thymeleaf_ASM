@@ -13,8 +13,8 @@
                     <aside class="profile__sidebar">
                         <div class="profile-user">
                             <img th:src="@{/assets/img/avatar.jpg}" alt="" class="profile-user__avatar"/>
-                            <h1 class="profile-user__name" th:text="${session.user.fullName}">John Smith</h1>
-                            <p class="profile-user__desc" th:text="'@' + ${session.user.username}">@johnsmith</p>
+                            <h1 class="profile-user__name" th:text="${session.user != null ? session.user.fullName : 'Guest'}">John Smith</h1>
+                            <p class="profile-user__desc" th:text="${session.user != null ? '@' + session.user.username : ''}">@johnsmith</p>
                         </div>
                         <div class="profile-menu">
                             <h3 class="profile-menu__title">Quản lý tài khoản</h3>

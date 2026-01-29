@@ -3,6 +3,8 @@
 <head th:fragment="head(title)">
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf?.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}"/>
     <title th:text="${title}">Grocery Store</title>
 
     <!-- favicon -->
@@ -14,16 +16,24 @@
     <meta name="msapplication-TileColor" content="#da532c"/>
     <meta name="theme-color" content="#ffffff"/>
 
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"/>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+
     <!-- fonts -->
     <link rel="stylesheet" th:href="@{/assets/fonts/stylesheet.css}"/>
 
     <!-- styles CSS -->
     <link rel="stylesheet" th:href="@{/assets/css/main.css}"/>
     <link rel="stylesheet" th:href="@{/assets/css/slideshow.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/custom-fixes.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/cart-page.css}"/>
 
     <!-- scripts -->
     <script th:src="@{/assets/js/scripts.js}"></script>
     <script th:src="@{/assets/js/slideshow.js}"></script>
     <script th:src="@{/assets/js/products.js}"></script>
+    <script th:src="@{/assets/js/user-menu.js}"></script>
 </head>
 </html>
