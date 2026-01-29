@@ -32,12 +32,16 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .discountPrice(product.getDiscountPrice())
                 .imageUrl(product.getImageUrl())
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .brandId(product.getBrand() != null ? product.getBrand().getId() : null)
                 .brandName(product.getBrand() != null ? product.getBrand().getName() : null)
+                .stockQuantity(product.getStockQuantity())
                 .averageRating(calculateAverageRating(product))
                 .totalReviews(product.getReviews() != null ? product.getReviews().size() : 0)
-                .isInStock(product.getIsActive() && !product.getIsOutOfStock())
+                .isInStock(product.getStockQuantity() != null && product.getStockQuantity() > 0)
                 .isFeatured(product.getIsFeatured())
+                .isActive(product.getIsActive())
                 .build();
     }
 

@@ -210,7 +210,10 @@
                 const tbody = document.getElementById('productsTable');
                 const products = data.products || data.content || [];
                 if (products.length > 0) {
-                    tbody.innerHTML = products.map(product => `
+                    tbody.innerHTML = products.map(product => {
+                        const stock = product.stockQuantity || 0;
+                        const safeName = (product.name || '').replace(/'/g, "\\'");
+                        return `
                         <tr>
                             <td>${product.id}</td>
                             <td><img src="${product.imageUrl || '/assets/img/product/item-1.png'}" alt="" class="table-product-img"/></td>
@@ -222,22 +225,22 @@
                                     formatPrice(product.price)}
                             </td>
                             <td>
-                                <span class="stock-badge ${product.stockQuantity > 10 ? 'stock-ok' : product.stockQuantity > 0 ? 'stock-low' : 'stock-out'}">
-                                    ${product.stockQuantity}
+                                <span class="stock-badge ${stock > 10 ? 'stock-ok' : stock > 0 ? 'stock-low' : 'stock-out'}">
+                                    ${stock}
                                 </span>
                             </td>
                             <td>
-                                <button onclick="toggleFeatured(${product.id}, '${product.name}')" class="btn btn--icon ${product.isFeatured ? 'btn--featured' : ''}">
+                                <button onclick="toggleFeatured(${product.id}, '${safeName}')" class="btn btn--icon ${product.isFeatured ? 'btn--featured' : ''}">
                                     ${product.isFeatured ? '⭐' : '☆'}
                                 </button>
                             </td>
                             <td class="action-buttons">
                                 <button onclick="editProduct(${product.id})" class="btn btn--small btn--info" title="Sửa">✏️</button>
-                                <button onclick="updateStock(${product.id}, ${product.stockQuantity}, '${product.name.replace(/'/g, "\\'")}')" class="btn btn--small btn--warning" title="Cập nhật tồn kho">📦</button>
-                                <button onclick="deleteProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}')" class="btn btn--small btn--danger" title="Xóa">🗑️</button>
+                                <button onclick="updateStock(${product.id}, ${stock}, '${safeName}')" class="btn btn--small btn--warning" title="Cập nhật tồn kho">📦</button>
+                                <button onclick="deleteProduct(${product.id}, '${safeName}')" class="btn btn--small btn--danger" title="Xóa">🗑️</button>
                             </td>
                         </tr>
-                    `).join('');
+                    `}).join('');
                 } else {
                     tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có sản phẩm</td></tr>';
                 }
@@ -604,11 +607,32 @@
     
     .action-buttons {
         display: flex;
+        flex-wrap: nowrap;
         gap: 4px;
+        align-items: center;
+        white-space: nowrap;
     }
     .btn--info { background: #17a2b8; }
     .btn--warning { background: #ffc107; color: #333; }
     .btn--danger { background: #dc3545; }
+    
+    .btn--small {
+        padding: 6px 10px;
+        font-size: 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+    }
+    
+    /* Fix table alignment */
+    .admin-table td {
+        vertical-align: middle;
+    }
     
     /* Modal styles */
     .modal {

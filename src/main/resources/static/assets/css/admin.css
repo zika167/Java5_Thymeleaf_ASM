@@ -221,7 +221,7 @@
    ======================================== */
 .charts-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 32px;
 }
@@ -232,7 +232,6 @@
     padding: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    min-width: 0;
 }
 
 .chart-card h3 {
@@ -291,10 +290,17 @@
     padding: 16px;
     border-bottom: 1px solid #f0f0f0;
     color: #1a1d29;
+    vertical-align: middle;
 }
 
 .admin-table tr:hover {
     background: #f8f9fa;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
 }
 
 /* ========================================
