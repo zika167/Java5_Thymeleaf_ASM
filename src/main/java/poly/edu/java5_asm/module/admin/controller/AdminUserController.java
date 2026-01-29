@@ -38,7 +38,21 @@ public class AdminUserController {
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         
-        Page<User> users = userRepository.findAll(pageable);
+        Page<User> users;
+        
+        // Filter by role and search
+        if (role != null && !role.isEmpty() && search != null && !search.isEmpty()) {
+            User.Role userRole = User.Role.valueOf(role.toUpperCase());
+            users = userRepository.findByRoleAndUsernameContainingIgnoreCaseOrRoleAndEmailContainingIgnoreCase(
+                    userRole, search, userRole, search, pageable);
+        } else if (role != null && !role.isEmpty()) {
+            User.Role userRole = User.Role.valueOf(role.toUpperCase());
+            users = userRepository.findByRole(userRole, pageable);
+        } else if (search != null && !search.isEmpty()) {
+            users = userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(search, search, pageable);
+        } else {
+            users = userRepository.findAll(pageable);
+        }
         
         Page<AdminUserResponse> response = users.map(user -> AdminUserResponse.builder()
                 .id(user.getId())

@@ -1,5 +1,7 @@
 package poly.edu.java5_asm.module.user.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import poly.edu.java5_asm.module.user.entity.User;
@@ -100,4 +102,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Optional chứa User nếu tìm thấy
      */
     Optional<User> findByProviderAndProviderId(String provider, String providerId);
+
+    /**
+     * Tìm users theo role
+     */
+    Page<User> findByRole(User.Role role, Pageable pageable);
+
+    /**
+     * Tìm users theo username hoặc email (search)
+     */
+    Page<User> findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(String username, String email, Pageable pageable);
+
+    /**
+     * Tìm users theo role và search
+     */
+    Page<User> findByRoleAndUsernameContainingIgnoreCaseOrRoleAndEmailContainingIgnoreCase(
+            User.Role role1, String username, User.Role role2, String email, Pageable pageable);
 }

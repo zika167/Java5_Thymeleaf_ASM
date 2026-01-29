@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Quản Lý Orders | Admin</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}"/>
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="admin-body">
 
@@ -21,12 +26,32 @@
     </div>
 
     <div class="admin-content">
+        <!-- Stats Summary -->
+        <div class="order-stats">
+            <div class="order-stat" data-status="PENDING">
+                <span class="order-stat__count" id="pendingCount">0</span>
+                <span class="order-stat__label">Chờ xử lý</span>
+            </div>
+            <div class="order-stat" data-status="PROCESSING">
+                <span class="order-stat__count" id="processingCount">0</span>
+                <span class="order-stat__label">Đang xử lý</span>
+            </div>
+            <div class="order-stat" data-status="SHIPPED">
+                <span class="order-stat__count" id="shippedCount">0</span>
+                <span class="order-stat__label">Đang giao</span>
+            </div>
+            <div class="order-stat" data-status="DELIVERED">
+                <span class="order-stat__count" id="deliveredCount">0</span>
+                <span class="order-stat__label">Đã giao</span>
+            </div>
+        </div>
+
         <div class="table-card">
             <div class="table-card__header">
                 <input type="text" id="searchInput" placeholder="Tìm mã đơn hàng..." class="search-input"/>
                 <select id="statusFilter" class="filter-select" onchange="loadOrders()">
                     <option value="">Tất cả trạng thái</option>
-                    <option value="PENDING">Chờ xác nhận</option>
+                    <option value="PENDING">Chờ xử lý</option>
                     <option value="CONFIRMED">Đã xác nhận</option>
                     <option value="PROCESSING">Đang xử lý</option>
                     <option value="SHIPPED">Đang giao</option>
@@ -42,6 +67,7 @@
                         <th>Mã ĐH</th>
                         <th>Khách Hàng</th>
                         <th>Ngày Đặt</th>
+                        <th>Sản Phẩm</th>
                         <th>Tổng Tiền</th>
                         <th>Thanh Toán</th>
                         <th>Trạng Thái</th>
@@ -50,7 +76,7 @@
                     </thead>
                     <tbody id="ordersTable">
                     <tr>
-                        <td colspan="7" class="text-center">Đang tải...</td>
+                        <td colspan="8" class="text-center">Đang tải...</td>
                     </tr>
                     </tbody>
                 </table>
@@ -59,44 +85,121 @@
     </div>
 </main>
 
+<!-- View Order Modal -->
+<div id="viewModal" class="modal">
+    <div class="modal-content modal-content--lg">
+        <div class="modal-header">
+            <h2>Chi Tiết Đơn Hàng</h2>
+            <button onclick="closeViewModal()" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body" id="orderDetails">
+            <!-- Order details will be loaded here -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="closeViewModal()" class="btn btn--outline">Đóng</button>
+        </div>
+    </div>
+</div>
+
 <!-- Update Status Modal -->
 <div id="statusModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h2>Cập Nhật Trạng Thái</h2>
-            <button onclick="closeModal()" class="modal-close">&times;</button>
+            <button onclick="closeStatusModal()" class="modal-close">&times;</button>
         </div>
-        <form id="statusForm" onsubmit="updateStatus(event)">
+        <form onsubmit="updateStatus(event)">
             <input type="hidden" id="orderId"/>
             <div class="form-group">
                 <label>Trạng thái mới</label>
                 <select id="newStatus" class="form-control" required>
-                    <option value="CONFIRMED">Xác nhận</option>
+                    <option value="PENDING">Chờ xử lý</option>
+                    <option value="CONFIRMED">Đã xác nhận</option>
                     <option value="PROCESSING">Đang xử lý</option>
                     <option value="SHIPPED">Đang giao</option>
                     <option value="DELIVERED">Đã giao</option>
-                    <option value="CANCELLED">Hủy</option>
+                    <option value="CANCELLED">Đã hủy</option>
                 </select>
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="closeModal()" class="btn btn--outline">Hủy</button>
-                <button type="submit" class="btn btn--small">Cập nhật</button>
+                <button type="button" onclick="closeStatusModal()" class="btn btn--outline">Hủy</button>
+                <button type="submit" class="btn btn--primary">Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Update Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Cập Nhật Thanh Toán</h2>
+            <button onclick="closePaymentModal()" class="modal-close">&times;</button>
+        </div>
+        <form onsubmit="updatePayment(event)">
+            <input type="hidden" id="paymentOrderId"/>
+            <div class="form-group">
+                <label>Trạng thái thanh toán</label>
+                <select id="newPaymentStatus" class="form-control" required>
+                    <option value="PENDING">Chưa thanh toán</option>
+                    <option value="PAID">Đã thanh toán</option>
+                    <option value="REFUNDED">Đã hoàn tiền</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="closePaymentModal()" class="btn btn--outline">Hủy</button>
+                <button type="submit" class="btn btn--primary">Cập nhật</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
+    // CSRF token
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    // Toast config
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+
     let currentPage = 0;
 
-    document.addEventListener('DOMContentLoaded', loadOrders);
+    document.addEventListener('DOMContentLoaded', function() {
+        loadOrders();
+        loadOrderStats();
+    });
+
+    function loadOrderStats() {
+        // Load counts for each status
+        const statuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+        statuses.forEach(status => {
+            fetch(`/api/orders/paginated?status=${status}&size=1`, {
+                headers: { [csrfHeader]: csrfToken }
+            })
+                .then(r => r.json())
+                .then(data => {
+                    const countEl = document.getElementById(status.toLowerCase() + 'Count');
+                    if (countEl) countEl.textContent = data.totalElements || 0;
+                })
+                .catch(e => console.error(e));
+        });
+    }
 
     function loadOrders() {
         const status = document.getElementById('statusFilter').value;
+        const search = document.getElementById('searchInput').value;
         let url = `/api/orders/paginated?page=${currentPage}&size=20`;
         if (status) url += `&status=${status}`;
 
-        fetch(url)
+        fetch(url, {
+            headers: { [csrfHeader]: csrfToken }
+        })
             .then(r => r.json())
             .then(data => {
                 const tbody = document.getElementById('ordersTable');
@@ -104,32 +207,63 @@
                     tbody.innerHTML = data.content.map(order => `
                         <tr>
                             <td><strong>${order.orderNumber}</strong></td>
-                            <td>${order.userName || 'N/A'}</td>
-                            <td>${new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
-                            <td>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.totalAmount)}</td>
-                            <td><span class="badge badge--${order.paymentStatus === 'PAID' ? 'delivered' : 'pending'}">${getPaymentText(order.paymentStatus)}</span></td>
-                            <td><span class="badge badge--${order.status.toLowerCase()}">${getStatusText(order.status)}</span></td>
                             <td>
-                                <button onclick="showStatusModal(${order.id}, '${order.status}')" class="btn btn--small">Cập nhật</button>
+                                <div class="customer-info">
+                                    <span class="customer-name">${order.userName || 'N/A'}</span>
+                                </div>
+                            </td>
+                            <td>${formatDate(order.createdAt)}</td>
+                            <td>${order.itemCount || '-'} sản phẩm</td>
+                            <td class="price">${formatPrice(order.totalAmount)}</td>
+                            <td>
+                                <span class="badge badge--${order.paymentStatus === 'PAID' ? 'delivered' : 'pending'}" 
+                                      onclick="showPaymentModal(${order.id}, '${order.paymentStatus}')"
+                                      style="cursor: pointer;">
+                                    ${getPaymentText(order.paymentStatus)}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge--${order.status.toLowerCase()}">
+                                    ${getStatusText(order.status)}
+                                </span>
+                            </td>
+                            <td class="action-buttons">
+                                <button onclick="viewOrder(${order.id})" class="btn btn--small btn--info" title="Xem chi tiết">👁️</button>
+                                <button onclick="showStatusModal(${order.id}, '${order.status}')" class="btn btn--small btn--warning" title="Cập nhật trạng thái">📝</button>
                             </td>
                         </tr>
                     `).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center">Không có đơn hàng</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có đơn hàng</td></tr>';
                 }
             })
             .catch(e => {
                 console.error(e);
                 document.getElementById('ordersTable').innerHTML =
-                    '<tr><td colspan="7" class="text-center">Lỗi tải dữ liệu</td></tr>';
+                    '<tr><td colspan="8" class="text-center">Lỗi tải dữ liệu</td></tr>';
             });
+    }
+
+    function formatPrice(price) {
+        return new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(price);
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        return new Date(dateStr).toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 
     function getStatusText(status) {
         const map = {
             'PENDING': 'Chờ xử lý',
-            'PROCESSING': 'Đang xử lý',
             'CONFIRMED': 'Đã xác nhận',
+            'PROCESSING': 'Đang xử lý',
             'SHIPPED': 'Đang giao',
             'DELIVERED': 'Đã giao',
             'CANCELLED': 'Đã hủy'
@@ -138,16 +272,129 @@
     }
 
     function getPaymentText(status) {
-        return status === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán';
+        const map = {
+            'PENDING': 'Chưa TT',
+            'PAID': 'Đã TT',
+            'REFUNDED': 'Hoàn tiền'
+        };
+        return map[status] || status;
+    }
+
+    function viewOrder(id) {
+        fetch(`/api/orders/${id}`, {
+            headers: { [csrfHeader]: csrfToken }
+        })
+            .then(r => r.json())
+            .then(order => {
+                document.getElementById('orderDetails').innerHTML = `
+                    <div class="order-detail">
+                        <div class="order-detail__header">
+                            <div>
+                                <h3>Đơn hàng: ${order.orderNumber}</h3>
+                                <p>Ngày đặt: ${formatDate(order.createdAt)}</p>
+                            </div>
+                            <div>
+                                <span class="badge badge--${order.status.toLowerCase()}">${getStatusText(order.status)}</span>
+                                <span class="badge badge--${order.paymentStatus === 'PAID' ? 'delivered' : 'pending'}">${getPaymentText(order.paymentStatus)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="order-detail__section">
+                            <h4>Thông tin khách hàng</h4>
+                            <p><strong>Tên:</strong> ${order.userName || 'N/A'}</p>
+                            <p><strong>Địa chỉ:</strong> ${order.shippingAddress || 'N/A'}</p>
+                            <p><strong>Ghi chú:</strong> ${order.customerNote || 'Không có'}</p>
+                        </div>
+                        
+                        <div class="order-detail__section">
+                            <h4>Sản phẩm</h4>
+                            <table class="order-items-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Đơn giá</th>
+                                        <th>SL</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${order.items ? order.items.map(item => `
+                                        <tr>
+                                            <td>${item.productName}</td>
+                                            <td>${formatPrice(item.unitPrice)}</td>
+                                            <td>${item.quantity}</td>
+                                            <td>${formatPrice(item.subtotal)}</td>
+                                        </tr>
+                                    `).join('') : '<tr><td colspan="4">Không có thông tin</td></tr>'}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="order-detail__summary">
+                            <div class="summary-row">
+                                <span>Tạm tính:</span>
+                                <span>${formatPrice(order.subtotal || 0)}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Phí vận chuyển:</span>
+                                <span>${formatPrice(order.shippingFee || 0)}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Thuế:</span>
+                                <span>${formatPrice(order.tax || 0)}</span>
+                            </div>
+                            <div class="summary-row summary-row--total">
+                                <span>Tổng cộng:</span>
+                                <span>${formatPrice(order.totalAmount)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('viewModal').style.display = 'flex';
+            })
+            .catch(e => Toast.fire({ icon: 'error', title: 'Lỗi tải thông tin đơn hàng' }));
+    }
+
+    function closeViewModal() {
+        document.getElementById('viewModal').style.display = 'none';
     }
 
     function showStatusModal(id, currentStatus) {
-        document.getElementById('orderId').value = id;
-        document.getElementById('newStatus').value = currentStatus;
-        document.getElementById('statusModal').style.display = 'flex';
+        Swal.fire({
+            title: '📝 Cập Nhật Trạng Thái',
+            input: 'select',
+            inputOptions: {
+                'PENDING': 'Chờ xử lý',
+                'CONFIRMED': 'Đã xác nhận',
+                'PROCESSING': 'Đang xử lý',
+                'SHIPPED': 'Đang giao',
+                'DELIVERED': 'Đã giao',
+                'CANCELLED': 'Đã hủy'
+            },
+            inputValue: currentStatus,
+            showCancelButton: true,
+            confirmButtonColor: '#667eea',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Cập nhật',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/api/orders/${id}/status?status=${result.value}`, { 
+                    method: 'PUT',
+                    headers: { [csrfHeader]: csrfToken }
+                })
+                    .then(r => r.json())
+                    .then(() => {
+                        Toast.fire({ icon: 'success', title: 'Đã cập nhật trạng thái' });
+                        loadOrders();
+                        loadOrderStats();
+                    })
+                    .catch(e => Toast.fire({ icon: 'error', title: 'Có lỗi xảy ra' }));
+            }
+        });
     }
 
-    function closeModal() {
+    function closeStatusModal() {
         document.getElementById('statusModal').style.display = 'none';
     }
 
@@ -156,18 +403,108 @@
         const id = document.getElementById('orderId').value;
         const status = document.getElementById('newStatus').value;
 
-        fetch(`/api/orders/${id}/status?status=${status}`, {method: 'PUT'})
+        fetch(`/api/orders/${id}/status?status=${status}`, { 
+            method: 'PUT',
+            headers: { [csrfHeader]: csrfToken }
+        })
             .then(r => r.json())
             .then(() => {
-                alert('Đã cập nhật trạng thái');
-                closeModal();
+                Toast.fire({ icon: 'success', title: 'Đã cập nhật trạng thái' });
+                closeStatusModal();
+                loadOrders();
+                loadOrderStats();
+            })
+            .catch(e => Toast.fire({ icon: 'error', title: 'Có lỗi xảy ra' }));
+    }
+
+    function showPaymentModal(id, currentStatus) {
+        Swal.fire({
+            title: '💳 Cập Nhật Thanh Toán',
+            input: 'select',
+            inputOptions: {
+                'PENDING': 'Chưa thanh toán',
+                'PAID': 'Đã thanh toán',
+                'REFUNDED': 'Đã hoàn tiền'
+            },
+            inputValue: currentStatus,
+            showCancelButton: true,
+            confirmButtonColor: '#667eea',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Cập nhật',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/api/orders/${id}/payment-status?paymentStatus=${result.value}`, { 
+                    method: 'PUT',
+                    headers: { [csrfHeader]: csrfToken }
+                })
+                    .then(r => r.json())
+                    .then(() => {
+                        Toast.fire({ icon: 'success', title: 'Đã cập nhật trạng thái thanh toán' });
+                        loadOrders();
+                    })
+                    .catch(e => Toast.fire({ icon: 'error', title: 'Có lỗi xảy ra' }));
+            }
+        });
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').style.display = 'none';
+    }
+
+    function updatePayment(e) {
+        e.preventDefault();
+        const id = document.getElementById('paymentOrderId').value;
+        const status = document.getElementById('newPaymentStatus').value;
+
+        fetch(`/api/orders/${id}/payment-status?paymentStatus=${status}`, { 
+            method: 'PUT',
+            headers: { [csrfHeader]: csrfToken }
+        })
+            .then(r => r.json())
+            .then(() => {
+                Toast.fire({ icon: 'success', title: 'Đã cập nhật trạng thái thanh toán' });
+                closePaymentModal();
                 loadOrders();
             })
-            .catch(e => alert('Có lỗi xảy ra'));
+            .catch(e => Toast.fire({ icon: 'error', title: 'Có lỗi xảy ra' }));
     }
 </script>
 
 <style>
+    .order-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .order-stat {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .order-stat:hover {
+        transform: translateY(-2px);
+    }
+    .order-stat[data-status="PENDING"] { border-left: 4px solid #ffc107; }
+    .order-stat[data-status="PROCESSING"] { border-left: 4px solid #17a2b8; }
+    .order-stat[data-status="SHIPPED"] { border-left: 4px solid #6f42c1; }
+    .order-stat[data-status="DELIVERED"] { border-left: 4px solid #28a745; }
+    .order-stat__count {
+        display: block;
+        font-size: 32px;
+        font-weight: 600;
+        color: #1a1d29;
+    }
+    .order-stat__label {
+        font-size: 14px;
+        color: #666;
+    }
+
     .table-card__header {
         display: flex;
         gap: 16px;
@@ -182,6 +519,27 @@
     .search-input { flex: 1; }
     .filter-select { min-width: 180px; }
     
+    .customer-info {
+        display: flex;
+        flex-direction: column;
+    }
+    .customer-name {
+        font-weight: 500;
+    }
+    
+    .price {
+        font-weight: 600;
+        color: #e53935;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 4px;
+    }
+    .btn--info { background: #17a2b8; }
+    .btn--warning { background: #ffc107; color: #333; }
+    
+    /* Modal styles */
     .modal {
         display: none;
         position: fixed;
@@ -199,6 +557,11 @@
         border-radius: 12px;
         width: 90%;
         max-width: 400px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .modal-content--lg {
+        max-width: 700px;
     }
     .modal-header {
         display: flex;
@@ -206,6 +569,9 @@
         align-items: center;
         padding: 20px;
         border-bottom: 1px solid #e0e0e0;
+        position: sticky;
+        top: 0;
+        background: #fff;
     }
     .modal-header h2 { margin: 0; font-size: 18px; }
     .modal-close {
@@ -215,6 +581,9 @@
         cursor: pointer;
         color: #666;
     }
+    .modal-body {
+        padding: 20px;
+    }
     .modal-footer {
         display: flex;
         gap: 12px;
@@ -223,7 +592,7 @@
         border-top: 1px solid #e0e0e0;
     }
     .form-group {
-        padding: 20px;
+        padding: 0 20px 20px;
     }
     .form-group label {
         display: block;
@@ -241,9 +610,80 @@
         background: #fff;
         border: 1px solid #e0e0e0;
         color: #333;
-        padding: 8px 16px;
-        border-radius: 6px;
+        padding: 10px 20px;
+        border-radius: 8px;
         cursor: pointer;
+    }
+    .btn--primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    
+    /* Order detail styles */
+    .order-detail__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .order-detail__header h3 {
+        margin: 0 0 4px;
+    }
+    .order-detail__header p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+    }
+    .order-detail__section {
+        margin-bottom: 20px;
+    }
+    .order-detail__section h4 {
+        margin: 0 0 12px;
+        font-size: 16px;
+        color: #1a1d29;
+    }
+    .order-detail__section p {
+        margin: 4px 0;
+        font-size: 14px;
+    }
+    .order-items-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+    .order-items-table th {
+        text-align: left;
+        padding: 8px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .order-items-table td {
+        padding: 8px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .order-detail__summary {
+        background: #f8f9fa;
+        padding: 16px;
+        border-radius: 8px;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        font-size: 14px;
+    }
+    .summary-row--total {
+        border-top: 1px solid #e0e0e0;
+        margin-top: 8px;
+        padding-top: 8px;
+        font-weight: 600;
+        font-size: 16px;
     }
 </style>
 

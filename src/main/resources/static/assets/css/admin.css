@@ -221,7 +221,7 @@
    ======================================== */
 .charts-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 32px;
 }
@@ -231,6 +231,7 @@
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
 .chart-card h3 {
@@ -239,8 +240,14 @@
     color: #1a1d29;
 }
 
+.chart-wrapper {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
 .chart-card canvas {
-    height: 300px !important;
+    max-width: 100%;
 }
 
 /* ========================================
@@ -283,10 +290,17 @@
     padding: 16px;
     border-bottom: 1px solid #f0f0f0;
     color: #1a1d29;
+    vertical-align: middle;
 }
 
 .admin-table tr:hover {
     background: #f8f9fa;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
 }
 
 /* ========================================

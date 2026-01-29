@@ -9,6 +9,7 @@ import poly.edu.java5_asm.module.admin.dto.response.UserRegistrationStatsRespons
 import poly.edu.java5_asm.module.order.entity.Order;
 import poly.edu.java5_asm.module.user.entity.UserActivityLog;
 import poly.edu.java5_asm.module.order.repository.OrderRepository;
+import poly.edu.java5_asm.module.product.repository.ProductRepository;
 import poly.edu.java5_asm.module.user.repository.UserActivityLogRepository;
 import poly.edu.java5_asm.module.user.repository.UserRepository;
 
@@ -30,6 +31,7 @@ public class AdminStatisticsService {
     private final UserRepository userRepository;
     private final UserActivityLogRepository activityLogRepository;
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
     /**
      * Lấy thống kê tổng quan cho Dashboard
@@ -61,6 +63,7 @@ public class AdminStatisticsService {
                 // Thống kê đơn hàng
                 .totalOrders(totalOrders)
                 .totalRevenue(totalRevenue)
+                .totalProducts(productRepository.count())
 
                 // Thống kê traffic
                 .totalPageViewsToday(activityLogRepository.countPageViewsBetween(startOfToday, now))
