@@ -34,6 +34,13 @@
                     </div>
 
                     <ul class="user-menu__list">
+                        <!-- Admin Dashboard - chỉ hiển thị cho ADMIN -->
+                        <li th:if="${session.user.role.name() eq 'ADMIN'}">
+                            <a th:href="@{/admin/dashboard}" class="user-menu__link user-menu__link--admin">
+                                <span>🛠️ Admin Dashboard</span>
+                            </a>
+                        </li>
+                        <li th:if="${session.user.role.name() eq 'ADMIN'}" class="user-menu__separate"></li>
                         <li>
                             <a th:href="@{/profile}" class="user-menu__link">Profile</a>
                         </li>

@@ -1,15 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/fragments/head :: head('Quản Lý Orders | Admin')}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Quản Lý Orders | Admin</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}"/>
 </head>
 <body class="admin-body">
+
 <th:block th:replace="~{shared/fragments/admin-sidebar :: admin-sidebar}"></th:block>
 
 <main class="admin-main">
     <div class="admin-header">
         <h1>Quản Lý Orders</h1>
         <div class="admin-user">
-            <img th:src="@{/assets/img/avatar.jpg}" alt="" class="admin-user__avatar"/>
+            <img th:src="${session.user != null ? session.user.avatarUrlOrGravatar : '/assets/img/avatar.jpg'}" 
+                 alt="" class="admin-user__avatar"/>
             <span th:text="${session.user != null ? session.user.fullName : 'Admin'}">Admin</span>
         </div>
     </div>
@@ -49,14 +55,12 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </main>
 
 <!-- Update Status Modal -->
-<div id="statusModal" class="modal" style="display:none">
+<div id="statusModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h2>Cập Nhật Trạng Thái</h2>
@@ -76,7 +80,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" onclick="closeModal()" class="btn btn--outline">Hủy</button>
-                <button type="submit" class="btn btn--primary">Cập nhật</button>
+                <button type="submit" class="btn btn--small">Cập nhật</button>
             </div>
         </form>
     </div>
@@ -98,19 +102,18 @@
                 const tbody = document.getElementById('ordersTable');
                 if (data.content && data.content.length > 0) {
                     tbody.innerHTML = data.content.map(order => `
-                <tr>
-                  <td><strong>${order.orderNumber}</strong></td>
-                  <td>${order.userName || 'N/A'}</td>
-                  <td>${new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
-                  <td>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.totalAmount)}</td>
-                  <td><span class="badge badge--${order.paymentStatus.toLowerCase()}">${order.paymentStatus}</span></td>
-                  <td><span class="badge badge--${order.status.toLowerCase()}">${order.status}</span></td>
-                  <td>
-                    <button onclick="viewOrder(${order.id})" class="btn btn--small">Xem</button>
-                    <button onclick="showStatusModal(${order.id}, '${order.status}')" class="btn btn--small btn--primary">Cập nhật</button>
-                  </td>
-                </tr>
-              `).join('');
+                        <tr>
+                            <td><strong>${order.orderNumber}</strong></td>
+                            <td>${order.userName || 'N/A'}</td>
+                            <td>${new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
+                            <td>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.totalAmount)}</td>
+                            <td><span class="badge badge--${order.paymentStatus === 'PAID' ? 'delivered' : 'pending'}">${getPaymentText(order.paymentStatus)}</span></td>
+                            <td><span class="badge badge--${order.status.toLowerCase()}">${getStatusText(order.status)}</span></td>
+                            <td>
+                                <button onclick="showStatusModal(${order.id}, '${order.status}')" class="btn btn--small">Cập nhật</button>
+                            </td>
+                        </tr>
+                    `).join('');
                 } else {
                     tbody.innerHTML = '<tr><td colspan="7" class="text-center">Không có đơn hàng</td></tr>';
                 }
@@ -122,8 +125,20 @@
             });
     }
 
-    function viewOrder(id) {
-        window.location.href = `/order-detail/${id}`;
+    function getStatusText(status) {
+        const map = {
+            'PENDING': 'Chờ xử lý',
+            'PROCESSING': 'Đang xử lý',
+            'CONFIRMED': 'Đã xác nhận',
+            'SHIPPED': 'Đang giao',
+            'DELIVERED': 'Đã giao',
+            'CANCELLED': 'Đã hủy'
+        };
+        return map[status] || status;
+    }
+
+    function getPaymentText(status) {
+        return status === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán';
     }
 
     function showStatusModal(id, currentStatus) {
@@ -153,167 +168,20 @@
 </script>
 
 <style>
-    .admin-body {
-        margin: 0;
-        padding: 0;
-        background: #f5f7fa;
-        font-family: system-ui, -apple-system, sans-serif
-    }
-
-    .admin-main {
-        margin-left: 260px;
-        min-height: 100vh;
-        padding: 0
-    }
-
-    .admin-header {
-        background: #fff;
-        padding: 20px 32px;
-        border-bottom: 1px solid #e0e0e0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center
-    }
-
-    .admin-header h1 {
-        margin: 0;
-        font-size: 24px
-    }
-
-    .admin-user {
-        display: flex;
-        align-items: center;
-        gap: 12px
-    }
-
-    .admin-user__avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%
-    }
-
-    .admin-content {
-        padding: 32px
-    }
-
-    .table-card {
-        background: #fff;
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05)
-    }
-
     .table-card__header {
         display: flex;
         gap: 16px;
-        margin-bottom: 20px
+        margin-bottom: 20px;
     }
-
     .search-input, .filter-select {
         padding: 10px 16px;
         border: 1px solid #e0e0e0;
         border-radius: 8px;
-        font-size: 14px
+        font-size: 14px;
     }
-
-    .search-input {
-        flex: 1
-    }
-
-    .filter-select {
-        min-width: 150px
-    }
-
-    .table-responsive {
-        overflow-x: auto
-    }
-
-    .admin-table {
-        width: 100%;
-        border-collapse: collapse
-    }
-
-    .admin-table th {
-        text-align: left;
-        padding: 12px;
-        border-bottom: 2px solid #e0e0e0;
-        font-weight: 600;
-        color: #666;
-        font-size: 14px
-    }
-
-    .admin-table td {
-        padding: 12px;
-        border-bottom: 1px solid #f0f0f0;
-        font-size: 14px
-    }
-
-    .badge {
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 500
-    }
-
-    .badge--pending {
-        background: #fff3cd;
-        color: #856404
-    }
-
-    .badge--confirmed {
-        background: #d1ecf1;
-        color: #0c5460
-    }
-
-    .badge--processing {
-        background: #cce5ff;
-        color: #004085
-    }
-
-    .badge--shipped {
-        background: #d1ecf1;
-        color: #0c5460
-    }
-
-    .badge--delivered {
-        background: #d4edda;
-        color: #155724
-    }
-
-    .badge--cancelled {
-        background: #f8d7da;
-        color: #721c24
-    }
-
-    .badge--paid {
-        background: #d4edda;
-        color: #155724
-    }
-
-    .badge--pending {
-        background: #fff3cd;
-        color: #856404
-    }
-
-    .btn--small {
-        padding: 6px 12px;
-        font-size: 13px;
-        background: #77dae6;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        margin-right: 4px
-    }
-
-    .btn--primary {
-        background: #3b82f6
-    }
-
-    .text-center {
-        text-align: center
-    }
-
+    .search-input { flex: 1; }
+    .filter-select { min-width: 180px; }
+    
     .modal {
         display: none;
         position: fixed;
@@ -324,67 +192,60 @@
         background: rgba(0, 0, 0, 0.5);
         align-items: center;
         justify-content: center;
-        z-index: 1000
+        z-index: 1001;
     }
-
     .modal-content {
         background: #fff;
         border-radius: 12px;
         width: 90%;
-        max-width: 400px
+        max-width: 400px;
     }
-
     .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 20px;
-        border-bottom: 1px solid #e0e0e0
+        border-bottom: 1px solid #e0e0e0;
     }
-
+    .modal-header h2 { margin: 0; font-size: 18px; }
     .modal-close {
         background: none;
         border: none;
         font-size: 28px;
-        cursor: pointer
+        cursor: pointer;
+        color: #666;
     }
-
     .modal-footer {
         display: flex;
         gap: 12px;
         justify-content: flex-end;
         padding: 20px;
-        border-top: 1px solid #e0e0e0
+        border-top: 1px solid #e0e0e0;
     }
-
     .form-group {
-        padding: 20px
+        padding: 20px;
     }
-
     .form-group label {
         display: block;
         margin-bottom: 8px;
-        font-weight: 500
+        font-weight: 500;
     }
-
     .form-control {
         width: 100%;
         padding: 10px;
         border: 1px solid #e0e0e0;
-        border-radius: 8px
+        border-radius: 8px;
+        box-sizing: border-box;
     }
-
     .btn--outline {
         background: #fff;
         border: 1px solid #e0e0e0;
-        color: #333
-    }
-
-    @media (max-width: 768px) {
-        .admin-main {
-            margin-left: 0
-        }
+        color: #333;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
     }
 </style>
+
 </body>
 </html>

@@ -1126,3 +1126,29 @@ html.dark .cart-dropdown__count {
 .cart-summary .btn.btn--secondary.btn--full:hover {
     background: #f5f5f5 !important;
 }
+
+
+/* ========================================
+   ADMIN DASHBOARD LINK IN USER MENU
+   ======================================== */
+
+.user-menu__link--admin {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #fff !important;
+    font-weight: 500 !important;
+    border-radius: 8px !important;
+}
+
+.user-menu__link--admin:hover {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+    color: #fff !important;
+}
+
+html.dark .user-menu__link--admin {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #fff !important;
+}
+
+html.dark .user-menu__link--admin:hover {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+}
