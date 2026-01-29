@@ -1,7 +1,8 @@
-package poly.edu.java5_asm.entity;
+package poly.edu.java5_asm.module.cart.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

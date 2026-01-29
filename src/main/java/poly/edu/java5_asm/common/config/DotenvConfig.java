@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.config;
+package poly.edu.java5_asm.common.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.ApplicationContextInitializer;

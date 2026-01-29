@@ -400,11 +400,140 @@
     }
 </style>
 
-<!-- Payment Methods Script -->
+<!-- Cart & Payment APIs -->
+<script th:src="@{/assets/js/cart-api.js}"></script>
 <script th:src="@{/assets/js/address-api.js}"></script>
 <script>
+    // Format currency
+    function formatCurrency(value) {
+        return '$' + Number(value || 0).toFixed(2);
+    }
+
+    // Load cart from API and render
+    async function loadCartFromAPI() {
+        const listEl = document.querySelector('.checkout-page .cart-info__list');
+        if (!listEl) return;
+
+        try {
+            const cartData = await window.CartAPI.getCart();
+            if (!cartData || !cartData.items || cartData.items.length === 0) {
+                listEl.innerHTML = '<p style="padding: 20px; color: #666;">Giỏ hàng trống. <a href="/index-logined">Tiếp tục mua sắm</a></p>';
+                updateCheckoutSummaryFromAPI(0, 0, 0, 0);
+                return;
+            }
+
+            // Render cart items
+            listEl.innerHTML = cartData.items.map(item => `
+                <article class="cart-item" data-id="${item.id}" data-price="${item.productPrice}">
+                    <a href="/product/${item.productId}">
+                        <img src="${item.productImage || '/assets/img/product/item-1.png'}" alt="" class="cart-item__thumb" />
+                    </a>
+                    <div class="cart-item__content">
+                        <div class="cart-item__content-left">
+                            <h3 class="cart-item__title">
+                                <a href="/product/${item.productId}">${item.productName}</a>
+                            </h3>
+                            <p class="cart-item__price-wrap">
+                                ${formatCurrency(item.productPrice)} |
+                                <span class="cart-item__status">In Stock</span>
+                            </p>
+                            <div class="cart-item__ctrl cart-item__ctrl--md-block">
+                                <div class="cart-item__input">
+                                    <button class="cart-item__input-btn js-cart-minus" data-item-id="${item.id}">
+                                        <img src="/assets/icon/minus.svg" alt="" class="icon" />
+                                    </button>
+                                    <span class="js-cart-qty">${item.quantity}</span>
+                                    <button class="cart-item__input-btn js-cart-plus" data-item-id="${item.id}">
+                                        <img src="/assets/icon/plus.svg" alt="" class="icon" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cart-item__content-right">
+                            <p class="cart-item__total-price js-line-total">${formatCurrency(item.subtotal)}</p>
+                            <div class="cart-item__ctrl">
+                                <button class="cart-item__ctrl-btn js-cart-delete" data-item-id="${item.id}">
+                                    <img src="/assets/icon/trash.svg" alt="" />Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+
+            // Update summary
+            const shipping = cartData.totalItems > 0 ? 10 : 0;
+            updateCheckoutSummaryFromAPI(cartData.totalItems, cartData.totalPrice, shipping, cartData.totalPrice + shipping);
+
+            // Bind cart item interactions
+            bindCartItemInteractions();
+        } catch (error) {
+            console.error('Error loading cart:', error);
+            listEl.innerHTML = '<p style="padding: 20px; color: #dc3545;">Lỗi khi tải giỏ hàng. Vui lòng thử lại.</p>';
+        }
+    }
+
+    function updateCheckoutSummaryFromAPI(itemCount, subtotal, shipping, total) {
+        const itemsCountEl = document.querySelector('.cart-summary__items-count');
+        const priceEl = document.querySelector('.cart-summary__price');
+        const shippingEl = document.querySelector('.cart-summary__shipping');
+        const estimatedEl = document.querySelector('.cart-summary__estimated');
+
+        if (itemsCountEl) itemsCountEl.textContent = String(itemCount);
+        if (priceEl) priceEl.textContent = formatCurrency(subtotal);
+        if (shippingEl) shippingEl.textContent = formatCurrency(shipping);
+        if (estimatedEl) estimatedEl.textContent = formatCurrency(total);
+    }
+
+    function bindCartItemInteractions() {
+        // Plus button
+        document.querySelectorAll('.js-cart-plus').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const itemId = btn.getAttribute('data-item-id');
+                const qtyEl = btn.closest('.cart-item__ctrl')?.querySelector('.js-cart-qty');
+                const currentQty = parseInt(qtyEl?.textContent || '1', 10);
+                try {
+                    await window.CartAPI.updateCartItem(parseInt(itemId, 10), currentQty + 1);
+                    await loadCartFromAPI();
+                } catch (error) {
+                    console.error('Error updating cart:', error);
+                }
+            });
+        });
+
+        // Minus button
+        document.querySelectorAll('.js-cart-minus').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const itemId = btn.getAttribute('data-item-id');
+                const qtyEl = btn.closest('.cart-item__ctrl')?.querySelector('.js-cart-qty');
+                const currentQty = parseInt(qtyEl?.textContent || '1', 10);
+                if (currentQty <= 1) {
+                    await window.CartAPI.removeFromCart(parseInt(itemId, 10));
+                } else {
+                    await window.CartAPI.updateCartItem(parseInt(itemId, 10), currentQty - 1);
+                }
+                await loadCartFromAPI();
+            });
+        });
+
+        // Delete button
+        document.querySelectorAll('.js-cart-delete').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const itemId = btn.getAttribute('data-item-id');
+                await window.CartAPI.removeFromCart(parseInt(itemId, 10));
+                await loadCartFromAPI();
+            });
+        });
+    }
+
     // Load addresses on page load
     document.addEventListener('DOMContentLoaded', async function () {
+        // Load cart from API
+        await loadCartFromAPI();
+
         const paymentInputs = document.querySelectorAll('input[name="paymentMethod"]');
         const instructions = document.querySelectorAll('.payment-instruction');
 

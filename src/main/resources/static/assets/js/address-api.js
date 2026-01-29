@@ -7,6 +7,38 @@
     const API_BASE = '/api/addresses';
 
     /**
+     * Get CSRF token from meta tags or cookie
+     */
+    function getCsrfToken() {
+        // Try to get from meta tag first
+        const tokenMeta = document.querySelector('meta[name="_csrf"]');
+        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+        if (tokenMeta && headerMeta) {
+            return { token: tokenMeta.content, header: headerMeta.content };
+        }
+        // Try to get from cookie
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'XSRF-TOKEN') {
+                return { token: decodeURIComponent(value), header: 'X-XSRF-TOKEN' };
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add CSRF headers to request options
+     */
+    function addCsrfHeaders(headers = {}) {
+        const csrf = getCsrfToken();
+        if (csrf) {
+            headers[csrf.header] = csrf.token;
+        }
+        return headers;
+    }
+
+    /**
      * Lấy tất cả địa chỉ của user
      */
     async function getUserAddresses() {
@@ -70,15 +102,26 @@
         try {
             const response = await fetch(`${API_BASE}`, {
                 method: 'POST',
-                headers: {
+                headers: addCsrfHeaders({
                     'Content-Type': 'application/json',
-                },
+                }),
                 body: JSON.stringify(addressData)
             });
 
             if (!response.ok) {
-                const error = await response.text();
-                throw new Error(error || `HTTP ${response.status}`);
+                let errorMessage = `HTTP ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.message) {
+                        errorMessage = errorData.message;
+                    } else if (errorData.errors) {
+                        errorMessage = Object.values(errorData.errors).join(', ');
+                    }
+                } catch (e) {
+                    const errorText = await response.text();
+                    if (errorText) errorMessage = errorText;
+                }
+                throw new Error(errorMessage);
             }
 
             const address = await response.json();
@@ -98,9 +141,9 @@
         try {
             const response = await fetch(`${API_BASE}/${addressId}`, {
                 method: 'PUT',
-                headers: {
+                headers: addCsrfHeaders({
                     'Content-Type': 'application/json',
-                },
+                }),
                 body: JSON.stringify(addressData)
             });
 
@@ -125,9 +168,9 @@
         try {
             const response = await fetch(`${API_BASE}/${addressId}`, {
                 method: 'DELETE',
-                headers: {
+                headers: addCsrfHeaders({
                     'Content-Type': 'application/json',
-                }
+                })
             });
 
             if (!response.ok) {
@@ -150,9 +193,9 @@
         try {
             const response = await fetch(`${API_BASE}/${addressId}/set-default`, {
                 method: 'PATCH',
-                headers: {
+                headers: addCsrfHeaders({
                     'Content-Type': 'application/json',
-                }
+                })
             });
 
             if (!response.ok) {
@@ -206,6 +249,4 @@
         deleteAddress,
         setDefaultAddress
     };
-
-    console.log('✅ Address API Service initialized');
 })();

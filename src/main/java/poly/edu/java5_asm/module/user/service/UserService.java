@@ -1,12 +1,12 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.ProfileUpdateRequest;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.UserRepository;
+import poly.edu.java5_asm.module.user.dto.request.ProfileUpdateRequest;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
 
 /**
  * Service xử lý các nghiệp vụ liên quan đến User.
@@ -54,12 +54,16 @@ public class UserService {
 
         // Cập nhật password nếu có nhập mới
         if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
+            // Validate password length
+            if (request.getNewPassword().length() < 6 || request.getNewPassword().length() > 100) {
+                throw new RuntimeException("Mật khẩu phải từ 6-100 ký tự");
+            }
             if (!request.getNewPassword().equals(request.getConfirmPassword())) {
                 throw new RuntimeException("Mật khẩu xác nhận không khớp");
             }
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         }
 
-        return userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
 }

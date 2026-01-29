@@ -1,11 +1,11 @@
-package poly.edu.java5_asm.security;
+package poly.edu.java5_asm.common.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import poly.edu.java5_asm.entity.User;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.util.Collection;
 import java.util.List;

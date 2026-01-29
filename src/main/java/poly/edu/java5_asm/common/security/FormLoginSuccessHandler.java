@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.security;
+package poly.edu.java5_asm.common.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -35,8 +35,8 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+            HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
 
         log.info("Form login success for user: {}", authentication.getName());
 

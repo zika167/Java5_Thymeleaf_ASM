@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ hàng - Fat C Grocery Store</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-</head>
-<body>
+<head th:replace="~{shared/fragments/head :: head('Giỏ hàng | grocerystore')}"></head>
+<body class="cart-page">
 <!-- Header -->
 <div th:replace="~{shared/fragments/header :: header}"></div>
 
@@ -342,5 +337,8 @@
         margin-top: 10px;
     }
 </style>
+
+<!-- Footer -->
+<footer th:replace="~{shared/fragments/footer :: footer}"></footer>
 </body>
 </html>

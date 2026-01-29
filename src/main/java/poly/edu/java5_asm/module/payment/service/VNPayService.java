@@ -1,7 +1,7 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.payment.service;
 
-import poly.edu.java5_asm.dto.response.VNPayResponse;
-import poly.edu.java5_asm.entity.Order;
+import poly.edu.java5_asm.module.payment.dto.response.VNPayResponse;
+import poly.edu.java5_asm.module.order.entity.Order;
 
 import java.util.Map;
 

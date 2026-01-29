@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.dto.request;
+package poly.edu.java5_asm.module.review.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

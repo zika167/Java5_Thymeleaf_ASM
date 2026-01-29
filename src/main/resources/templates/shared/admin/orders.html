@@ -10,7 +10,7 @@
         <h1>Quản Lý Orders</h1>
         <div class="admin-user">
             <img th:src="@{/assets/img/avatar.jpg}" alt="" class="admin-user__avatar"/>
-            <span th:text="${session.user.fullName}">Admin</span>
+            <span th:text="${session.user != null ? session.user.fullName : 'Admin'}">Admin</span>
         </div>
     </div>
 

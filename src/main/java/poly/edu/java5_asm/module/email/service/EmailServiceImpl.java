@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.service.impl;
+package poly.edu.java5_asm.module.email.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -11,10 +11,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import poly.edu.java5_asm.entity.Order;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.OrderItemRepository;
-import poly.edu.java5_asm.service.EmailService;
+import poly.edu.java5_asm.module.order.entity.Order;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.order.repository.OrderItemRepository;
+import poly.edu.java5_asm.module.email.service.EmailService;
 
 @Service
 @RequiredArgsConstructor

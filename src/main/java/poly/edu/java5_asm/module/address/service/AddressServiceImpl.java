@@ -1,14 +1,14 @@
-package poly.edu.java5_asm.service.impl;
+package poly.edu.java5_asm.module.address.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.request.CreateAddressRequest;
-import poly.edu.java5_asm.dto.response.AddressResponse;
-import poly.edu.java5_asm.entity.Address;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.AddressRepository;
+import poly.edu.java5_asm.module.address.dto.request.CreateAddressRequest;
+import poly.edu.java5_asm.module.address.dto.response.AddressResponse;
+import poly.edu.java5_asm.module.address.entity.Address;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.address.repository.AddressRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import poly.edu.java5_asm.dto.ProfileUpdateRequest;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.security.CustomUserDetails;
-import poly.edu.java5_asm.service.UserService;
+import poly.edu.java5_asm.module.user.dto.request.ProfileUpdateRequest;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.common.security.CustomUserDetails;
+import poly.edu.java5_asm.module.user.service.UserService;
+import poly.edu.java5_asm.module.address.service.AddressServiceImpl;
+import poly.edu.java5_asm.module.address.dto.response.AddressResponse;
+
+import java.util.List;
 
 /**
  * Controller xử lý các request liên quan đến trang Profile.
@@ -23,6 +27,7 @@ import poly.edu.java5_asm.service.UserService;
 public class ProfileController {
 
     private final UserService userService;
+    private final AddressServiceImpl addressService;
 
     /**
      * Hiển thị trang Profile.
@@ -31,6 +36,23 @@ public class ProfileController {
     public String profilePage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
         User user = userService.findById(userDetails.getUser().getId());
         model.addAttribute("user", user);
+        
+        // Load địa chỉ của user
+        try {
+            List<AddressResponse> addresses = addressService.getUserAddresses(user);
+            model.addAttribute("addresses", addresses);
+            
+            // Lấy địa chỉ mặc định
+            AddressResponse defaultAddress = addresses.stream()
+                    .filter(a -> a.getIsDefault() != null && a.getIsDefault())
+                    .findFirst()
+                    .orElse(addresses.isEmpty() ? null : addresses.get(0));
+            model.addAttribute("defaultAddress", defaultAddress);
+        } catch (Exception e) {
+            model.addAttribute("addresses", List.of());
+            model.addAttribute("defaultAddress", null);
+        }
+        
         return "module/user/profile";
     }
 
@@ -58,10 +80,10 @@ public class ProfileController {
      */
     @PostMapping("/profile/update")
     public String updateProfile(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                @Valid @ModelAttribute("profileRequest") ProfileUpdateRequest request,
-                                BindingResult bindingResult,
-                                RedirectAttributes redirectAttributes,
-                                Model model) {
+            @Valid @ModelAttribute("profileRequest") ProfileUpdateRequest request,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            Model model) {
 
         if (bindingResult.hasErrors()) {
             User user = userService.findById(userDetails.getUser().getId());
@@ -73,7 +95,7 @@ public class ProfileController {
             userService.updateProfile(userDetails.getUser().getId(), request);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công!");
             return "redirect:/profile";
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             User user = userService.findById(userDetails.getUser().getId());
             model.addAttribute("user", user);
             model.addAttribute("errorMessage", e.getMessage());

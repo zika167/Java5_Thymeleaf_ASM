@@ -1,14 +1,14 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.product.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import poly.edu.java5_asm.dto.request.ProductSearchRequest;
-import poly.edu.java5_asm.dto.response.BrandResponse;
-import poly.edu.java5_asm.dto.response.CategoryResponse;
-import poly.edu.java5_asm.dto.response.ProductListResponse;
-import poly.edu.java5_asm.dto.response.ProductResponse;
-import poly.edu.java5_asm.service.ProductService;
+import poly.edu.java5_asm.module.product.dto.request.ProductSearchRequest;
+import poly.edu.java5_asm.module.brand.dto.response.BrandResponse;
+import poly.edu.java5_asm.module.category.dto.response.CategoryResponse;
+import poly.edu.java5_asm.module.product.dto.response.ProductListResponse;
+import poly.edu.java5_asm.module.product.dto.response.ProductResponse;
+import poly.edu.java5_asm.module.product.service.ProductService;
 
 import java.math.BigDecimal;
 import java.util.List;

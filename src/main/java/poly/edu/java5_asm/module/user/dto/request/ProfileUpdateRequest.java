@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.dto;
+package poly.edu.java5_asm.module.user.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,11 +26,10 @@ public class ProfileUpdateRequest {
     @Email(message = "Email không hợp lệ")
     private String email;
 
-    @Pattern(regexp = "^$|^[0-9]{10,11}$", message = "Số điện thoại phải có 10-11 chữ số")
+    @Pattern(regexp = "^$|^[0-9\\s\\-\\+\\(\\)]{0,20}$", message = "Số điện thoại không hợp lệ")
     private String phone;
 
-    // Password có thể để trống nếu không muốn đổi
-    @Size(min = 6, max = 100, message = "Mật khẩu phải từ 6-100 ký tự")
+    // Password có thể để trống nếu không muốn đổi - không validate nếu để trống
     private String newPassword;
 
     private String confirmPassword;

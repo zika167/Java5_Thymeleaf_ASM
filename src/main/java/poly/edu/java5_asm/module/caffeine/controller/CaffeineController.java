@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.caffeine.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import poly.edu.java5_asm.dto.request.CaffeineCalculationRequest;
-import poly.edu.java5_asm.dto.result.CaffeineCalculationResult;
-import poly.edu.java5_asm.service.CaffeineService;
+import poly.edu.java5_asm.module.caffeine.dto.request.CaffeineCalculationRequest;
+import poly.edu.java5_asm.module.caffeine.dto.response.CaffeineCalculationResult;
+import poly.edu.java5_asm.module.caffeine.service.CaffeineService;
 
 @Controller
 @RequestMapping("/cc-doctor")
@@ -22,7 +22,7 @@ public class CaffeineController {
 
     @GetMapping
     public String showCalculator(Model model) {
-        log.info("Showing CC-Doctor calculator page");
+        log.info("Showing Caffeine Calculator page");
 
         // Add empty request object for form binding
         model.addAttribute("request", new CaffeineCalculationRequest());

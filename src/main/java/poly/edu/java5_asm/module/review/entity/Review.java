@@ -1,7 +1,9 @@
-package poly.edu.java5_asm.entity;
+package poly.edu.java5_asm.module.review.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import poly.edu.java5_asm.module.product.entity.Product;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.time.LocalDateTime;
 

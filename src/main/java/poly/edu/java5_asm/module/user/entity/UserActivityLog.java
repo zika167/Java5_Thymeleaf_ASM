@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.entity;
+package poly.edu.java5_asm.module.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,0 +1,9 @@
+/**
+ * Cart Page Specific Styles
+ * Ẩn icon giỏ hàng khi đang ở trang cart
+ */
+
+/* Hide cart icon on cart page */
+.cart-page #cart-dropdown-container {
+    display: none !important;
+}

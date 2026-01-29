@@ -1,10 +1,11 @@
-package poly.edu.java5_asm.security;
+package poly.edu.java5_asm.common.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import poly.edu.java5_asm.module.user.entity.User;
 
 import java.io.IOException;
 
@@ -38,8 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
         // Bỏ qua JWT validation cho static resources
         String requestPath = request.getRequestURI();
         if (isStaticResource(requestPath)) {
@@ -60,12 +62,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 // Tạo authentication object
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
 
                 // Set thêm thông tin request vào authentication
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -73,10 +73,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Set authentication vào SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
+                // Lưu user vào session để templates có thể truy cập qua ${session.user}
+                if (userDetails instanceof CustomUserDetails customUserDetails) {
+                    User user = customUserDetails.getUser();
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute("user", user);
+                }
+
                 log.debug("Set authentication for user: {}", username);
+            } else {
+                // Không có JWT hợp lệ -> xóa user khỏi session để đảm bảo UI hiển thị đúng
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.removeAttribute("user");
+                }
+                // Clear SecurityContext
+                SecurityContextHolder.clearContext();
             }
         } catch (Exception ex) {
             log.error("Cannot set user authentication: {}", ex.getMessage());
+            // Khi có lỗi, cũng clear session user
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.removeAttribute("user");
+            }
+            SecurityContextHolder.clearContext();
         }
 
         // Tiếp tục filter chain

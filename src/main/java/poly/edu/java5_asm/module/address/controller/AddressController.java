@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.address.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import poly.edu.java5_asm.dto.request.CreateAddressRequest;
-import poly.edu.java5_asm.dto.response.AddressResponse;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.repository.UserRepository;
-import poly.edu.java5_asm.service.impl.AddressServiceImpl;
+import poly.edu.java5_asm.module.address.dto.request.CreateAddressRequest;
+import poly.edu.java5_asm.module.address.dto.response.AddressResponse;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
+import poly.edu.java5_asm.module.address.service.AddressServiceImpl;
 
 import java.util.List;
 

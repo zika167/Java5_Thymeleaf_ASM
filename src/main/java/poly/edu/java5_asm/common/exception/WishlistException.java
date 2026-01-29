@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.exception;
+package poly.edu.java5_asm.common.exception;
 
 /**
  * Base exception cho Wishlist operations

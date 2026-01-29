@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.admin.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import poly.edu.java5_asm.dto.response.DashboardStatsResponse;
-import poly.edu.java5_asm.dto.response.TrafficStatsResponse;
-import poly.edu.java5_asm.dto.response.UserRegistrationStatsResponse;
-import poly.edu.java5_asm.service.AdminStatisticsService;
+import poly.edu.java5_asm.module.admin.dto.response.DashboardStatsResponse;
+import poly.edu.java5_asm.module.admin.dto.response.TrafficStatsResponse;
+import poly.edu.java5_asm.module.admin.dto.response.UserRegistrationStatsResponse;
+import poly.edu.java5_asm.module.admin.service.AdminStatisticsService;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,15 +1,18 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poly.edu.java5_asm.dto.response.DashboardStatsResponse;
-import poly.edu.java5_asm.dto.response.TrafficStatsResponse;
-import poly.edu.java5_asm.dto.response.UserRegistrationStatsResponse;
-import poly.edu.java5_asm.entity.UserActivityLog;
-import poly.edu.java5_asm.repository.UserActivityLogRepository;
-import poly.edu.java5_asm.repository.UserRepository;
+import poly.edu.java5_asm.module.admin.dto.response.DashboardStatsResponse;
+import poly.edu.java5_asm.module.admin.dto.response.TrafficStatsResponse;
+import poly.edu.java5_asm.module.admin.dto.response.UserRegistrationStatsResponse;
+import poly.edu.java5_asm.module.order.entity.Order;
+import poly.edu.java5_asm.module.user.entity.UserActivityLog;
+import poly.edu.java5_asm.module.order.repository.OrderRepository;
+import poly.edu.java5_asm.module.user.repository.UserActivityLogRepository;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,6 +29,7 @@ public class AdminStatisticsService {
 
     private final UserRepository userRepository;
     private final UserActivityLogRepository activityLogRepository;
+    private final OrderRepository orderRepository;
 
     /**
      * Lấy thống kê tổng quan cho Dashboard
@@ -36,6 +40,14 @@ public class AdminStatisticsService {
         LocalDateTime startOfWeek = now.minusWeeks(1);
         LocalDateTime startOfMonth = now.minusMonths(1);
 
+        // Tính tổng đơn hàng và doanh thu
+        List<Order> allOrders = orderRepository.findAll();
+        Long totalOrders = (long) allOrders.size();
+        BigDecimal totalRevenue = allOrders.stream()
+                .filter(o -> o.getStatus() == Order.OrderStatus.DELIVERED)
+                .map(Order::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         return DashboardStatsResponse.builder()
                 // Thống kê người dùng
                 .totalUsers(userRepository.count())
@@ -45,6 +57,10 @@ public class AdminStatisticsService {
                         startOfWeek.toLocalDate(), LocalDate.now()))
                 .newUsersThisMonth(userRepository.countByRegisteredDateBetween(
                         startOfMonth.toLocalDate(), LocalDate.now()))
+
+                // Thống kê đơn hàng
+                .totalOrders(totalOrders)
+                .totalRevenue(totalRevenue)
 
                 // Thống kê traffic
                 .totalPageViewsToday(activityLogRepository.countPageViewsBetween(startOfToday, now))

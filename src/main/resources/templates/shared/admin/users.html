@@ -10,7 +10,7 @@
         <h1>Quản Lý Users</h1>
         <div class="admin-user">
             <img th:src="@{/assets/img/avatar.jpg}" alt="" class="admin-user__avatar"/>
-            <span th:text="${session.user.fullName}">Admin</span>
+            <span th:text="${session.user != null ? session.user.fullName : 'Admin'}">Admin</span>
         </div>
     </div>
 
@@ -78,55 +78,37 @@
         if (currentRole) url += `&role=${currentRole}`;
         if (searchQuery) url += `&search=${searchQuery}`;
 
-        // Mock data for now
-        const mockUsers = [
-            {
-                id: 1,
-                username: 'admin',
-                email: 'admin@example.com',
-                fullName: 'Admin User',
-                role: 'ADMIN',
-                active: true,
-                createdAt: '2024-01-01'
-            },
-            {
-                id: 2,
-                username: 'user1',
-                email: 'user1@example.com',
-                fullName: 'User One',
-                role: 'USER',
-                active: true,
-                createdAt: '2024-01-15'
-            },
-            {
-                id: 3,
-                username: 'user2',
-                email: 'user2@example.com',
-                fullName: 'User Two',
-                role: 'USER',
-                active: false,
-                createdAt: '2024-02-01'
-            }
-        ];
-
-        const tbody = document.getElementById('usersTable');
-        tbody.innerHTML = mockUsers.map(user => `
-          <tr>
-            <td>${user.id}</td>
-            <td>${user.username}</td>
-            <td>${user.email}</td>
-            <td>${user.fullName}</td>
-            <td><span class="badge badge--${user.role.toLowerCase()}">${user.role}</span></td>
-            <td><span class="badge badge--${user.active ? 'success' : 'danger'}">${user.active ? 'Active' : 'Inactive'}</span></td>
-            <td>${new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
-            <td>
-              <button onclick="viewUser(${user.id})" class="btn btn--small">Xem</button>
-              <button onclick="toggleUserStatus(${user.id}, ${user.active})" class="btn btn--small btn--${user.active ? 'danger' : 'success'}">
-                ${user.active ? 'Khóa' : 'Mở khóa'}
-              </button>
-            </td>
-          </tr>
-        `).join('');
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                const tbody = document.getElementById('usersTable');
+                if (data.content && data.content.length > 0) {
+                    tbody.innerHTML = data.content.map(user => `
+                      <tr>
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.fullName || 'N/A'}</td>
+                        <td><span class="badge badge--${user.role.toLowerCase()}">${user.role}</span></td>
+                        <td><span class="badge badge--${user.active ? 'success' : 'danger'}">${user.active ? 'Active' : 'Inactive'}</span></td>
+                        <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</td>
+                        <td>
+                          <button onclick="viewUser(${user.id})" class="btn btn--small">Xem</button>
+                          <button onclick="toggleUserStatus(${user.id}, ${user.active})" class="btn btn--small btn--${user.active ? 'danger' : 'success'}">
+                            ${user.active ? 'Khóa' : 'Mở khóa'}
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có user</td></tr>';
+                }
+            })
+            .catch(e => {
+                console.error(e);
+                document.getElementById('usersTable').innerHTML =
+                    '<tr><td colspan="8" class="text-center">Lỗi tải dữ liệu</td></tr>';
+            });
     }
 
     function viewUser(id) {
@@ -135,8 +117,13 @@
 
     function toggleUserStatus(id, currentStatus) {
         if (confirm(`Bạn có chắc muốn ${currentStatus ? 'khóa' : 'mở khóa'} user này?`)) {
-            console.log('Toggle user status:', id);
-            loadUsers();
+            fetch(`/api/admin/users/${id}/toggle-status`, { method: 'PUT' })
+                .then(r => r.json())
+                .then(data => {
+                    alert(data.message);
+                    loadUsers();
+                })
+                .catch(e => alert('Có lỗi xảy ra'));
         }
     }
 </script>

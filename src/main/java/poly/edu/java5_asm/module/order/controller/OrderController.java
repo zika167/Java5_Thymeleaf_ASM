@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.order.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,12 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import poly.edu.java5_asm.dto.request.CheckoutRequest;
-import poly.edu.java5_asm.dto.response.OrderResponse;
-import poly.edu.java5_asm.entity.Order;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.security.CustomUserDetails;
-import poly.edu.java5_asm.service.OrderService;
+import poly.edu.java5_asm.module.order.dto.request.CheckoutRequest;
+import poly.edu.java5_asm.module.order.dto.response.OrderResponse;
+import poly.edu.java5_asm.module.order.entity.Order;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.common.security.CustomUserDetails;
+import poly.edu.java5_asm.module.order.service.OrderService;
 
 import java.util.List;
 
@@ -33,6 +33,9 @@ public class OrderController {
             Authentication authentication,
             @RequestBody CheckoutRequest request) {
         try {
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
             OrderResponse order = orderService.createOrder(user, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(order);
@@ -85,6 +88,9 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getUserOrders(Authentication authentication) {
         try {
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
             List<OrderResponse> orders = orderService.getUserOrders(user);
             return ResponseEntity.ok(orders);
@@ -102,6 +108,9 @@ public class OrderController {
             Authentication authentication,
             Pageable pageable) {
         try {
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
             Page<OrderResponse> orders = orderService.getUserOrdersPaginated(user, pageable);
             return ResponseEntity.ok(orders);

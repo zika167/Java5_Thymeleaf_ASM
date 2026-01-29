@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.controller;
+package poly.edu.java5_asm.module.cart.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -7,12 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import poly.edu.java5_asm.dto.request.AddToCartRequest;
-import poly.edu.java5_asm.dto.request.UpdateCartItemRequest;
-import poly.edu.java5_asm.dto.response.CartResponse;
-import poly.edu.java5_asm.entity.User;
-import poly.edu.java5_asm.security.CustomUserDetails;
-import poly.edu.java5_asm.service.CartService;
+import poly.edu.java5_asm.module.cart.dto.request.AddToCartRequest;
+import poly.edu.java5_asm.module.cart.dto.request.UpdateCartItemRequest;
+import poly.edu.java5_asm.module.cart.dto.response.CartResponse;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.common.security.CustomUserDetails;
+import poly.edu.java5_asm.module.cart.service.CartService;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -26,7 +26,8 @@ public class CartController {
      * Lấy user từ Authentication hoặc session ID cho guest
      */
     private String getCartIdentifier(Authentication authentication, HttpSession session) {
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() 
+                && authentication.getPrincipal() instanceof CustomUserDetails) {
             User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
             return "user_" + user.getId();
         }

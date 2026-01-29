@@ -1,6 +1,8 @@
-package poly.edu.java5_asm.dto.response;
+package poly.edu.java5_asm.module.admin.dto.response;
 
 import lombok.*;
+
+import java.math.BigDecimal;
 
 /**
  * DTO Response cho Dashboard Admin - Tổng quan thống kê
@@ -18,6 +20,10 @@ public class DashboardStatsResponse {
     private Long newUsersToday;           // Số người đăng ký hôm nay
     private Long newUsersThisWeek;        // Số người đăng ký tuần này
     private Long newUsersThisMonth;       // Số người đăng ký tháng này
+
+    // Thống kê đơn hàng
+    private Long totalOrders;             // Tổng số đơn hàng
+    private BigDecimal totalRevenue;      // Tổng doanh thu
 
     // Thống kê traffic
     private Long totalPageViewsToday;     // Tổng lượt xem hôm nay

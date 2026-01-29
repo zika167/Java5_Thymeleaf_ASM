@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Navbar Fragment -->
+<nav th:fragment="navbar" id="navbar" class="navbar hide">
+    <button class="navbar__close-btn js-toggle" toggle-target="#navbar">
+        <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="icon" />
+    </button>
+
+    <a th:href="@{/checkout}" class="nav-btn d-none">
+        <img th:src="@{/assets/icon/buy.svg}" alt="" class="icon nav-btn__icon" />
+        <span class="nav-btn__title">Cart</span>
+        <span class="nav-btn__qnt">3</span>
+    </a>
+
+    <a href="#!" class="nav-btn d-none">
+        <img th:src="@{/assets/icon/heart.svg}" alt="" class="icon nav-btn__icon" />
+        <span class="nav-btn__title">Favorite</span>
+        <span class="nav-btn__qnt">3</span>
+    </a>
+
+    <ul class="navbar__list js-dropdown-list">
+        <!-- Departments -->
+        <li class="navbar__item">
+            <a href="#!" class="navbar__link">
+                Departments
+                <img th:src="@{/assets/icon/arrow-down.svg}" alt="" class="icon navbar__arrow" />
+            </a>
+            <div th:replace="~{shared/fragments/header/dropdown-departments :: dropdownDepartments}"></div>
+        </li>
+
+        <!-- Grocery -->
+        <li class="navbar__item">
+            <a href="#!" class="navbar__link">
+                Grocery
+                <img th:src="@{/assets/icon/arrow-down.svg}" alt="" class="icon navbar__arrow" />
+            </a>
+            <div th:replace="~{shared/fragments/header/dropdown-grocery :: dropdownGrocery}"></div>
+        </li>
+
+        <!-- Beauty -->
+        <li class="navbar__item">
+            <a href="#!" class="navbar__link">
+                Beauty
+                <img th:src="@{/assets/icon/arrow-down.svg}" alt="" class="icon navbar__arrow" />
+            </a>
+            <div th:replace="~{shared/fragments/header/dropdown-beauty :: dropdownBeauty}"></div>
+        </li>
+
+        <!-- Caffeine Calculator -->
+        <li class="navbar__item">
+            <a th:href="@{/cc-doctor}" class="navbar__link">Caffeine Calculator</a>
+        </li>
+    </ul>
+</nav>
+
+</html>

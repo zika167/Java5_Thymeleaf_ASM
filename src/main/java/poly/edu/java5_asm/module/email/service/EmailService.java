@@ -1,7 +1,7 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.email.service;
 
-import poly.edu.java5_asm.entity.Order;
-import poly.edu.java5_asm.entity.User;
+import poly.edu.java5_asm.module.order.entity.Order;
+import poly.edu.java5_asm.module.user.entity.User;
 
 /**
  * Service interface for email operations

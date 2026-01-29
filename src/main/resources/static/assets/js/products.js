@@ -1,4 +1,4 @@
-// Products data and rendering functionality
+// Products data - synced with database (ID 1-10)
 const productsData = [
     {
         id: 1,
@@ -21,129 +21,73 @@ const productsData = [
     {
         id: 3,
         name: "Lavazza - Caffè Espresso Black Tin - Ground coffee",
-        brand: "welikecoffee",
+        brand: "Lavazza",
         price: 99.99,
         rating: 5.0,
         image: "./assets/img/product/item-3.png",
-        isLiked: true
+        isLiked: false
     },
     {
         id: 4,
-        name: "Qualità Oro Mountain Grown - Espresso Coffee Beans",
-        brand: "Lavazza",
-        price: 38.65,
+        name: "Starbucks Pike Place Roast",
+        brand: "Starbucks",
+        price: 32.00,
         rating: 4.4,
         image: "./assets/img/product/item-4.png",
         isLiked: false
     },
     {
         id: 5,
-        name: "Coffee Beans - Espresso Arabica and Robusta Beans",
-        brand: "Lavazza",
-        price: 47.00,
+        name: "Trung Nguyen Creative 3",
+        brand: "Trung Nguyen",
+        price: 45.00,
         rating: 4.3,
         image: "./assets/img/product/item-5.png",
-        isLiked: true
+        isLiked: false
     },
     {
         id: 6,
-        name: "Lavazza Coffee Blends - Try the Italian Espresso",
-        brand: "Lavazza",
-        price: 53.00,
+        name: "Nescafe Gold Instant Coffee",
+        brand: "Nescafe",
+        price: 24.00,
         rating: 3.4,
         image: "./assets/img/product/item-6.png",
         isLiked: false
     },
     {
         id: 7,
-        name: "Lavazza - Caffè Espresso Black Tin - Ground coffee",
-        brand: "welikecoffee",
-        price: 99.99,
+        name: "Lavazza Qualità Rossa",
+        brand: "Lavazza",
+        price: 38.00,
         rating: 5.0,
         image: "./assets/img/product/item-7.png",
         isLiked: false
     },
     {
         id: 8,
-        name: "Qualità Oro Mountain Grown - Espresso Coffee Beans",
-        brand: "Lavazza",
-        price: 38.65,
+        name: "Starbucks French Roast",
+        brand: "Starbucks",
+        price: 35.00,
         rating: 4.4,
         image: "./assets/img/product/item-8.png",
         isLiked: false
-    }
-    ,
-    // Additional items to show 16 cards on home/index-logined
+    },
     {
         id: 9,
-        name: "Arabica Classic Roast - Whole Bean",
-        brand: "Lavazza",
-        price: 42.50,
+        name: "Trung Nguyen Gourmet Blend",
+        brand: "Trung Nguyen",
+        price: 52.00,
         rating: 4.2,
         image: "./assets/img/product/item-1.png",
         isLiked: false
     },
     {
         id: 10,
-        name: "Espresso Perfetto - Dark Roast",
-        brand: "Lavazza",
-        price: 55.00,
+        name: "Nescafe Classic Instant",
+        brand: "Nescafe",
+        price: 18.00,
         rating: 3.9,
         image: "./assets/img/product/item-2.png",
-        isLiked: false
-    },
-    {
-        id: 11,
-        name: "Caffè Crema - Ground Coffee",
-        brand: "welikecoffee",
-        price: 88.90,
-        rating: 4.8,
-        image: "./assets/img/product/item-3.png",
-        isLiked: false
-    },
-    {
-        id: 12,
-        name: "Mountain Grown Gold - Beans",
-        brand: "Lavazza",
-        price: 36.20,
-        rating: 4.1,
-        image: "./assets/img/product/item-4.png",
-        isLiked: false
-    },
-    {
-        id: 13,
-        name: "Arabica Robusta Blend - Beans",
-        brand: "Lavazza",
-        price: 47.00,
-        rating: 4.5,
-        image: "./assets/img/product/item-5.png",
-        isLiked: false
-    },
-    {
-        id: 14,
-        name: "Italian Espresso Selection",
-        brand: "Lavazza",
-        price: 53.00,
-        rating: 3.6,
-        image: "./assets/img/product/item-6.png",
-        isLiked: false
-    },
-    {
-        id: 15,
-        name: "Caffè Espresso Black Tin",
-        brand: "welikecoffee",
-        price: 95.99,
-        rating: 4.9,
-        image: "./assets/img/product/item-7.png",
-        isLiked: false
-    },
-    {
-        id: 16,
-        name: "Oro Mountain Grown - Beans",
-        brand: "Lavazza",
-        price: 39.99,
-        rating: 4.4,
-        image: "./assets/img/product/item-8.png",
         isLiked: false
     }
 ];
@@ -157,11 +101,32 @@ class ProductRenderer {
         this.init();
     }
 
-    init() {
+    async init() {
         if (!this.container) return;
 
+        // Fetch wishlist status from API
+        await this.syncWishlistStatus();
+        
         this.renderProducts();
         this.initLikeButtons();
+    }
+
+    async syncWishlistStatus() {
+        try {
+            const response = await fetch('/api/wishlist');
+            if (response.ok) {
+                const wishlistItems = await response.json();
+                const wishlistProductIds = wishlistItems.map(item => item.productId);
+                
+                // Update isLiked status for each product
+                this.products.forEach(product => {
+                    product.isLiked = wishlistProductIds.includes(product.id);
+                });
+                this.filteredProducts = [...this.products];
+            }
+        } catch (error) {
+            console.log('Could not sync wishlist status:', error);
+        }
     }
 
     renderProducts(products = this.filteredProducts) {
@@ -177,7 +142,7 @@ class ProductRenderer {
             <div class="col">
                 <article class="product-card">
                     <div class="product-card__img-wrap">
-                        <a href="./product-detail.html">
+                        <a href="/product/${product.id}">
                             <img src="${product.image}" alt="${product.name}" class="product-card__thumb" />
                         </a>
                         <button class="like-btn product-card__like-btn ${likeClass}" data-product-id="${product.id}">
@@ -186,7 +151,7 @@ class ProductRenderer {
                         </button>
                     </div>
                     <h3 class="product-card__title">
-                        <a href="./product-detail.html">${product.name}</a>
+                        <a href="/product/${product.id}">${product.name}</a>
                     </h3>
                     <p class="product-card__brand">${product.brand}</p>
                     <div class="product-card__row">
@@ -196,7 +161,7 @@ class ProductRenderer {
                     </div>
                     <div class="product-card__row">
                         <button class="btn btn--primary js-add-to-cart"
-                                data-id="${product.id}"
+                                data-product-id="${product.id}"
                                 data-name="${product.name}"
                                 data-price="${product.price}"
                                 data-image="${product.image}">
@@ -211,11 +176,31 @@ class ProductRenderer {
     initLikeButtons() {
         const likeButtons = this.container.querySelectorAll('.like-btn');
         likeButtons.forEach(button => {
-            button.onclick = (e) => {
+            button.onclick = async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Toggle class reliably regardless of viewport
-                button.classList.toggle('like-btn__liked');
+                
+                const productId = button.getAttribute('data-product-id');
+                if (!productId) {
+                    // Fallback for static cards without product ID
+                    button.classList.toggle('like-btn__liked');
+                    return;
+                }
+                
+                // Call backend API
+                if (window.WishlistAPI) {
+                    try {
+                        const result = await window.WishlistAPI.toggleWishlist(productId);
+                        if (result !== false) {
+                            button.classList.toggle('like-btn__liked');
+                        }
+                    } catch (error) {
+                        console.error('Wishlist toggle error:', error);
+                    }
+                } else {
+                    // Fallback if API not loaded
+                    button.classList.toggle('like-btn__liked');
+                }
             };
         });
     }
@@ -312,7 +297,7 @@ function bindAddToCartButtons() {
     document.querySelectorAll('.js-add-to-cart').forEach((btn) => {
         btn.onclick = async function (e) {
             e.preventDefault();
-            const productId = parseInt(this.dataset.id, 10);
+            const productId = parseInt(this.dataset.productId, 10);
 
             // Gọi API backend thay vì localStorage
             if (window.CartAPI && typeof window.CartAPI.addToCart === 'function') {

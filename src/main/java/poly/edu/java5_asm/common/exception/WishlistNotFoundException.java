@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.exception;
+package poly.edu.java5_asm.common.exception;
 
 /**
  * Exception khi không tìm thấy wishlist item

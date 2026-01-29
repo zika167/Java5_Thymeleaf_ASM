@@ -1,7 +1,7 @@
-package poly.edu.java5_asm.service;
+package poly.edu.java5_asm.module.caffeine.service;
 
-import poly.edu.java5_asm.dto.request.CaffeineCalculationRequest;
-import poly.edu.java5_asm.dto.result.CaffeineCalculationResult;
+import poly.edu.java5_asm.module.caffeine.dto.request.CaffeineCalculationRequest;
+import poly.edu.java5_asm.module.caffeine.dto.response.CaffeineCalculationResult;
 
 import java.util.Map;
 

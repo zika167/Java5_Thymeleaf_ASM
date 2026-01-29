@@ -1,10 +1,10 @@
-package poly.edu.java5_asm.repository;
+package poly.edu.java5_asm.module.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import poly.edu.java5_asm.entity.UserActivityLog;
+import poly.edu.java5_asm.module.user.entity.UserActivityLog;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,5 +1,5 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<body>
 <aside th:fragment="admin-sidebar" class="admin-sidebar">
     <div class="admin-sidebar__header">
         <a th:href="@{/}" class="admin-logo">
@@ -50,10 +50,12 @@
             <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="admin-nav__icon"/>
             <span>Về trang chủ</span>
         </a>
-        <a th:href="@{/logout}" class="admin-nav__link">
-            <img th:src="@{/assets/icon/logout.svg}" alt="" class="admin-nav__icon"/>
-            <span>Đăng xuất</span>
-        </a>
+        <form th:action="@{/auth/logout}" method="post" style="margin: 0;">
+            <button type="submit" class="admin-nav__link" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left;">
+                <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="admin-nav__icon"/>
+                <span>Đăng xuất</span>
+            </button>
+        </form>
     </div>
 </aside>
 
@@ -150,4 +152,5 @@
         }
     }
 </style>
+</body>
 </html>

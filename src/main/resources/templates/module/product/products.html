@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Sản phẩm | grocerystore')}"></head>
+<body>
+<header th:replace="~{shared/fragments/header :: header}"></header>
+
+<main class="products-page">
+    <div class="container py-4">
+        <div class="row">
+            <!-- Sidebar Filter -->
+            <div class="col-lg-3 col-md-4">
+                <div class="filter-sidebar card p-3 mb-4">
+                    <h5 class="mb-3">Bộ lọc</h5>
+                    
+                    <!-- Categories -->
+                    <div class="filter-section mb-4">
+                        <h6 class="filter-title">Danh mục</h6>
+                        <div class="filter-list">
+                            <div class="form-check" th:each="category : ${navCategories}">
+                                <input class="form-check-input category-filter" type="radio" 
+                                       name="categoryFilter" 
+                                       th:id="'cat-' + ${category.id}"
+                                       th:value="${category.id}">
+                                <label class="form-check-label" th:for="'cat-' + ${category.id}" 
+                                       th:text="${category.name}">Category</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input category-filter" type="radio" 
+                                       name="categoryFilter" id="cat-all" value="" checked>
+                                <label class="form-check-label" for="cat-all">Tất cả</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Brands -->
+                    <div class="filter-section mb-4">
+                        <h6 class="filter-title">Thương hiệu</h6>
+                        <div class="filter-list" id="brandFilters">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Price Range -->
+                    <div class="filter-section mb-4">
+                        <h6 class="filter-title">Khoảng giá</h6>
+                        <div class="d-flex gap-2 align-items-center">
+                            <input type="number" class="form-control form-control-sm" 
+                                   id="minPrice" placeholder="Từ" min="0">
+                            <span>-</span>
+                            <input type="number" class="form-control form-control-sm" 
+                                   id="maxPrice" placeholder="Đến" min="0">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary w-100" onclick="applyFilters()">Áp dụng</button>
+                    <button class="btn btn-outline-secondary w-100 mt-2" onclick="clearFilters()">Xóa bộ lọc</button>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="col-lg-9 col-md-8">
+                <!-- Sort & Results Info -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p class="mb-0" id="resultsInfo">Đang tải...</p>
+                    <select class="form-select form-select-sm w-auto" id="sortSelect" onchange="applyFilters()">
+                        <option value="createdAt-DESC">Mới nhất</option>
+                        <option value="price-ASC">Giá: Thấp đến cao</option>
+                        <option value="price-DESC">Giá: Cao đến thấp</option>
+                        <option value="name-ASC">Tên: A-Z</option>
+                    </select>
+                </div>
+                
+                <!-- Products -->
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3" id="productsGrid">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <nav class="mt-4" id="pagination"></nav>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+
+<script>
+    let currentPage = 0;
+    const pageSize = 12;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBrands();
+        loadProducts();
+    });
+    
+    async function loadBrands() {
+        try {
+            const response = await fetch('/api/products/brands');
+            const brands = await response.json();
+            
+            const container = document.getElementById('brandFilters');
+            container.innerHTML = brands.map(brand => `
+                <div class="form-check">
+                    <input class="form-check-input brand-filter" type="radio" 
+                           name="brandFilter" id="brand-${brand.id}" value="${brand.id}">
+                    <label class="form-check-label" for="brand-${brand.id}">${brand.name}</label>
+                </div>
+            `).join('') + `
+                <div class="form-check">
+                    <input class="form-check-input brand-filter" type="radio" 
+                           name="brandFilter" id="brand-all" value="" checked>
+                    <label class="form-check-label" for="brand-all">Tất cả</label>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error loading brands:', error);
+        }
+    }
+    
+    async function loadProducts() {
+        const categoryId = document.querySelector('input[name="categoryFilter"]:checked')?.value || '';
+        const brandId = document.querySelector('input[name="brandFilter"]:checked')?.value || '';
+        const minPrice = document.getElementById('minPrice').value || '';
+        const maxPrice = document.getElementById('maxPrice').value || '';
+        const sortValue = document.getElementById('sortSelect').value.split('-');
+        const sortBy = sortValue[0];
+        const sortDirection = sortValue[1];
+        
+        const params = new URLSearchParams({
+            page: currentPage,
+            size: pageSize,
+            sortBy: sortBy,
+            sortDirection: sortDirection
+        });
+        
+        if (categoryId) params.append('categoryId', categoryId);
+        if (brandId) params.append('brandId', brandId);
+        if (minPrice) params.append('minPrice', minPrice);
+        if (maxPrice) params.append('maxPrice', maxPrice);
+        
+        try {
+            const response = await fetch(`/api/products/search?${params}`);
+            const data = await response.json();
+            
+            renderProducts(data.products);
+            renderPagination(data.totalPages, data.currentPage);
+            document.getElementById('resultsInfo').textContent = 
+                `Hiển thị ${data.products.length} / ${data.totalElements} sản phẩm`;
+        } catch (error) {
+            console.error('Error loading products:', error);
+            document.getElementById('productsGrid').innerHTML = 
+                '<div class="col-12 text-center py-5 text-danger">Lỗi tải sản phẩm</div>';
+        }
+    }
+    
+    function renderProducts(products) {
+        const container = document.getElementById('productsGrid');
+        
+        if (!products || products.length === 0) {
+            container.innerHTML = '<div class="col-12 text-center py-5">Không tìm thấy sản phẩm nào</div>';
+            return;
+        }
+        
+        container.innerHTML = products.map(product => `
+            <div class="col">
+                <article class="product-card h-100">
+                    <div class="product-card__img-wrap">
+                        <a href="/product/${product.id}">
+                            <img src="${product.imageUrl || '/assets/img/product/item-1.png'}" 
+                                 alt="${product.name}" class="product-card__thumb"/>
+                        </a>
+                        <button class="like-btn product-card__like-btn" onclick="toggleWishlist(${product.id})">
+                            <img src="/assets/icon/heart.svg" alt="" class="like-btn__icon icon"/>
+                            <img src="/assets/icon/heart-red.svg" alt="" class="like-btn__icon--liked"/>
+                        </button>
+                    </div>
+                    <h3 class="product-card__title">
+                        <a href="/product/${product.id}">${product.name}</a>
+                    </h3>
+                    <p class="product-card__brand">${product.brandName || ''}</p>
+                    <div class="product-card__row">
+                        ${product.discountPrice 
+                            ? `<span class="product-card__price text-danger">$${product.discountPrice}</span>
+                               <span class="text-muted text-decoration-line-through small">$${product.price}</span>`
+                            : `<span class="product-card__price">$${product.price}</span>`
+                        }
+                        <img src="/assets/icon/star.svg" alt="" class="product-card__star"/>
+                        <span class="product-card__score">${product.averageRating?.toFixed(1) || '0.0'}</span>
+                    </div>
+                </article>
+            </div>
+        `).join('');
+    }
+    
+    function renderPagination(totalPages, currentPage) {
+        const container = document.getElementById('pagination');
+        
+        if (totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<ul class="pagination justify-content-center">';
+        
+        // Previous
+        html += `<li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;">«</a>
+        </li>`;
+        
+        // Pages
+        for (let i = 0; i < totalPages; i++) {
+            if (i === 0 || i === totalPages - 1 || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i + 1}</a>
+                </li>`;
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            }
+        }
+        
+        // Next
+        html += `<li class="page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;">»</a>
+        </li>`;
+        
+        html += '</ul>';
+        container.innerHTML = html;
+    }
+    
+    function goToPage(page) {
+        currentPage = page;
+        loadProducts();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function applyFilters() {
+        currentPage = 0;
+        loadProducts();
+    }
+    
+    function clearFilters() {
+        document.getElementById('cat-all').checked = true;
+        document.getElementById('brand-all').checked = true;
+        document.getElementById('minPrice').value = '';
+        document.getElementById('maxPrice').value = '';
+        document.getElementById('sortSelect').value = 'createdAt-DESC';
+        applyFilters();
+    }
+    
+    function toggleWishlist(productId) {
+        // TODO: Implement wishlist toggle
+        console.log('Toggle wishlist for product:', productId);
+    }
+</script>
+
+<style>
+    .filter-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+    .filter-title {
+        font-weight: 600;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eee;
+    }
+    .filter-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .product-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px;
+        transition: box-shadow 0.3s;
+    }
+    .product-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .product-card__img-wrap {
+        position: relative;
+        margin-bottom: 12px;
+    }
+    .product-card__thumb {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #f5f5f5;
+    }
+    .product-card__like-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+    }
+    .product-card__title {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .product-card__title a {
+        color: inherit;
+        text-decoration: none;
+    }
+    .product-card__brand {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    .product-card__row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .product-card__price {
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+    .product-card__star {
+        width: 16px;
+        height: 16px;
+    }
+    .product-card__score {
+        font-size: 13px;
+        color: #666;
+    }
+</style>
+</body>
+</html>

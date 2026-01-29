@@ -184,6 +184,4 @@
         getProductAverageRating,
         renderStars
     };
-
-    console.log('✅ Reviews API Service initialized');
 })();

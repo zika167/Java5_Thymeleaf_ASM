@@ -1,8 +1,8 @@
-package poly.edu.java5_asm.repository;
+package poly.edu.java5_asm.module.category.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import poly.edu.java5_asm.entity.Category;
+import poly.edu.java5_asm.module.category.entity.Category;
 
 import java.util.List;
 import java.util.Optional;

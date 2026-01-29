@@ -1,4 +1,4 @@
-package poly.edu.java5_asm.repository;
+package poly.edu.java5_asm.module.wishlist.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import poly.edu.java5_asm.entity.Wishlist;
+import poly.edu.java5_asm.module.wishlist.entity.Wishlist;
 
 import java.util.List;
 import java.util.Optional;
