@@ -66,4 +66,14 @@ public class UserService {
 
         return userRepository.saveAndFlush(user);
     }
+
+    /**
+     * Cập nhật avatar của user.
+     */
+    @Transactional
+    public User updateAvatar(Long userId, String avatarUrl) {
+        User user = findById(userId);
+        user.setAvatarUrl(avatarUrl);
+        return userRepository.saveAndFlush(user);
+    }
 }

@@ -116,7 +116,7 @@ public class OrderService {
 
         // Gửi email xác nhận đơn hàng
         try {
-            emailService.sendOrderConfirmation(order, user);
+            emailService.sendOrderConfirmation(order.getId(), user.getId());
         } catch (Exception e) {
             log.error("Failed to send order confirmation email: {}", e.getMessage());
             // Don't fail the order creation if email fails
@@ -144,7 +144,7 @@ public class OrderService {
 
         // Gửi email cập nhật trạng thái
         try {
-            emailService.sendOrderStatusUpdate(order, order.getUser());
+            emailService.sendOrderStatusUpdate(order.getId(), order.getUser().getId());
         } catch (Exception e) {
             log.error("Failed to send order status update email: {}", e.getMessage());
         }
@@ -178,7 +178,7 @@ public class OrderService {
         // Gửi email thông báo khi trạng thái thanh toán thay đổi
         if (!oldStatus.equals(paymentStatus)) {
             try {
-                emailService.sendPaymentStatusUpdate(order, order.getUser());
+                emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
             } catch (Exception e) {
                 log.error("Failed to send payment status update email: {}", e.getMessage());
             }
@@ -248,7 +248,7 @@ public class OrderService {
 
         // Gửi email thông báo
         try {
-            emailService.sendPaymentStatusUpdate(order, order.getUser());
+            emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
         } catch (Exception e) {
             log.error("Failed to send payment notification email for order {}: {}",
                     orderNumber, e.getMessage());
@@ -288,7 +288,7 @@ public class OrderService {
 
         // Gửi email cập nhật trạng thái
         try {
-            emailService.sendOrderStatusUpdate(order, order.getUser());
+            emailService.sendOrderStatusUpdate(order.getId(), order.getUser().getId());
         } catch (Exception e) {
             log.error("Failed to send order status update email: {}", e.getMessage());
         }

@@ -223,13 +223,30 @@
     }
 
     /**
+     * Format price to VND (convert USD if needed)
+     */
+    function formatPriceVND(price) {
+        let p = parseFloat(price) || 0;
+        // Convert USD to VND if price < 10000
+        if (p > 0 && p < 10000) {
+            p = p * 25000;
+        }
+        return new Intl.NumberFormat('vi-VN').format(p) + 'đ';
+    }
+
+    /**
      * Cập nhật UI header giỏ hàng
      */
     function updateHeaderCartUI(cartData) {
         if (!cartData) return;
 
         const totalItems = cartData.totalItems || 0;
-        const totalPrice = cartData.totalPrice || 0;
+        let totalPrice = parseFloat(cartData.totalPrice) || 0;
+        
+        // Convert USD to VND if needed
+        if (totalPrice > 0 && totalPrice < 10000) {
+            totalPrice = totalPrice * 25000;
+        }
 
         // Cập nhật badge số lượng
         document.querySelectorAll('.nav-btn__qnt').forEach((el) => {
@@ -277,7 +294,7 @@
             if (countSpan) countSpan.textContent = String(totalItems);
 
             const ddTitle = cartWrap.querySelector('.act-dropdown__title');
-            if (ddTitle) ddTitle.textContent = `You have ${totalItems} item(s)`;
+            if (ddTitle) ddTitle.textContent = `Bạn có ${totalItems} sản phẩm`;
 
             // Cập nhật dropdown list
             const listEl = cartWrap.querySelector('.act-dropdown__list');
@@ -292,7 +309,7 @@
                                 <img src="${item.productImage}" alt="" class="cart-preview-item__thumb" />
                             </div>
                             <h3 class="cart-preview-item__title">${item.productName}</h3>
-                            <p class="cart-preview-item__price">${(item.subtotal || 0).toFixed(2)}</p>
+                            <p class="cart-preview-item__price">${formatPriceVND(item.subtotal)}</p>
                         </article>
                     `;
                     listEl.appendChild(col);
@@ -308,9 +325,9 @@
                     const valueEl = row.querySelector('.act-dropdown__value');
                     if (!valueEl) return;
 
-                    if (label === 'Subtotal') valueEl.textContent = totalPrice.toFixed(2);
-                    if (label === 'Shipping') valueEl.textContent = '0.00';
-                    if (label === 'Total Price') valueEl.textContent = totalPrice.toFixed(2);
+                    if (label === 'Subtotal' || label === 'Tạm tính') valueEl.textContent = formatPriceVND(totalPrice);
+                    if (label === 'Shipping' || label === 'Vận chuyển') valueEl.textContent = 'Miễn phí';
+                    if (label === 'Total Price' || label === 'Tổng cộng') valueEl.textContent = formatPriceVND(totalPrice * 1.1);
                 });
             }
         }
@@ -318,10 +335,14 @@
 
     /**
      * Bind "Add to Cart" buttons trên product cards
+     * Chỉ bind cho các nút KHÔNG có class js-add-to-cart (đã được xử lý bởi products.js)
      */
     function bindAddToCartButtons() {
         document.addEventListener('click', async (e) => {
-            const btn = e.target.closest('.btn--primary[data-product-id], .js-add-to-cart-btn, .js-add-to-cart[data-product-id]');
+            // Skip nếu là nút js-add-to-cart (đã được xử lý bởi products.js)
+            if (e.target.closest('.js-add-to-cart')) return;
+            
+            const btn = e.target.closest('.btn--primary[data-product-id]');
             if (!btn) return;
 
             e.preventDefault();

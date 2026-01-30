@@ -1,114 +1,47 @@
-// Products data - synced with database (ID 1-10)
-const productsData = [
-    {
-        id: 1,
-        name: "Coffee Beans - Espresso Arabica and Robusta Beans",
-        brand: "Lavazza",
-        price: 47.00,
-        rating: 4.3,
-        image: "./assets/img/product/item-1.png",
-        isLiked: false
-    },
-    {
-        id: 2,
-        name: "Lavazza Coffee Blends - Try the Italian Espresso",
-        brand: "Lavazza",
-        price: 53.00,
-        rating: 3.4,
-        image: "./assets/img/product/item-2.png",
-        isLiked: false
-    },
-    {
-        id: 3,
-        name: "Lavazza - Caffè Espresso Black Tin - Ground coffee",
-        brand: "Lavazza",
-        price: 99.99,
-        rating: 5.0,
-        image: "./assets/img/product/item-3.png",
-        isLiked: false
-    },
-    {
-        id: 4,
-        name: "Starbucks Pike Place Roast",
-        brand: "Starbucks",
-        price: 32.00,
-        rating: 4.4,
-        image: "./assets/img/product/item-4.png",
-        isLiked: false
-    },
-    {
-        id: 5,
-        name: "Trung Nguyen Creative 3",
-        brand: "Trung Nguyen",
-        price: 45.00,
-        rating: 4.3,
-        image: "./assets/img/product/item-5.png",
-        isLiked: false
-    },
-    {
-        id: 6,
-        name: "Nescafe Gold Instant Coffee",
-        brand: "Nescafe",
-        price: 24.00,
-        rating: 3.4,
-        image: "./assets/img/product/item-6.png",
-        isLiked: false
-    },
-    {
-        id: 7,
-        name: "Lavazza Qualità Rossa",
-        brand: "Lavazza",
-        price: 38.00,
-        rating: 5.0,
-        image: "./assets/img/product/item-7.png",
-        isLiked: false
-    },
-    {
-        id: 8,
-        name: "Starbucks French Roast",
-        brand: "Starbucks",
-        price: 35.00,
-        rating: 4.4,
-        image: "./assets/img/product/item-8.png",
-        isLiked: false
-    },
-    {
-        id: 9,
-        name: "Trung Nguyen Gourmet Blend",
-        brand: "Trung Nguyen",
-        price: 52.00,
-        rating: 4.2,
-        image: "./assets/img/product/item-1.png",
-        isLiked: false
-    },
-    {
-        id: 10,
-        name: "Nescafe Classic Instant",
-        brand: "Nescafe",
-        price: 18.00,
-        rating: 3.9,
-        image: "./assets/img/product/item-2.png",
-        isLiked: false
-    }
-];
+// Format price to VND
+function formatVND(price) {
+    return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+}
 
 class ProductRenderer {
     constructor(containerSelector) {
         this.container = document.querySelector(containerSelector);
-        this.products = productsData;
-        this.filteredProducts = [...this.products];
-
+        this.products = [];
+        this.filteredProducts = [];
+        this.currentPage = 1;
+        this.itemsPerPage = 8;
         this.init();
     }
 
     async init() {
         if (!this.container) return;
-
-        // Fetch wishlist status from API
+        await this.loadProductsFromAPI();
         await this.syncWishlistStatus();
-        
         this.renderProducts();
-        this.initLikeButtons();
+        this.renderTopRated();
+        this.initPagination();
+    }
+
+    async loadProductsFromAPI() {
+        try {
+            const response = await fetch('/api/products?page=0&size=50');
+            if (response.ok) {
+                const data = await response.json();
+                this.products = data.products.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    brand: p.brandName || 'Unknown',
+                    price: p.price,
+                    rating: p.averageRating || 0,
+                    image: p.imageUrl || './assets/img/product/item-1.png',
+                    isLiked: false
+                }));
+                this.filteredProducts = [...this.products];
+                console.log('Loaded products from API:', this.products.length);
+            }
+        } catch (error) {
+            console.error('Could not load products from API:', error);
+        }
     }
 
     async syncWishlistStatus() {
@@ -117,33 +50,89 @@ class ProductRenderer {
             if (response.ok) {
                 const wishlistItems = await response.json();
                 const wishlistProductIds = wishlistItems.map(item => item.productId);
-                
-                // Update isLiked status for each product
                 this.products.forEach(product => {
                     product.isLiked = wishlistProductIds.includes(product.id);
                 });
                 this.filteredProducts = [...this.products];
             }
         } catch (error) {
-            console.log('Could not sync wishlist status:', error);
+            console.log('Could not sync wishlist status');
         }
     }
 
-    renderProducts(products = this.filteredProducts) {
-        if (!this.container) return;
+    // Render top 3 rated products
+    renderTopRated() {
+        const container = document.getElementById('top-rated-container');
+        if (!container || this.products.length === 0) return;
 
-        this.container.innerHTML = products.map(product => this.createProductHTML(product)).join('');
+        const topRated = [...this.products]
+            .sort((a, b) => b.rating - a.rating)
+            .slice(0, 3);
+
+        container.innerHTML = topRated.map(product => {
+            const imageUrl = this.getImageUrl(product.image);
+            return `
+                <div class="col">
+                    <a href="/product/${product.id}">
+                        <article class="cate-item">
+                            <img src="${imageUrl}" alt="${product.name}" class="cate-item__thumb"/>
+                            <div class="cate-item__info">
+                                <h3 class="cate-item__title">${formatVND(product.price)}</h3>
+                                <p class="cate-item__desc">${product.name}</p>
+                                <p class="cate-item__rating">⭐ ${product.rating.toFixed(1)}</p>
+                            </div>
+                        </article>
+                    </a>
+                </div>
+            `;
+        }).join('');
+    }
+
+    getImageUrl(image) {
+        if (!image) return './assets/img/product/item-1.png';
+        if (image.startsWith('http')) return image;
+        if (image.startsWith('/')) return image;
+        return './assets/img/product/item-1.png';
+    }
+
+    // Get paginated products
+    getPaginatedProducts() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        return this.filteredProducts.slice(start, end);
+    }
+
+    getTotalPages() {
+        return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
+    }
+
+    renderProducts() {
+        if (!this.container) return;
+        
+        const paginatedProducts = this.getPaginatedProducts();
+        
+        if (paginatedProducts.length === 0) {
+            this.container.innerHTML = '<div class="col-12 text-center py-5"><p>Không có sản phẩm nào</p></div>';
+            this.renderPagination();
+            return;
+        }
+        
+        this.container.innerHTML = paginatedProducts.map(product => this.createProductHTML(product)).join('');
         this.initLikeButtons();
+        bindAddToCartButtons();
+        this.renderPagination();
     }
 
     createProductHTML(product) {
         const likeClass = product.isLiked ? 'like-btn__liked' : '';
+        const rating = Math.round((product.rating || 0) * 10) / 10;
+        const imageUrl = this.getImageUrl(product.image);
         return `
             <div class="col">
                 <article class="product-card">
                     <div class="product-card__img-wrap">
                         <a href="/product/${product.id}">
-                            <img src="${product.image}" alt="${product.name}" class="product-card__thumb" />
+                            <img src="${imageUrl}" alt="${product.name}" class="product-card__thumb" />
                         </a>
                         <button class="like-btn product-card__like-btn ${likeClass}" data-product-id="${product.id}">
                             <img src="./assets/icon/heart.svg" alt="" class="like-btn__icon icon" />
@@ -155,17 +144,17 @@ class ProductRenderer {
                     </h3>
                     <p class="product-card__brand">${product.brand}</p>
                     <div class="product-card__row">
-                        <span class="product-card__price">$${product.price.toFixed(2)}</span>
+                        <span class="product-card__price">${formatVND(product.price)}</span>
                         <img src="./assets/icon/star.svg" alt="" class="product-card__star" />
-                        <span class="product-card__score">${product.rating}</span>
+                        <span class="product-card__score">${rating}</span>
                     </div>
                     <div class="product-card__row">
                         <button class="btn btn--primary js-add-to-cart"
                                 data-product-id="${product.id}"
                                 data-name="${product.name}"
                                 data-price="${product.price}"
-                                data-image="${product.image}">
-                            Add to cart
+                                data-image="${imageUrl}">
+                            Thêm vào giỏ
                         </button>
                     </div>
                 </article>
@@ -181,57 +170,100 @@ class ProductRenderer {
                 e.stopPropagation();
                 
                 const productId = button.getAttribute('data-product-id');
-                if (!productId) {
-                    // Fallback for static cards without product ID
-                    button.classList.toggle('like-btn__liked');
-                    return;
-                }
+                if (!productId) return;
                 
-                // Call backend API
                 if (window.WishlistAPI) {
                     try {
                         const result = await window.WishlistAPI.toggleWishlist(productId);
                         if (result !== false) {
                             button.classList.toggle('like-btn__liked');
+                            const product = this.products.find(p => p.id === parseInt(productId));
+                            if (product) {
+                                product.isLiked = !product.isLiked;
+                            }
                         }
                     } catch (error) {
                         console.error('Wishlist toggle error:', error);
                     }
-                } else {
-                    // Fallback if API not loaded
-                    button.classList.toggle('like-btn__liked');
                 }
             };
         });
     }
 
-    // Deprecated per viewport bug; logic handled inline above
-    handleLikeClick() {
-        // no-op
+    // Pagination
+    initPagination() {
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+        
+        if (prevBtn) {
+            prevBtn.onclick = () => {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.renderProducts();
+                    this.scrollToProducts();
+                }
+            };
+        }
+        
+        if (nextBtn) {
+            nextBtn.onclick = () => {
+                if (this.currentPage < this.getTotalPages()) {
+                    this.currentPage++;
+                    this.renderProducts();
+                    this.scrollToProducts();
+                }
+            };
+        }
+    }
+
+    renderPagination() {
+        const totalPages = this.getTotalPages();
+        const pagesContainer = document.getElementById('pagination-pages');
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+        const paginationContainer = document.getElementById('pagination-container');
+        
+        // Hide pagination if only 1 page
+        if (paginationContainer) {
+            paginationContainer.style.display = totalPages <= 1 ? 'none' : 'flex';
+        }
+        
+        if (prevBtn) prevBtn.disabled = this.currentPage <= 1;
+        if (nextBtn) nextBtn.disabled = this.currentPage >= totalPages;
+        
+        if (pagesContainer) {
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const activeClass = i === this.currentPage ? 'pagination__page--active' : '';
+                html += `<button class="pagination__page ${activeClass}" data-page="${i}">${i}</button>`;
+            }
+            pagesContainer.innerHTML = html;
+            
+            // Bind page buttons
+            pagesContainer.querySelectorAll('.pagination__page').forEach(btn => {
+                btn.onclick = () => {
+                    this.currentPage = parseInt(btn.dataset.page);
+                    this.renderProducts();
+                    this.scrollToProducts();
+                };
+            });
+        }
+    }
+
+    scrollToProducts() {
+        this.container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     filterProducts(filters = {}) {
         this.filteredProducts = this.products.filter(product => {
-            // Price filter
             if (filters.minPrice !== undefined && product.price < filters.minPrice) return false;
             if (filters.maxPrice !== undefined && product.price > filters.maxPrice) return false;
-
-            // Brand filter
-            if (filters.brand && filters.brand !== 'all' && product.brand.toLowerCase() !== filters.brand.toLowerCase()) return false;
-
+            if (filters.wishlistOnly && !product.isLiked) return false;
+            if (filters.minRating !== undefined && product.rating < filters.minRating) return false;
             return true;
         });
-
+        this.currentPage = 1; // Reset to first page after filter
         this.renderProducts();
-        this.updateProductCount();
-    }
-
-    updateProductCount() {
-        const countElement = document.querySelector('.home__heading');
-        if (countElement) {
-            const totalCount = this.filteredProducts.length;
-            countElement.textContent = `Total LavAzza ${totalCount}`;
-        }
     }
 
     searchProducts(query) {
@@ -243,63 +275,68 @@ class ProductRenderer {
                 product.brand.toLowerCase().includes(query.toLowerCase())
             );
         }
-
+        this.currentPage = 1;
         this.renderProducts();
-        this.updateProductCount();
     }
 }
 
 // Initialize product renderer when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
-    const productContainer = document.querySelector('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
+    const productContainer = document.querySelector('#products-container');
     if (productContainer) {
-        window.productRenderer = new ProductRenderer('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
+        window.productRenderer = new ProductRenderer('#products-container');
+        console.log('ProductRenderer initialized');
     }
-    // Bind add-to-cart buttons for static category page as well
-    bindAddToCartButtons();
+    
+    // Bind filter submit button
+    const filterSubmitBtn = document.querySelector('.filter__submit');
+    if (filterSubmitBtn) {
+        filterSubmitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            applyFilters();
+        });
+    }
+    
+    // Bind rating tags
+    document.querySelectorAll('.rating-tag').forEach(tag => {
+        tag.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.rating-tag').forEach(t => t.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('filter-rating').value = this.dataset.rating;
+        });
+    });
+    
+    // Set default rating tag as selected
+    const defaultRatingTag = document.querySelector('.rating-tag[data-rating="0"]');
+    if (defaultRatingTag) defaultRatingTag.classList.add('selected');
 });
 
-// Also initialize when templates are loaded
-window.addEventListener('template-loaded', function () {
-    const productContainer = document.querySelector('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
-    if (productContainer && !window.productRenderer) {
-        window.productRenderer = new ProductRenderer('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
-    }
-    bindAddToCartButtons();
-});
-
-// Filter functionality
+// Filter function
 function applyFilters() {
-    const minPrice = parseFloat(document.getElementById('min-price')?.value) || 0;
-    const maxPrice = parseFloat(document.getElementById('max-price')?.value) || 200;
-    const brandSelect = document.querySelector('.weight-size');
-    const selectedBrand = brandSelect ? brandSelect.value : 'all';
+    const minPrice = parseFloat(document.getElementById('min-price')?.value) * 1000 || 0;
+    const maxPrice = parseFloat(document.getElementById('max-price')?.value) * 1000 || 5000000;
+    const wishlistOnly = document.getElementById('filter-wishlist')?.checked || false;
+    const minRating = parseFloat(document.getElementById('filter-rating')?.value) || 0;
 
     if (window.productRenderer) {
         window.productRenderer.filterProducts({
             minPrice: minPrice,
             maxPrice: maxPrice,
-            brand: selectedBrand
+            wishlistOnly: wishlistOnly,
+            minRating: minRating
         });
     }
+    
+    document.getElementById('home-filter')?.classList.add('hide');
 }
 
-// Search functionality
-function searchProducts() {
-    const searchInput = document.querySelector('.filter__form-input');
-    if (searchInput && window.productRenderer) {
-        window.productRenderer.searchProducts(searchInput.value);
-    }
-}
-
-// ===== Add-to-cart for product cards =====
 function bindAddToCartButtons() {
     document.querySelectorAll('.js-add-to-cart').forEach((btn) => {
         btn.onclick = async function (e) {
             e.preventDefault();
             const productId = parseInt(this.dataset.productId, 10);
-
-            // Gọi API backend thay vì localStorage
             if (window.CartAPI && typeof window.CartAPI.addToCart === 'function') {
                 try {
                     await window.CartAPI.addToCart(productId, 1);

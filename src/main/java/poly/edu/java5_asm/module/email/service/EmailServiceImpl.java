@@ -9,12 +9,17 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import poly.edu.java5_asm.module.order.entity.Order;
-import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.order.entity.OrderItem;
+import poly.edu.java5_asm.module.order.repository.OrderRepository;
 import poly.edu.java5_asm.module.order.repository.OrderItemRepository;
-import poly.edu.java5_asm.module.email.service.EmailService;
+import poly.edu.java5_asm.module.user.entity.User;
+import poly.edu.java5_asm.module.user.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +28,9 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final UserRepository userRepository;
 
     @Value("${spring.mail.from}")
     private String fromEmail;
@@ -32,56 +39,78 @@ public class EmailServiceImpl implements EmailService {
     private static final long RETRY_DELAY_MS = 2000;
 
     @Override
-    @Async
-    public void sendOrderConfirmation(Order order, User user) {
-        log.info("Sending order confirmation email for order {} to {}", order.getOrderNumber(), user.getEmail());
+    // @Async - Tạm bỏ để debug
+    @Transactional(readOnly = true)
+    public void sendOrderConfirmation(Long orderId, Long userId) {
+        log.info("=== START sendOrderConfirmation === orderId={}, userId={}", orderId, userId);
 
         try {
+            // Query fresh data within this transaction
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+            List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+
+            log.info("Found order {} with {} items for user {}", 
+                    order.getOrderNumber(), orderItems.size(), user.getEmail());
+
             String subject = "Xác nhận đơn hàng #" + order.getOrderNumber();
-            String htmlContent = buildOrderConfirmationEmail(order, user);
+            String htmlContent = buildOrderConfirmationEmail(order, user, orderItems);
 
             sendEmailWithRetry(user.getEmail(), subject, htmlContent);
-            log.info("Order confirmation email sent successfully for order {}", order.getOrderNumber());
+            log.info("=== END sendOrderConfirmation === email sent successfully for order {}", order.getOrderNumber());
         } catch (Exception e) {
-            log.error("Failed to send order confirmation email for order {}: {}", order.getOrderNumber(), e.getMessage(), e);
+            log.error("=== ERROR sendOrderConfirmation === orderId {}: {}", orderId, e.getMessage(), e);
         }
     }
 
     @Override
     @Async
-    public void sendOrderStatusUpdate(Order order, User user) {
-        log.info("Sending order status update email for order {} to {}", order.getOrderNumber(), user.getEmail());
+    @Transactional(readOnly = true)
+    public void sendOrderStatusUpdate(Long orderId, Long userId) {
+        log.info("Sending order status update email for orderId={}", orderId);
 
         try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+            List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+
             String subject = "Cập nhật đơn hàng #" + order.getOrderNumber();
-            String htmlContent = buildOrderStatusUpdateEmail(order, user);
+            String htmlContent = buildOrderStatusUpdateEmail(order, user, orderItems);
 
             sendEmailWithRetry(user.getEmail(), subject, htmlContent);
             log.info("Order status update email sent successfully for order {}", order.getOrderNumber());
         } catch (Exception e) {
-            log.error("Failed to send order status update email for order {}: {}", order.getOrderNumber(), e.getMessage(), e);
+            log.error("Failed to send order status update email for orderId {}: {}", orderId, e.getMessage(), e);
         }
     }
 
     @Override
     @Async
-    public void sendPaymentStatusUpdate(Order order, User user) {
-        log.info("Sending payment status update email for order {} to {}", order.getOrderNumber(), user.getEmail());
+    @Transactional(readOnly = true)
+    public void sendPaymentStatusUpdate(Long orderId, Long userId) {
+        log.info("Sending payment status update email for orderId={}", orderId);
 
         try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+            List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+
             String subject = getPaymentEmailSubject(order);
-            String htmlContent = buildPaymentStatusUpdateEmail(order, user);
+            String htmlContent = buildPaymentStatusUpdateEmail(order, user, orderItems);
 
             sendEmailWithRetry(user.getEmail(), subject, htmlContent);
             log.info("Payment status update email sent successfully for order {}", order.getOrderNumber());
         } catch (Exception e) {
-            log.error("Failed to send payment status update email for order {}: {}", order.getOrderNumber(), e.getMessage(), e);
+            log.error("Failed to send payment status update email for orderId {}: {}", orderId, e.getMessage(), e);
         }
     }
 
-    /**
-     * Get email subject based on payment status
-     */
     private String getPaymentEmailSubject(Order order) {
         return switch (order.getPaymentStatus()) {
             case PAID -> "Thanh toán thành công - Đơn hàng #" + order.getOrderNumber();
@@ -91,23 +120,42 @@ public class EmailServiceImpl implements EmailService {
         };
     }
 
-    /**
-     * Build payment status update email HTML content
-     */
-    private String buildPaymentStatusUpdateEmail(Order order, User user) {
+    private String buildOrderConfirmationEmail(Order order, User user, List<OrderItem> orderItems) {
+        log.info("Building email for order {}, items count: {}", order.getOrderNumber(), orderItems.size());
+        for (OrderItem item : orderItems) {
+            log.info("  - Item: productName='{}', quantity={}, subtotal={}", 
+                item.getProductName(), item.getQuantity(), item.getSubtotal());
+        }
+        
         Context context = new Context();
         context.setVariable("user", user);
         context.setVariable("order", order);
-        context.setVariable("orderItems", orderItemRepository.findByOrder(order));
+        context.setVariable("orderItems", orderItems);
+
+        return templateEngine.process("shared/email/order-confirmation-email", context);
+    }
+
+    private String buildOrderStatusUpdateEmail(Order order, User user, List<OrderItem> orderItems) {
+        Context context = new Context();
+        context.setVariable("user", user);
+        context.setVariable("order", order);
+        context.setVariable("orderItems", orderItems);
+        context.setVariable("statusMessage", getStatusMessage(order.getStatus()));
+
+        return templateEngine.process("shared/email/order-status-update-email", context);
+    }
+
+    private String buildPaymentStatusUpdateEmail(Order order, User user, List<OrderItem> orderItems) {
+        Context context = new Context();
+        context.setVariable("user", user);
+        context.setVariable("order", order);
+        context.setVariable("orderItems", orderItems);
         context.setVariable("paymentStatusMessage", getPaymentStatusMessage(order.getPaymentStatus()));
         context.setVariable("isPaymentSuccess", order.getPaymentStatus() == Order.PaymentStatus.PAID);
 
-        return templateEngine.process("email/payment-status-email", context);
+        return templateEngine.process("shared/email/payment-status-email", context);
     }
 
-    /**
-     * Get user-friendly payment status message
-     */
     private String getPaymentStatusMessage(Order.PaymentStatus status) {
         return switch (status) {
             case PENDING -> "Đơn hàng của bạn đang chờ thanh toán";
@@ -117,82 +165,6 @@ public class EmailServiceImpl implements EmailService {
         };
     }
 
-    /**
-     * Send email with retry logic (max 3 attempts with exponential backoff)
-     */
-    private void sendEmailWithRetry(String to, String subject, String htmlContent) throws MessagingException {
-        int attempts = 0;
-        MessagingException lastException = null;
-
-        while (attempts < MAX_RETRY_ATTEMPTS) {
-            try {
-                sendEmail(to, subject, htmlContent);
-                return; // Success
-            } catch (MessagingException e) {
-                lastException = e;
-                attempts++;
-
-                if (attempts < MAX_RETRY_ATTEMPTS) {
-                    long delay = RETRY_DELAY_MS * (long) Math.pow(2, attempts - 1); // Exponential backoff
-                    log.warn("Email sending failed (attempt {}/{}), retrying in {}ms...", attempts, MAX_RETRY_ATTEMPTS, delay);
-
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        throw new MessagingException("Email sending interrupted", ie);
-                    }
-                }
-            }
-        }
-
-        log.error("Failed to send email after {} attempts", MAX_RETRY_ATTEMPTS);
-        throw lastException;
-    }
-
-    /**
-     * Send email using JavaMailSender
-     */
-    private void sendEmail(String to, String subject, String htmlContent) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-        helper.setFrom(fromEmail);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(htmlContent, true);
-
-        mailSender.send(message);
-    }
-
-    /**
-     * Build order confirmation email HTML content
-     */
-    private String buildOrderConfirmationEmail(Order order, User user) {
-        Context context = new Context();
-        context.setVariable("user", user);
-        context.setVariable("order", order);
-        context.setVariable("orderItems", orderItemRepository.findByOrder(order));
-
-        return templateEngine.process("email/order-confirmation-email", context);
-    }
-
-    /**
-     * Build order status update email HTML content
-     */
-    private String buildOrderStatusUpdateEmail(Order order, User user) {
-        Context context = new Context();
-        context.setVariable("user", user);
-        context.setVariable("order", order);
-        context.setVariable("orderItems", orderItemRepository.findByOrder(order));
-        context.setVariable("statusMessage", getStatusMessage(order.getStatus()));
-
-        return templateEngine.process("email/order-status-update-email", context);
-    }
-
-    /**
-     * Get user-friendly status message
-     */
     private String getStatusMessage(Order.OrderStatus status) {
         return switch (status) {
             case PENDING -> "Đơn hàng của bạn đang chờ xác nhận";
@@ -202,5 +174,42 @@ public class EmailServiceImpl implements EmailService {
             case DELIVERED -> "Đơn hàng của bạn đã được giao thành công";
             case CANCELLED -> "Đơn hàng của bạn đã bị hủy";
         };
+    }
+
+    private void sendEmailWithRetry(String to, String subject, String htmlContent) throws MessagingException {
+        int attempts = 0;
+        MessagingException lastException = null;
+
+        while (attempts < MAX_RETRY_ATTEMPTS) {
+            try {
+                sendEmail(to, subject, htmlContent);
+                return;
+            } catch (MessagingException e) {
+                lastException = e;
+                attempts++;
+                if (attempts < MAX_RETRY_ATTEMPTS) {
+                    long delay = RETRY_DELAY_MS * (long) Math.pow(2, attempts - 1);
+                    log.warn("Email sending failed (attempt {}/{}), retrying in {}ms...", attempts, MAX_RETRY_ATTEMPTS, delay);
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new MessagingException("Email sending interrupted", ie);
+                    }
+                }
+            }
+        }
+        log.error("Failed to send email after {} attempts", MAX_RETRY_ATTEMPTS);
+        throw lastException;
+    }
+
+    private void sendEmail(String to, String subject, String htmlContent) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setFrom(fromEmail);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true);
+        mailSender.send(message);
     }
 }

@@ -76,7 +76,7 @@ public class HomeController {
         return "module/product/category";
     }
 
-    @GetMapping("/product/deltail")
+    @GetMapping("/product/detail")
     public String productDeltailTypo() {
         return "redirect:/category";
     }
@@ -164,6 +164,7 @@ public class HomeController {
             User user = userDetails.getUser();
             Integer cartCount = cartService.getCartItemCount(user);
             model.addAttribute("cartCount", cartCount);
+            model.addAttribute("user", user);
         }
         return "module/order/my-orders";
     }
@@ -186,6 +187,7 @@ public class HomeController {
             User user = userDetails.getUser();
             Integer cartCount = cartService.getCartItemCount(user);
             model.addAttribute("cartCount", cartCount);
+            model.addAttribute("user", user);
         }
         return "module/address/addresses";
     }
