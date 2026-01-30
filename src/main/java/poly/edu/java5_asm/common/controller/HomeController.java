@@ -176,6 +176,7 @@ public class HomeController {
             User user = userDetails.getUser();
             Integer cartCount = cartService.getCartItemCount(user);
             model.addAttribute("cartCount", cartCount);
+            model.addAttribute("user", user);
         }
         model.addAttribute("orderId", id);
         return "module/order/order-detail";

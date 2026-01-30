@@ -12,9 +12,9 @@
                 <div class="col-12 col-md-3">
                     <aside class="profile__sidebar">
                         <div class="profile-user">
-                            <img th:src="@{/assets/img/avatar.jpg}" alt="" class="profile-user__avatar"/>
-                            <h1 class="profile-user__name" th:text="${session.user != null ? session.user.fullName : 'Guest'}">John Smith</h1>
-                            <p class="profile-user__desc" th:text="${session.user != null ? '@' + session.user.username : ''}">@johnsmith</p>
+                            <img th:src="${user != null && user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar/default-avatar.png'}" alt="" class="profile-user__avatar"/>
+                            <h1 class="profile-user__name" th:text="${user != null ? user.fullName : 'Guest'}">John Smith</h1>
+                            <p class="profile-user__desc" th:text="${user != null ? '@' + user.username : ''}">@johnsmith</p>
                         </div>
                         <div class="profile-menu">
                             <h3 class="profile-menu__title">Quản lý tài khoản</h3>
@@ -90,7 +90,7 @@
         container.innerHTML = `
           <div class="order-status-card">
             <div class="order-status-header">
-              <div><h3>Trạng thái đơn hàng</h3><p>Ngày đặt: ${new Date(order.createdAt).toLocaleDateString('vi-VN')}</p></div>
+              <div><h3>Trạng thái đơn hàng</h3><p>Ngày đặt: ${new Date(order.orderedAt).toLocaleDateString('vi-VN')}</p></div>
               ${statusBadges[order.status]}
             </div>
             <div class="order-timeline">
@@ -115,9 +115,9 @@
           <div class="order-info-grid">
             <div class="info-card">
               <h3>Thông tin giao hàng</h3>
-              <p><strong>Người nhận:</strong> ${order.shippingName}</p>
-              <p><strong>Số điện thoại:</strong> ${order.shippingPhone}</p>
-              <p><strong>Địa chỉ:</strong> ${order.shippingAddress}</p>
+              <p><strong>Người nhận:</strong> ${order.shippingName || 'Chưa có thông tin'}</p>
+              <p><strong>Số điện thoại:</strong> ${order.shippingPhone || 'Chưa có thông tin'}</p>
+              <p><strong>Địa chỉ:</strong> ${order.shippingAddress || 'Chưa có thông tin'}</p>
             </div>
             <div class="info-card">
               <h3>Thanh toán</h3>
@@ -129,19 +129,19 @@
           <div class="order-items-card">
             <h3>Sản phẩm đã đặt</h3>
             <div class="order-items-list">
-              ${order.items.map(item => `
+              ${order.orderItems.map(item => `
                 <div class="order-item">
-                  <img src="/assets/img/product/${item.productImage || 'default.jpg'}" alt="${item.productName}" />
+                  <img src="${item.productImage || '/assets/img/product/default.jpg'}" alt="${item.productName}" />
                   <div class="order-item-info">
                     <h4>${item.productName}</h4>
                     <p>Số lượng: ${item.quantity}</p>
                   </div>
                   <div class="order-item-price">
-                    <p>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(item.price)}</p>
+                    <p>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(item.unitPrice)}</p>
                     <p class="total">${new Intl.NumberFormat('vi-VN', {
             style: 'currency',
             currency: 'VND'
-        }).format(item.price * item.quantity)}</p>
+        }).format(item.subtotal)}</p>
                   </div>
                 </div>
               `).join('')}
