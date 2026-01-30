@@ -53,45 +53,13 @@
         </div>
     </div>
 
-    <!-- Browse Categories -->
+    <!-- Danh mục nổi bật - Top 3 sản phẩm rating cao nhất -->
     <section class="home__container">
         <div class="home__row">
-            <h2 class="home__heading">Danh mục nổi bật</h2>
+            <h2 class="home__heading">Sản phẩm được đánh giá cao</h2>
         </div>
-        <div class="home__cate row row-cols-3 row-cols-md-1">
-            <div class="col">
-                <a th:href="@{/product/1}">
-                    <article class="cate-item">
-                        <img th:src="@{/assets/img/category-item/item-1.png}" alt="" class="cate-item__thumb"/>
-                        <div class="cate-item__info">
-                            <h3 class="cate-item__title">800.000đ - 4.000.000đ</h3>
-                            <p class="cate-item__desc">Cà phê hạt Lavazza cao cấp</p>
-                        </div>
-                    </article>
-                </a>
-            </div>
-            <div class="col">
-                <a th:href="@{/product/2}">
-                    <article class="cate-item">
-                        <img th:src="@{/assets/img/category-item/item-2.png}" alt="" class="cate-item__thumb"/>
-                        <div class="cate-item__info">
-                            <h3 class="cate-item__title">600.000đ - 3.750.000đ</h3>
-                            <p class="cate-item__desc">Cà phê Sumatra Mandeling blend</p>
-                        </div>
-                    </article>
-                </a>
-            </div>
-            <div class="col">
-                <a th:href="@{/product/3}">
-                    <article class="cate-item">
-                        <img th:src="@{/assets/img/category-item/item-3.png}" alt="" class="cate-item__thumb"/>
-                        <div class="cate-item__info">
-                            <h3 class="cate-item__title">925.000đ - 4.000.000đ</h3>
-                            <p class="cate-item__desc">Cà phê Espresso Arabica và Robusta</p>
-                        </div>
-                    </article>
-                </a>
-            </div>
+        <div class="home__cate row row-cols-3 row-cols-md-1" id="top-rated-container">
+            <!-- Sẽ được render bởi JavaScript -->
         </div>
     </section>
 
@@ -109,87 +77,75 @@
                     <h3 class="filter__heading">Bộ lọc</h3>
                     <form action="" class="filter__form form">
                         <div class="filter__row filter__content">
+                            <!-- Yêu thích -->
+                            <div class="filter__col">
+                                <label class="form__label">Yêu thích</label>
+                                <div class="filter__form-group">
+                                    <label class="filter__checkbox-label">
+                                        <input type="checkbox" id="filter-wishlist" class="filter__checkbox" />
+                                        <span class="filter__checkbox-text">Chỉ hiện sản phẩm yêu thích</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="filter__separate"></div>
+                            <!-- Giá -->
                             <div class="filter__col">
                                 <label class="form__label">Giá (nghìn đồng)</label>
                                 <div class="slider-container">
                                     <div class="range-slider">
                                         <div class="slider-track"></div>
-                                        <input type="range" id="min-price" min="0" max="5000" step="50" value="500" oninput="updatePrice()"/>
-                                        <input type="range" id="max-price" min="0" max="5000" step="50" value="3000" oninput="updatePrice()"/>
+                                        <input type="range" id="min-price" min="0" max="5000" step="50" value="0" oninput="updatePrice()"/>
+                                        <input type="range" id="max-price" min="0" max="5000" step="50" value="5000" oninput="updatePrice()"/>
                                     </div>
                                 </div>
                                 <div class="price-values">
                                     <div>
                                         <span>Tối thiểu: </span>
-                                        <span id="min-price-value">500.000đ</span>
+                                        <span id="min-price-value">0đ</span>
                                     </div>
                                     <div>
                                         <span>Tối đa: </span>
-                                        <span id="max-price-value">3.000.000đ</span>
+                                        <span id="max-price-value">5.000.000đ</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="filter__separate"></div>
+                            <!-- Rating -->
                             <div class="filter__col">
-                                <label for="" class="form__label">Khối lượng</label>
-                                <div class="filter__form-group">
-                                    <div class="form__select-wrap">
-                                        <div class="form__select">
-                                            <select class="weight-size">
-                                                <option value="200g">200g</option>
-                                                <option value="300g">300g</option>
-                                                <option value="400g">400g</option>
-                                                <option value="500g" selected>500g</option>
-                                                <option value="600g">600g</option>
-                                                <option value="700g">700g</option>
-                                                <option value="800g">800g</option>
-                                                <option value="900g">900g</option>
-                                                <option value="1000g">1000g</option>
-                                            </select>
-                                        </div>
-                                        <div class="form__select">
-                                            <select class="weight-size" style="--width: 118px">
-                                                <option value="gram">Gram</option>
-                                                <option value="pao">Pao</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
+                                <label class="form__label">Đánh giá tối thiểu</label>
                                 <div class="filter__form-group">
                                     <div class="form__tags">
-                                        <button type="button" class="form__tag btn1" onclick="toggleSelected1(this)">Nhỏ</button>
-                                        <button type="button" class="form__tag btn1" onclick="toggleSelected1(this)">Vừa</button>
-                                        <button type="button" class="form__tag btn1" onclick="toggleSelected1(this)">Lớn</button>
+                                        <button type="button" class="form__tag rating-tag" data-rating="0">Tất cả</button>
+                                        <button type="button" class="form__tag rating-tag" data-rating="3">3+ ⭐</button>
+                                        <button type="button" class="form__tag rating-tag" data-rating="4">4+ ⭐</button>
+                                        <button type="button" class="form__tag rating-tag" data-rating="4.5">4.5+ ⭐</button>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="filter__separate"></div>
-                            <div class="filter__col">
-                                <label for="" class="form__label">Thương hiệu</label>
-                                <div class="filter__form-group">
-                                    <div class="filter__form-text-input">
-                                        <input type="text" placeholder="Tìm thương hiệu" class="filter__form-input"/>
-                                        <img th:src="@{/assets/icon/filter-search.svg}" alt="" class="filter__form-input-icon icon"/>
-                                    </div>
-                                </div>
-                                <div class="filter__form-group">
-                                    <div class="form__tags">
-                                        <button type="button" class="form__tag btn2" onclick="toggleSelected2(this)">Lavazza</button>
-                                        <button type="button" class="form__tag btn2" onclick="toggleSelected2(this)">Nescafe</button>
-                                        <button type="button" class="form__tag btn2" onclick="toggleSelected2(this)">Starbucks</button>
-                                    </div>
-                                </div>
+                                <input type="hidden" id="filter-rating" value="0" />
                             </div>
                         </div>
                         <div class="filter__row filter__footer">
-                            <button class="btn btn--text filter__cancel js-toggle" toggle-target="#home-filter">Hủy</button>
-                            <button class="btn btn--primary filter__submit js-toggle" toggle-target="#home-filter">Xem kết quả</button>
+                            <button type="button" class="btn btn--text filter__cancel" onclick="document.getElementById('home-filter').classList.add('hide')">Hủy</button>
+                            <button type="button" class="btn btn--primary filter__submit">Xem kết quả</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
         <div class="row row-cols-4 row-cols-lg-2 row-cols-sm-1 g-3" id="products-container"></div>
+        
+        <!-- Pagination -->
+        <div class="pagination-container" id="pagination-container">
+            <nav class="pagination">
+                <button class="pagination__btn pagination__btn--prev" id="prev-page" disabled>
+                    <img src="./assets/icon/arrow-left.svg" alt="Previous" class="pagination__icon icon"/>
+                </button>
+                <div class="pagination__pages" id="pagination-pages"></div>
+                <button class="pagination__btn pagination__btn--next" id="next-page">
+                    <img src="./assets/icon/arrow-right.svg" alt="Next" class="pagination__icon icon"/>
+                </button>
+            </nav>
+        </div>
     </section>
 </div>
 
@@ -202,12 +158,12 @@
 
 <script>
     function toggleSelected1(button) {
-        document.querySelectorAll(".form__tags button.btn1").forEach((btn) => btn.classList.remove("selected"));
+        document.querySelectorAll(".form__tags button.btn1").forEach(btn => btn.classList.remove("selected"));
         button.classList.add("selected");
     }
 
     function toggleSelected2(button) {
-        document.querySelectorAll(".form__tags button.btn2").forEach((btn) => btn.classList.remove("selected"));
+        document.querySelectorAll(".form__tags button.btn2").forEach(btn => btn.classList.remove("selected"));
         button.classList.add("selected");
     }
 
@@ -218,27 +174,50 @@
     function updatePrice() {
         let minPrice = document.getElementById("min-price");
         let maxPrice = document.getElementById("max-price");
+        if (!minPrice || !maxPrice) return;
+        
         let minValue = parseInt(minPrice.value);
         let maxValue = parseInt(maxPrice.value);
 
-        if (minValue > maxValue - 100) {
-            minPrice.value = maxValue - 100;
-        }
-        if (maxValue < minValue + 100) {
-            maxPrice.value = minValue + 100;
-        }
+        if (minValue > maxValue - 100) minPrice.value = maxValue - 100;
+        if (maxValue < minValue + 100) maxPrice.value = minValue + 100;
 
         document.getElementById("min-price-value").innerText = formatVNDFilter(minPrice.value);
         document.getElementById("max-price-value").innerText = formatVNDFilter(maxPrice.value);
 
         let track = document.querySelector(".slider-track");
-        let minPercent = (minValue / 5000) * 100;
-        let maxPercent = (maxValue / 5000) * 100;
-        track.style.left = minPercent + "%";
-        track.style.width = (maxPercent - minPercent) + "%";
+        if (track) {
+            let minPercent = (minValue / 5000) * 100;
+            let maxPercent = (maxValue / 5000) * 100;
+            track.style.left = minPercent + "%";
+            track.style.width = (maxPercent - minPercent) + "%";
+        }
     }
 
-    window.onload = updatePrice;
+    // Init on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updatePrice();
+        
+        // Setup filter toggle
+        const filterBtn = document.querySelector('.filter-btn');
+        const filterPopup = document.getElementById('home-filter');
+        
+        if (filterBtn && filterPopup) {
+            filterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                filterPopup.classList.toggle('hide');
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!filterPopup.classList.contains('hide')) {
+                    if (!e.target.closest('#home-filter') && !e.target.closest('.filter-btn')) {
+                        filterPopup.classList.add('hide');
+                    }
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>

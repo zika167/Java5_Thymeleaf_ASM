@@ -344,14 +344,14 @@
             
             const percentage = safeLimit > 0 ? (totalCaffeine / safeLimit) * 100 : (totalCaffeine > 0 ? 100 : 0);
             
-            // Determine status
+            // Determine status (ngưỡng đồng bộ với backend: <70% SAFE, 70-100% WARNING, >100% DANGER)
             let status, statusColor, message, recommendation;
             if (safeLimit === 0 && totalCaffeine > 0) {
                 status = 'DANGER';
                 statusColor = 'red';
                 message = 'Không nên sử dụng caffeine!';
                 recommendation = 'Trẻ em dưới 12 tuổi không nên tiêu thụ caffeine. Hãy chọn các đồ uống không chứa caffeine.';
-            } else if (percentage <= 50) {
+            } else if (percentage < 70) {
                 status = 'SAFE';
                 statusColor = 'green';
                 message = 'Mức an toàn!';

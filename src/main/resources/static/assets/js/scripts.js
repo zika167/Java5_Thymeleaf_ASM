@@ -147,6 +147,7 @@ function handleActiveMenu() {
  * <div id="box">Content show/hide</div>
  */
 window.addEventListener("template-loaded", initJsToggle);
+document.addEventListener("DOMContentLoaded", initJsToggle);
 
 function initJsToggle() {
     $$(".js-toggle").forEach((button) => {
@@ -427,15 +428,16 @@ function toggleSelected2(button) {
         return { id, name, price, image };
     }
 
+    // DISABLED: Now handled by cart-api.js and inline onclick in product-detail.html
     function bindAddToCartOnDetail() {
-        const btn = document.querySelector('.prod-info__add-to-cart');
-        if (!btn) return;
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const product = getProductInfoFromDetail();
-            if (!product) return;
-            addToCart(product);
-        });
+        // const btn = document.querySelector('.prod-info__add-to-cart');
+        // if (!btn) return;
+        // btn.addEventListener('click', function (e) {
+        //     e.preventDefault();
+        //     const product = getProductInfoFromDetail();
+        //     if (!product) return;
+        //     addToCart(product);
+        // });
     }
 
     // ===================== CHECKOUT RENDERING =====================

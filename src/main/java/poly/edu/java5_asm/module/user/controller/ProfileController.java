@@ -16,6 +16,10 @@ import poly.edu.java5_asm.common.security.CustomUserDetails;
 import poly.edu.java5_asm.module.user.service.UserService;
 import poly.edu.java5_asm.module.address.service.AddressServiceImpl;
 import poly.edu.java5_asm.module.address.dto.response.AddressResponse;
+import poly.edu.java5_asm.module.order.service.OrderService;
+import poly.edu.java5_asm.module.order.dto.response.OrderResponse;
+import poly.edu.java5_asm.module.wishlist.service.WishlistService;
+import poly.edu.java5_asm.module.wishlist.dto.response.WishlistResponse;
 
 import java.util.List;
 
@@ -28,6 +32,8 @@ public class ProfileController {
 
     private final UserService userService;
     private final AddressServiceImpl addressService;
+    private final OrderService orderService;
+    private final WishlistService wishlistService;
 
     /**
      * Hiển thị trang Profile.
@@ -51,6 +57,23 @@ public class ProfileController {
         } catch (Exception e) {
             model.addAttribute("addresses", List.of());
             model.addAttribute("defaultAddress", null);
+        }
+        
+        // Load đơn hàng gần đây (tối đa 3 đơn)
+        try {
+            List<OrderResponse> allOrders = orderService.getUserOrders(user);
+            List<OrderResponse> recentOrders = allOrders.stream().limit(3).toList();
+            model.addAttribute("recentOrders", recentOrders);
+        } catch (Exception e) {
+            model.addAttribute("recentOrders", List.of());
+        }
+        
+        // Load wishlist
+        try {
+            List<WishlistResponse> wishlistItems = wishlistService.getUserWishlist(user.getId());
+            model.addAttribute("wishlistItems", wishlistItems);
+        } catch (Exception e) {
+            model.addAttribute("wishlistItems", List.of());
         }
         
         return "module/user/profile";

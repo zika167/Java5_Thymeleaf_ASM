@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/fragments/head :: head('Edit Profile - Grocery Store')}"></head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Chỉnh sửa thông tin - Grocery Store')}"></head>
 <body>
 <!-- Header -->
 <header th:replace="~{shared/fragments/header :: header}"></header>
-
 
 <!-- MAIN -->
 <main class="profile">
@@ -16,7 +15,7 @@
                         type="text"
                         name=""
                         id=""
-                        placeholder="Search for item"
+                        placeholder="Tìm kiếm sản phẩm"
                         class="search-bar__input"
                 />
                 <button class="search-bar__submit">
@@ -37,23 +36,23 @@
                         <!-- User -->
                         <div class="profile-user">
                             <img
-                                    th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar/avatar-3.png'}"
+                                    th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar.jpg'}"
                                     alt=""
                                     class="profile-user__avatar"
                             />
                             <h1 class="profile-user__name"
-                                th:text="${user.fullName != null ? user.fullName : user.username}">User Name</h1>
+                                th:text="${user.fullName != null ? user.fullName : user.username}">Tên người dùng</h1>
                             <p class="profile-user__desc"
-                               th:text="'Registered: ' + ${#temporals.format(user.registeredDate, 'dd MMM yyyy')}">
-                                Registered: 17th May 2022</p>
+                               th:text="'Ngày tham gia: ' + ${#temporals.format(user.registeredDate, 'dd/MM/yyyy')}">
+                                Ngày tham gia: 17/05/2022</p>
                         </div>
 
                         <!-- Menu 1 -->
                         <div class="profile-menu">
-                            <h3 class="profile-menu__title">Manage Account</h3>
+                            <h3 class="profile-menu__title">Quản lý tài khoản</h3>
                             <ul class="profile-menu__list">
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/edit-personal-info}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/profile.svg}"
@@ -61,11 +60,11 @@
                                   class="icon"
                           />
                         </span>
-                                        Personal info
+                                        Thông tin cá nhân
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/addresses}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/location.svg}"
@@ -73,19 +72,7 @@
                                   class="icon"
                           />
                         </span>
-                                        Addresses
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#!" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/message-2.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Communications & privacy
+                                        Địa chỉ
                                     </a>
                                 </li>
                             </ul>
@@ -93,22 +80,22 @@
 
                         <!-- Menu 2 -->
                         <div class="profile-menu">
-                            <h3 class="profile-menu__title">My items</h3>
+                            <h3 class="profile-menu__title">Đơn hàng của tôi</h3>
                             <ul class="profile-menu__list">
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/my-orders}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
-                                  th:src="@{/assets/icon/download.svg}"
+                                  th:src="@{/assets/icon/document.svg}"
                                   alt=""
                                   class="icon"
                           />
                         </span>
-                                        Reorder
+                                        Lịch sử đơn hàng
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/favourite}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/heart.svg}"
@@ -116,19 +103,7 @@
                                   class="icon"
                           />
                         </span>
-                                        Lists
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#!" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/gift-2.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Registries
+                                        Sản phẩm yêu thích
                                     </a>
                                 </li>
                             </ul>
@@ -136,29 +111,10 @@
 
                         <!-- Menu 3 -->
                         <div class="profile-menu">
-                            <h3 class="profile-menu__title">Subscriptions & plans</h3>
+                            <h3 class="profile-menu__title">Hỗ trợ</h3>
                             <ul class="profile-menu__list">
                                 <li>
-                                    <a href="#!" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/shield.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Protection plans
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Menu 4 -->
-                        <div class="profile-menu">
-                            <h3 class="profile-menu__title">Customer Service</h3>
-                            <ul class="profile-menu__list">
-                                <li>
-                                    <a href="#!" class="profile-menu__link">
+                                    <a th:href="@{/}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
                                   th:src="@{/assets/icon/info.svg}"
@@ -166,19 +122,7 @@
                                   class="icon"
                           />
                         </span>
-                                        Help
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#!" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/danger.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Terms of Use
+                                        Trợ giúp
                                     </a>
                                 </li>
                             </ul>
@@ -197,7 +141,7 @@
                                                 class="icon cart-info__back-arrow"
                                         />
                                     </a>
-                                    Personal info
+                                    Thông tin cá nhân
                                 </h2>
 
                                 <form action="/profile/update" th:action="@{/profile/update}" th:object="${profileRequest}" method="post"
@@ -215,7 +159,7 @@
                                                     for="full-name"
                                                     class="form__label form-card__label"
                                             >
-                                                Full name
+                                                Họ và tên
                                             </label>
                                             <div class="form__text-input"
                                                  th:classappend="${#fields.hasErrors('fullName')} ? 'form__text-input--error' : ''">
@@ -223,7 +167,7 @@
                                                         type="text"
                                                         th:field="*{fullName}"
                                                         id="full-name"
-                                                        placeholder="Full name"
+                                                        placeholder="Nhập họ và tên"
                                                         class="form__input"
                                                         autofocus
                                                 />
@@ -234,14 +178,14 @@
                                                 />
                                             </div>
                                             <p class="form__error" th:if="${#fields.hasErrors('fullName')}"
-                                               th:errors="*{fullName}">Please enter your full name</p>
+                                               th:errors="*{fullName}">Vui lòng nhập họ và tên</p>
                                         </div>
                                         <div class="form__group">
                                             <label
                                                     for="email-address"
                                                     class="form__label form-card__label"
                                             >
-                                                Email address
+                                                Email
                                             </label>
                                             <div class="form__text-input"
                                                  th:classappend="${#fields.hasErrors('email')} ? 'form__text-input--error' : ''">
@@ -249,7 +193,7 @@
                                                         type="email"
                                                         th:field="*{email}"
                                                         id="email-address"
-                                                        placeholder="Email address"
+                                                        placeholder="Nhập địa chỉ email"
                                                         class="form__input"
                                                 />
                                                 <img
@@ -260,7 +204,7 @@
                                             </div>
                                             <p class="form__error" th:if="${#fields.hasErrors('email')}"
                                                th:errors="*{email}">
-                                                Please enter a valid email address
+                                                Vui lòng nhập email hợp lệ
                                             </p>
                                         </div>
                                     </div>
@@ -272,7 +216,7 @@
                                                     for="phone-number"
                                                     class="form__label form-card__label"
                                             >
-                                                Phone Number
+                                                Số điện thoại
                                             </label>
                                             <div class="form__text-input"
                                                  th:classappend="${#fields.hasErrors('phone')} ? 'form__text-input--error' : ''">
@@ -280,7 +224,7 @@
                                                         type="text"
                                                         th:field="*{phone}"
                                                         id="phone-number"
-                                                        placeholder="Phone Number"
+                                                        placeholder="Nhập số điện thoại"
                                                         class="form__input"
                                                 />
                                                 <img
@@ -291,7 +235,7 @@
                                             </div>
                                             <p class="form__error" th:if="${#fields.hasErrors('phone')}"
                                                th:errors="*{phone}">
-                                                Please enter a valid phone number
+                                                Vui lòng nhập số điện thoại hợp lệ
                                             </p>
                                         </div>
                                         <div class="form__group">
@@ -299,7 +243,7 @@
                                                     for="new-password"
                                                     class="form__label form-card__label"
                                             >
-                                                New Password (để trống nếu không đổi)
+                                                Mật khẩu mới (để trống nếu không đổi)
                                             </label>
                                             <div class="form__text-input"
                                                  th:classappend="${#fields.hasErrors('newPassword')} ? 'form__text-input--error' : ''">
@@ -307,7 +251,7 @@
                                                         type="password"
                                                         th:field="*{newPassword}"
                                                         id="new-password"
-                                                        placeholder="New Password"
+                                                        placeholder="Nhập mật khẩu mới"
                                                         class="form__input"
                                                 />
                                                 <img
@@ -317,7 +261,7 @@
                                                 />
                                             </div>
                                             <p class="form__error" th:if="${#fields.hasErrors('newPassword')}"
-                                               th:errors="*{newPassword}">Please enter new password</p>
+                                               th:errors="*{newPassword}">Vui lòng nhập mật khẩu mới</p>
                                         </div>
                                     </div>
 
@@ -331,14 +275,14 @@
                                                     for="confirm-password"
                                                     class="form__label form-card__label"
                                             >
-                                                Confirm Password
+                                                Xác nhận mật khẩu
                                             </label>
                                             <div class="form__text-input">
                                                 <input
                                                         type="password"
                                                         th:field="*{confirmPassword}"
                                                         id="confirm-password"
-                                                        placeholder="Confirm Password"
+                                                        placeholder="Nhập lại mật khẩu"
                                                         class="form__input"
                                                 />
                                                 <img
@@ -351,11 +295,9 @@
                                     </div>
 
                                     <div class="form-card__bottom">
-                                        <a class="btn btn--text" th:href="@{/profile}"
-                                        >Cancel</a
-                                        >
+                                        <a class="btn btn--text" th:href="@{/profile}">Hủy</a>
                                         <button type="submit" class="btn btn--primary btn--rounded">
-                                            Save
+                                            Lưu thay đổi
                                         </button>
                                     </div>
                                 </form>
@@ -370,32 +312,5 @@
 
 <!-- Footer -->
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
-
-<!-- Modal: confirm remove shopping cart item -->
-<div id="delete-confirm" class="modal modal--small hide">
-    <div class="modal__content">
-        <p class="modal__text">
-            Do you want to remove this item from shopping cart?
-        </p>
-        <div class="modal__bottom">
-            <button
-                    class="btn btn--small btn--outline modal__btn js-toggle"
-                    toggle-target="#delete-confirm"
-            >
-                Cancel
-            </button>
-            <button
-                    class="btn btn--small btn--danger btn--primary modal__btn btn--no-margin js-toggle"
-                    toggle-target="#delete-confirm"
-            >
-                Delete
-            </button>
-        </div>
-    </div>
-    <div
-            class="modal__overlay js-toggle"
-            toggle-target="#delete-confirm"
-    ></div>
-</div>
 </body>
 </html>

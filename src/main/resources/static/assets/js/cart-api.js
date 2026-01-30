@@ -335,10 +335,14 @@
 
     /**
      * Bind "Add to Cart" buttons trên product cards
+     * Chỉ bind cho các nút KHÔNG có class js-add-to-cart (đã được xử lý bởi products.js)
      */
     function bindAddToCartButtons() {
         document.addEventListener('click', async (e) => {
-            const btn = e.target.closest('.btn--primary[data-product-id], .js-add-to-cart-btn, .js-add-to-cart[data-product-id]');
+            // Skip nếu là nút js-add-to-cart (đã được xử lý bởi products.js)
+            if (e.target.closest('.js-add-to-cart')) return;
+            
+            const btn = e.target.closest('.btn--primary[data-product-id]');
             if (!btn) return;
 
             e.preventDefault();
