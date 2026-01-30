@@ -556,7 +556,7 @@ function toggleSelected2(button) {
         const shippingValueEl = Array.from(root.querySelectorAll('.cart-info__row'))
             .find((row) => row.textContent.trim().startsWith('Shipping'))
             ?.querySelector('span:last-child');
-        if (shippingValueEl) shippingValueEl.textContent = formatCurrency(shipping);
+        // Shipping is always free - don't override
 
         const estimatedTotalEl = Array.from(root.querySelectorAll('.cart-info__row'))
             .find((row) => row.textContent.trim().startsWith('Estimated Total'))
@@ -566,11 +566,10 @@ function toggleSelected2(button) {
         // New explicit summary targets (cart.html)
         const itemsCountEl2 = root.querySelector('.cart-summary__items-count');
         const priceEl2 = root.querySelector('.cart-summary__price');
-        const shippingEl2 = root.querySelector('.cart-summary__shipping');
         const estimatedEl2 = root.querySelector('.cart-summary__estimated');
         if (itemsCountEl2) itemsCountEl2.textContent = String(itemCount);
         if (priceEl2) priceEl2.textContent = formatCurrency(subtotal);
-        if (shippingEl2) shippingEl2.textContent = formatCurrency(shipping);
+        // Shipping is always free - don't override
         if (estimatedEl2) estimatedEl2.textContent = formatCurrency(estimatedTotal);
 
         updateHeaderCartUI();
@@ -1052,164 +1051,90 @@ window.addEventListener('favorites-updated', () => {
 
 if (window.location.pathname.startsWith('/product/')) {
     document.addEventListener('DOMContentLoaded', function () {
+        // Kiểm tra xem hình đã được render từ server chưa
+        var mainPreviewImg = document.querySelector('.prod-preview__list .prod-preview__item:first-child img');
+        var serverImageUrl = mainPreviewImg ? mainPreviewImg.getAttribute('src') : null;
+        
+        // Nếu server đã render hình (có src và không phải placeholder), không ghi đè
+        if (serverImageUrl && serverImageUrl.length > 0 && !serverImageUrl.includes('undefined') && !serverImageUrl.includes('null')) {
+            console.log('Server rendered image found, skipping localStorage override:', serverImageUrl);
+            
+            // Chỉ setup thumbnail click handler
+            var thumbnails = document.querySelectorAll('.prod-preview__thumbs .prod-preview__thumb-img');
+            if (mainPreviewImg && thumbnails.length > 0) {
+                thumbnails.forEach(function (thumb) {
+                    thumb.addEventListener('click', function () {
+                        mainPreviewImg.setAttribute('src', this.getAttribute('src'));
+                        thumbnails.forEach(t => t.classList.remove('prod-preview__thumb-img--current'));
+                        this.classList.add('prod-preview__thumb-img--current');
+                    });
+                });
+            }
+            
+            // Clear localStorage
+            ['selectedProductImg', 'selectedProductImgSetTime', 'selectedProductTitle', 'selectedProductBrand', 'selectedProductPrice', 'selectedProductScore']
+                .forEach((k) => localStorage.removeItem(k));
+            return;
+        }
+
+        // Fallback cho static HTML pages
         var selectedImg = localStorage.getItem('selectedProductImg');
         var selectedTitle = localStorage.getItem('selectedProductTitle');
         var selectedBrand = localStorage.getItem('selectedProductBrand');
         var selectedPrice = localStorage.getItem('selectedProductPrice');
         var selectedScore = localStorage.getItem('selectedProductScore');
 
-        // Nếu không có thông tin được chọn, sử dụng thông tin mặc định
         if (!selectedImg) {
             selectedImg = './assets/img/product/item-1.png';
-            console.log('No selected image, using default:', selectedImg);
-        } else {
-            console.log('Using selected image:', selectedImg);
         }
 
-        if (!selectedTitle) {
-            selectedTitle = 'Coffee Beans - Espresso Arabica and Robusta Beans';
-            console.log('No selected title, using default:', selectedTitle);
-        } else {
-            console.log('Using selected title:', selectedTitle);
-        }
-
-        if (!selectedBrand) {
-            selectedBrand = 'Lavazza';
-            console.log('No selected brand, using default:', selectedBrand);
-        } else {
-            console.log('Using selected brand:', selectedBrand);
-        }
-
-        if (!selectedPrice) {
-            selectedPrice = '$500.00';
-            console.log('No selected price, using default:', selectedPrice);
-        } else {
-            console.log('Using selected price:', selectedPrice);
-        }
-
-        if (!selectedScore) {
-            selectedScore = '4.3';
-            console.log('No selected score, using default:', selectedScore);
-        } else {
-            console.log('Using selected score:', selectedScore);
-        }
-
-        // Xóa localStorage ngay sau khi sử dụng để tránh ảnh hưởng đến sản phẩm tiếp theo
         localStorage.removeItem('selectedProductImg');
         localStorage.removeItem('selectedProductImgSetTime');
         localStorage.removeItem('selectedProductTitle');
         localStorage.removeItem('selectedProductBrand');
         localStorage.removeItem('selectedProductPrice');
         localStorage.removeItem('selectedProductScore');
-        console.log('Cleared localStorage after using selected product info');
 
         var mainImgs = document.querySelectorAll('.prod-preview__img');
         var thumbImgs = document.querySelectorAll('.prod-preview__thumb-img');
 
         if (mainImgs.length > 0 && thumbImgs.length > 0) {
-            // Danh sách tất cả hình ảnh sản phẩm có sẵn
             var productImages = [
                 './assets/img/product/item-1.png',
                 './assets/img/product/item-2.png',
                 './assets/img/product/item-3.png',
-                './assets/img/product/item-4.png',
-                './assets/img/product/item-5.png',
-                './assets/img/product/item-6.png',
-                './assets/img/product/item-7.png',
-                './assets/img/product/item-8.png'
+                './assets/img/product/item-4.png'
             ];
 
-            // Hình đầu tiên là hình được chọn
             mainImgs[0].setAttribute('src', selectedImg);
             thumbImgs[0].setAttribute('src', selectedImg);
             thumbImgs[0].classList.add('prod-preview__thumb-img--current');
-            console.log('Set first image to selected image:', selectedImg);
 
-            // Cập nhật thông tin sản phẩm từ localStorage
-            var prodTitle = document.querySelector('.prod-info__heading');
-            var prodBrand = document.querySelector('.prod-info__brand');
-            var prodPrice = document.querySelector('.prod-info__price');
-            var prodScore = document.querySelector('.prod-prop__title');
-
-            if (prodTitle) {
-                prodTitle.textContent = selectedTitle;
-                console.log('Updated product title:', selectedTitle);
-            }
-
-            if (prodBrand) {
-                prodBrand.textContent = selectedBrand;
-                console.log('Updated product brand:', selectedBrand);
-            }
-
-            if (prodPrice) {
-                prodPrice.textContent = selectedPrice;
-                console.log('Updated product price:', selectedPrice);
-            }
-
-            if (prodScore) {
-                // Cập nhật điểm đánh giá trong format "(score) X reviews"
-                var currentReviews = prodScore.textContent.match(/\([^)]+\)\s*(.+)/);
-                if (currentReviews) {
-                    prodScore.textContent = `(${selectedScore}) ${currentReviews[1]}`;
-                } else {
-                    prodScore.textContent = `(${selectedScore}) 1100 reviews`;
-                }
-                console.log('Updated product score:', selectedScore);
-            }
-
-            // Các hình còn lại được chọn random từ danh sách (loại bỏ hình đã chọn)
             var availableImages = productImages.filter(img => img !== selectedImg);
-            console.log('Available images for random selection:', availableImages);
-
-            // Random 3 hình còn lại
-            for (var i = 1; i < 4; i++) {
-                if (i < mainImgs.length && i < thumbImgs.length && availableImages.length > 0) {
+            for (var i = 1; i < Math.min(4, mainImgs.length); i++) {
+                if (availableImages.length > 0) {
                     var randomIndex = Math.floor(Math.random() * availableImages.length);
                     var randomImg = availableImages[randomIndex];
-
                     mainImgs[i].setAttribute('src', randomImg);
-                    thumbImgs[i].setAttribute('src', randomImg);
-                    thumbImgs[i].classList.remove('prod-preview__thumb-img--current');
-
-                    console.log(`Set image ${i + 1} to random image:`, randomImg);
-
-                    // Loại bỏ hình đã dùng để tránh trùng lặp
+                    if (i < thumbImgs.length) {
+                        thumbImgs[i].setAttribute('src', randomImg);
+                        thumbImgs[i].classList.remove('prod-preview__thumb-img--current');
+                    }
                     availableImages.splice(randomIndex, 1);
                 }
             }
 
-            // Xử lý tương tác giữa các thumbnail
-            var mainPreviewImg = document.querySelector('.prod-preview__list .prod-preview__item:first-child img');
             var thumbnails = document.querySelectorAll('.prod-preview__thumbs .prod-preview__thumb-img');
-
             if (mainPreviewImg && thumbnails.length > 0) {
-                thumbnails.forEach(function (thumb, index) {
+                thumbnails.forEach(function (thumb) {
                     thumb.addEventListener('click', function () {
-                        console.log('Thumbnail clicked:', this.getAttribute('src'));
-
-                        // Cập nhật hình chính
                         mainPreviewImg.setAttribute('src', this.getAttribute('src'));
-
-                        // Cập nhật trạng thái current
                         thumbnails.forEach(t => t.classList.remove('prod-preview__thumb-img--current'));
                         this.classList.add('prod-preview__thumb-img--current');
-
-                        console.log('Updated main preview image and thumbnail states');
                     });
                 });
             }
         }
-
-        // Xóa localStorage khi rời khỏi trang để đảm bảo sản phẩm tiếp theo không bị ảnh hưởng
-        window.addEventListener('beforeunload', function () {
-            localStorage.removeItem('selectedProductImg');
-            localStorage.removeItem('selectedProductImgSetTime');
-            localStorage.removeItem('selectedProductTitle');
-            localStorage.removeItem('selectedProductBrand');
-            localStorage.removeItem('selectedProductPrice');
-            localStorage.removeItem('selectedProductScore');
-            console.log('Cleared localStorage before leaving product-detail page');
-        });
     });
 }
 

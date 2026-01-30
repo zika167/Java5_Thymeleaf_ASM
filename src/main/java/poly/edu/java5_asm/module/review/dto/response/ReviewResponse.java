@@ -21,6 +21,8 @@ public class ReviewResponse {
 
     private String userName;
 
+    private String userAvatar;
+
     private Integer rating;
 
     private String title;

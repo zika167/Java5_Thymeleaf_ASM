@@ -33,6 +33,10 @@
                     <span id="subtotal">0 đ</span>
                 </div>
                 <div class="cart-summary__row">
+                    <span>Thuế (10%):</span>
+                    <span id="tax">0 đ</span>
+                </div>
+                <div class="cart-summary__row">
                     <span>Phí vận chuyển:</span>
                     <span id="shipping">Miễn phí</span>
                 </div>
@@ -98,8 +102,17 @@ function renderCartItems(items) {
 }
 
 function updateCartSummary(data) {
-    document.getElementById('subtotal').textContent = formatPrice(data.totalPrice);
-    document.getElementById('total').textContent = formatPrice(data.totalPrice);
+    let subtotal = data.totalPrice;
+    // Convert USD to VND if needed
+    if (subtotal > 0 && subtotal < 10000) {
+        subtotal = subtotal * 25000;
+    }
+    const tax = subtotal * 0.1;
+    const total = subtotal + tax;
+    
+    document.getElementById('subtotal').textContent = formatPrice(subtotal);
+    document.getElementById('tax').textContent = formatPrice(tax);
+    document.getElementById('total').textContent = formatPrice(total);
 }
 
 async function updateQuantity(itemId, newQuantity) {
@@ -129,6 +142,10 @@ async function removeItem(itemId) {
 }
 
 function formatPrice(price) {
+    // Convert USD to VND if price < 10000 (old USD prices)
+    if (price > 0 && price < 10000) {
+        price = price * 25000;
+    }
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 }
 

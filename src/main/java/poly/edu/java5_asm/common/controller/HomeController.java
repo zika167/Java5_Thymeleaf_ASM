@@ -76,7 +76,7 @@ public class HomeController {
         return "module/product/category";
     }
 
-    @GetMapping("/product/deltail")
+    @GetMapping("/product/detail")
     public String productDeltailTypo() {
         return "redirect:/category";
     }

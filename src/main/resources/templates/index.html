@@ -1,22 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/fragments/head :: head('Grocery Store - Home')}"></head>
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Cửa hàng Cà phê - Trang chủ')}"></head>
 <body>
-<!-- header -->
 <header th:replace="~{shared/fragments/header :: header}"></header>
 
 <div class="container home">
-    <!-- slideshow -->
+    <!-- Slideshow -->
     <div class="home__container">
         <div class="slideshow">
             <div class="slideshow__inner">
                 <div class="slideshow__item">
                     <a href="#!" class="slideshow__link">
                         <picture>
-                            <source
-                                    media="(max-width: 767.98px)"
-                                    srcset="./assets/img/slideshow/item-1-md.png"/>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/item-1-md.png"/>
                             <img th:src="@{/assets/img/slideshow/item-1.png}" alt="" class="slideshow__img"/>
                         </picture>
                     </a>
@@ -24,9 +20,7 @@
                 <div class="slideshow__item">
                     <a href="#!" class="slideshow__link">
                         <picture>
-                            <source
-                                    media="(max-width: 767.98px)"
-                                    srcset="./assets/img/slideshow/slider-2.png"/>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/slider-2.png"/>
                             <img th:src="@{/assets/img/slideshow/slider-2.png}" alt="" class="slideshow__img"/>
                         </picture>
                     </a>
@@ -34,9 +28,7 @@
                 <div class="slideshow__item">
                     <a href="#!" class="slideshow__link">
                         <picture>
-                            <source
-                                    media="(max-width: 767.98px)"
-                                    srcset="./assets/img/slideshow/slider-3.png"/>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/slider-3.png"/>
                             <img th:src="@{/assets/img/slideshow/slider-3.png}" alt="" class="slideshow__img"/>
                         </picture>
                     </a>
@@ -44,9 +36,7 @@
                 <div class="slideshow__item">
                     <a href="#!" class="slideshow__link">
                         <picture>
-                            <source
-                                    media="(max-width: 767.98px)"
-                                    srcset="./assets/img/slideshow/slider-4.png"/>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/slider-4.png"/>
                             <img th:src="@{/assets/img/slideshow/slider-4.png}" alt="" class="slideshow__img"/>
                         </picture>
                     </a>
@@ -54,9 +44,7 @@
                 <div class="slideshow__item">
                     <a href="#!" class="slideshow__link">
                         <picture>
-                            <source
-                                    media="(max-width: 767.98px)"
-                                    srcset="./assets/img/slideshow/slider-5.png"/>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/slider-5.png"/>
                             <img th:src="@{/assets/img/slideshow/slider-5.png}" alt="" class="slideshow__img"/>
                         </picture>
                     </a>
@@ -65,46 +53,41 @@
         </div>
     </div>
 
-    <!-- browse categories -->
+    <!-- Browse Categories -->
     <section class="home__container">
         <div class="home__row">
-            <h2 class="home__heading">Browse Categories</h2>
+            <h2 class="home__heading">Danh mục nổi bật</h2>
         </div>
         <div class="home__cate row row-cols-3 row-cols-md-1">
-            <!-- category item 1 -->
             <div class="col">
                 <a th:href="@{/product/1}">
                     <article class="cate-item">
                         <img th:src="@{/assets/img/category-item/item-1.png}" alt="" class="cate-item__thumb"/>
                         <div class="cate-item__info">
-                            <h3 class="cate-item__title">$32 - $160</h3>
-                            <p class="cate-item__desc">Lavazza top class whole bean coffee blend</p>
+                            <h3 class="cate-item__title">800.000đ - 4.000.000đ</h3>
+                            <p class="cate-item__desc">Cà phê hạt Lavazza cao cấp</p>
                         </div>
                     </article>
                 </a>
             </div>
-
-            <!-- category item 2 -->
             <div class="col">
                 <a th:href="@{/product/2}">
                     <article class="cate-item">
                         <img th:src="@{/assets/img/category-item/item-2.png}" alt="" class="cate-item__thumb"/>
                         <div class="cate-item__info">
-                            <h3 class="cate-item__title">$24 - $150</h3>
-                            <p class="cate-item__desc">New sumatra mandeling coffe blend</p>
+                            <h3 class="cate-item__title">600.000đ - 3.750.000đ</h3>
+                            <p class="cate-item__desc">Cà phê Sumatra Mandeling blend</p>
                         </div>
                     </article>
                 </a>
             </div>
-
-            <!-- category item 3 -->
             <div class="col">
                 <a th:href="@{/product/3}">
                     <article class="cate-item">
                         <img th:src="@{/assets/img/category-item/item-3.png}" alt="" class="cate-item__thumb"/>
                         <div class="cate-item__info">
-                            <h3 class="cate-item__title">$37 - $160</h3>
-                            <p class="cate-item__desc">Espresso arabica and robusta beans</p>
+                            <h3 class="cate-item__title">925.000đ - 4.000.000đ</h3>
+                            <p class="cate-item__desc">Cà phê Espresso Arabica và Robusta</p>
                         </div>
                     </article>
                 </a>
@@ -112,62 +95,43 @@
         </div>
     </section>
 
-    <!-- browse products -->
+    <!-- Browse Products -->
     <section class="home__container">
         <div class="home__row">
-            <h2 class="home__heading">Total LavAzza 1320</h2>
+            <h2 class="home__heading">Sản phẩm nổi bật</h2>
             <div class="filter-wrap">
                 <button class="filter-btn js-toggle" toggle-target="#home-filter">
-                    Filter
+                    Lọc
                     <img th:src="@{/assets/icon/filter.svg}" alt="" class="filter-btn__icon icon"/>
                 </button>
-
                 <div id="home-filter" class="filter hide">
                     <img th:src="@{/assets/icon/filter-triangle.svg}" alt="" class="filter__arrow"/>
-                    <h3 class="filter__heading">Filter</h3>
+                    <h3 class="filter__heading">Bộ lọc</h3>
                     <form action="" class="filter__form form">
                         <div class="filter__row filter__content">
-                            <!-- filter column 1 -->
                             <div class="filter__col">
-                                <label class="form__label">Price</label>
+                                <label class="form__label">Giá (nghìn đồng)</label>
                                 <div class="slider-container">
                                     <div class="range-slider">
                                         <div class="slider-track"></div>
-                                        <input
-                                                type="range"
-                                                id="min-price"
-                                                min="0"
-                                                max="200"
-                                                step="2"
-                                                value="30"
-                                                oninput="updatePrice()"/>
-                                        <input
-                                                type="range"
-                                                id="max-price"
-                                                min="0"
-                                                max="200"
-                                                step="2"
-                                                value="100"
-                                                oninput="updatePrice()"/>
+                                        <input type="range" id="min-price" min="0" max="5000" step="50" value="500" oninput="updatePrice()"/>
+                                        <input type="range" id="max-price" min="0" max="5000" step="50" value="3000" oninput="updatePrice()"/>
                                     </div>
                                 </div>
                                 <div class="price-values">
                                     <div>
-                                        <span>Minimum: </span>
-                                        <span id="min-price-value">$30.00</span>
+                                        <span>Tối thiểu: </span>
+                                        <span id="min-price-value">500.000đ</span>
                                     </div>
                                     <div>
-                                        <span>Maximum: </span>
-                                        <span id="max-price-value">$100.00</span>
+                                        <span>Tối đa: </span>
+                                        <span id="max-price-value">3.000.000đ</span>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="filter__separate"></div>
-
-                            <!-- filter column 2 -->
                             <div class="filter__col">
-                                <label for="" class="form__label">Weight/Size</label>
+                                <label for="" class="form__label">Khối lượng</label>
                                 <div class="filter__form-group">
                                     <div class="form__select-wrap">
                                         <div class="form__select">
@@ -193,106 +157,50 @@
                                 </div>
                                 <div class="filter__form-group">
                                     <div class="form__tags">
-                                        <button
-                                                type="button"
-                                                class="form__tag btn1"
-                                                onclick="toggleSelected1(this)">
-                                            Small
-                                        </button>
-                                        <button
-                                                type="button"
-                                                class="form__tag btn1"
-                                                onclick="toggleSelected1(this)">
-                                            Medium
-                                        </button>
-                                        <button
-                                                type="button"
-                                                class="form__tag btn1"
-                                                onclick="toggleSelected1(this)">
-                                            Large
-                                        </button>
+                                        <button type="button" class="form__tag btn1" onclick="toggleSelected1(this)">Nhỏ</button>
+                                        <button type="button" class="form__tag btn1" onclick="toggleSelected1(this)">Vừa</button>
+                                        <button type="button" class="form__tag btn1" onclick="toggleSelected1(this)">Lớn</button>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="filter__separate"></div>
-
-                            <!-- filter column 3 -->
                             <div class="filter__col">
-                                <label for="" class="form__label">Brand</label>
+                                <label for="" class="form__label">Thương hiệu</label>
                                 <div class="filter__form-group">
                                     <div class="filter__form-text-input">
-                                        <input
-                                                type="text"
-                                                name=""
-                                                id=""
-                                                placeholder="Search brand name"
-                                                class="filter__form-input"/>
-                                        <img
-                                                th:src="@{/assets/icon/filter-search.svg}"
-                                                alt=""
-                                                class="filter__form-input-icon icon"/>
+                                        <input type="text" placeholder="Tìm thương hiệu" class="filter__form-input"/>
+                                        <img th:src="@{/assets/icon/filter-search.svg}" alt="" class="filter__form-input-icon icon"/>
                                     </div>
                                 </div>
                                 <div class="filter__form-group">
                                     <div class="form__tags">
-                                        <button
-                                                type="button"
-                                                class="form__tag btn2"
-                                                onclick="toggleSelected2(this)">
-                                            Lavazza
-                                        </button>
-                                        <button
-                                                type="button"
-                                                class="form__tag btn2"
-                                                onclick="toggleSelected2(this)">
-                                            Nescafe
-                                        </button>
-                                        <button
-                                                type="button"
-                                                class="form__tag btn2"
-                                                onclick="toggleSelected2(this)">
-                                            Starbucks
-                                        </button>
+                                        <button type="button" class="form__tag btn2" onclick="toggleSelected2(this)">Lavazza</button>
+                                        <button type="button" class="form__tag btn2" onclick="toggleSelected2(this)">Nescafe</button>
+                                        <button type="button" class="form__tag btn2" onclick="toggleSelected2(this)">Starbucks</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="filter__row filter__footer">
-                            <button class="btn btn--text filter__cancel js-toggle" toggle-target="#home-filter">
-                                Cancel
-                            </button>
-                            <button
-                                    class="btn btn--primary filter__submit js-toggle"
-                                    toggle-target="#home-filter">
-                                Show Result
-                            </button>
+                            <button class="btn btn--text filter__cancel js-toggle" toggle-target="#home-filter">Hủy</button>
+                            <button class="btn btn--primary filter__submit js-toggle" toggle-target="#home-filter">Xem kết quả</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-
-        <div class="row row-cols-4 row-cols-lg-2 row-cols-sm-1 g-3" id="products-container">
-            <!-- Products will be rendered by JavaScript -->
-        </div>
+        <div class="row row-cols-4 row-cols-lg-2 row-cols-sm-1 g-3" id="products-container"></div>
     </section>
 </div>
 
-<!-- footer -->
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
 
-<!-- API Services -->
 <script th:src="@{/assets/js/cart-api.js}"></script>
 <script th:src="@{/assets/js/wishlist-api.js}"></script>
 <script th:src="@{/assets/js/reviews-api.js}"></script>
 <script th:src="@{/assets/js/address-api.js}"></script>
 
 <script>
-    function updatePrice(value) {
-        document.getElementById("price-value").innerText = `$${value}.00`;
-    }
-
     function toggleSelected1(button) {
         document.querySelectorAll(".form__tags button.btn1").forEach((btn) => btn.classList.remove("selected"));
         button.classList.add("selected");
@@ -302,27 +210,32 @@
         document.querySelectorAll(".form__tags button.btn2").forEach((btn) => btn.classList.remove("selected"));
         button.classList.add("selected");
     }
-</script>
-<script>
+
+    function formatVNDFilter(value) {
+        return new Intl.NumberFormat('vi-VN').format(value * 1000) + 'đ';
+    }
+
     function updatePrice() {
         let minPrice = document.getElementById("min-price");
         let maxPrice = document.getElementById("max-price");
         let minValue = parseInt(minPrice.value);
         let maxValue = parseInt(maxPrice.value);
-        if (minValue > maxValue - 2) {
-            minPrice.value = maxValue - 2;
+
+        if (minValue > maxValue - 100) {
+            minPrice.value = maxValue - 100;
         }
-        if (maxValue < minValue + 2) {
-            maxPrice.value = minValue + 2;
+        if (maxValue < minValue + 100) {
+            maxPrice.value = minValue + 100;
         }
-        document.getElementById("min-price-value").innerText = `$${minPrice.value}.00`;
-        document.getElementById("max-price-value").innerText = `$${maxPrice.value}.00`;
+
+        document.getElementById("min-price-value").innerText = formatVNDFilter(minPrice.value);
+        document.getElementById("max-price-value").innerText = formatVNDFilter(maxPrice.value);
 
         let track = document.querySelector(".slider-track");
-        let minPercent = (minValue / 200) * 100;
-        let maxPercent = (maxValue / 200) * 100;
+        let minPercent = (minValue / 5000) * 100;
+        let maxPercent = (maxValue / 5000) * 100;
         track.style.left = minPercent + "%";
-        track.style.width = maxPercent - minPercent + "%";
+        track.style.width = (maxPercent - minPercent) + "%";
     }
 
     window.onload = updatePrice;

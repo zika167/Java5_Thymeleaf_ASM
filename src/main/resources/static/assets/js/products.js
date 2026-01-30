@@ -1,10 +1,10 @@
-// Products data - synced with database (ID 1-10)
+// Products data - synced with database (ID 1-10) - VND Prices
 const productsData = [
     {
         id: 1,
         name: "Coffee Beans - Espresso Arabica and Robusta Beans",
         brand: "Lavazza",
-        price: 47.00,
+        price: 1175000,
         rating: 4.3,
         image: "./assets/img/product/item-1.png",
         isLiked: false
@@ -13,7 +13,7 @@ const productsData = [
         id: 2,
         name: "Lavazza Coffee Blends - Try the Italian Espresso",
         brand: "Lavazza",
-        price: 53.00,
+        price: 1325000,
         rating: 3.4,
         image: "./assets/img/product/item-2.png",
         isLiked: false
@@ -22,7 +22,7 @@ const productsData = [
         id: 3,
         name: "Lavazza - Caffè Espresso Black Tin - Ground coffee",
         brand: "Lavazza",
-        price: 99.99,
+        price: 2499000,
         rating: 5.0,
         image: "./assets/img/product/item-3.png",
         isLiked: false
@@ -31,7 +31,7 @@ const productsData = [
         id: 4,
         name: "Starbucks Pike Place Roast",
         brand: "Starbucks",
-        price: 32.00,
+        price: 800000,
         rating: 4.4,
         image: "./assets/img/product/item-4.png",
         isLiked: false
@@ -40,7 +40,7 @@ const productsData = [
         id: 5,
         name: "Trung Nguyen Creative 3",
         brand: "Trung Nguyen",
-        price: 45.00,
+        price: 1125000,
         rating: 4.3,
         image: "./assets/img/product/item-5.png",
         isLiked: false
@@ -49,7 +49,7 @@ const productsData = [
         id: 6,
         name: "Nescafe Gold Instant Coffee",
         brand: "Nescafe",
-        price: 24.00,
+        price: 600000,
         rating: 3.4,
         image: "./assets/img/product/item-6.png",
         isLiked: false
@@ -58,7 +58,7 @@ const productsData = [
         id: 7,
         name: "Lavazza Qualità Rossa",
         brand: "Lavazza",
-        price: 38.00,
+        price: 950000,
         rating: 5.0,
         image: "./assets/img/product/item-7.png",
         isLiked: false
@@ -67,7 +67,7 @@ const productsData = [
         id: 8,
         name: "Starbucks French Roast",
         brand: "Starbucks",
-        price: 35.00,
+        price: 875000,
         rating: 4.4,
         image: "./assets/img/product/item-8.png",
         isLiked: false
@@ -76,7 +76,7 @@ const productsData = [
         id: 9,
         name: "Trung Nguyen Gourmet Blend",
         brand: "Trung Nguyen",
-        price: 52.00,
+        price: 1300000,
         rating: 4.2,
         image: "./assets/img/product/item-1.png",
         isLiked: false
@@ -85,30 +85,53 @@ const productsData = [
         id: 10,
         name: "Nescafe Classic Instant",
         brand: "Nescafe",
-        price: 18.00,
+        price: 450000,
         rating: 3.9,
         image: "./assets/img/product/item-2.png",
         isLiked: false
     }
 ];
 
+// Format price to VND
+function formatVND(price) {
+    return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+}
+
 class ProductRenderer {
     constructor(containerSelector) {
         this.container = document.querySelector(containerSelector);
         this.products = productsData;
         this.filteredProducts = [...this.products];
-
         this.init();
     }
 
     async init() {
         if (!this.container) return;
-
-        // Fetch wishlist status from API
         await this.syncWishlistStatus();
-        
+        await this.loadRatingsFromAPI();
         this.renderProducts();
         this.initLikeButtons();
+    }
+
+    async loadRatingsFromAPI() {
+        // Load actual ratings from reviews API for each product
+        for (const product of this.products) {
+            try {
+                const response = await fetch(`/api/reviews/product/${product.id}`);
+                if (response.ok) {
+                    const reviews = await response.json();
+                    if (reviews && reviews.length > 0) {
+                        const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+                        product.rating = Math.round(avg * 10) / 10;
+                    } else {
+                        product.rating = 0;
+                    }
+                }
+            } catch (error) {
+                console.log(`Could not load rating for product ${product.id}`);
+            }
+        }
+        this.filteredProducts = [...this.products];
     }
 
     async syncWishlistStatus() {
@@ -117,8 +140,6 @@ class ProductRenderer {
             if (response.ok) {
                 const wishlistItems = await response.json();
                 const wishlistProductIds = wishlistItems.map(item => item.productId);
-                
-                // Update isLiked status for each product
                 this.products.forEach(product => {
                     product.isLiked = wishlistProductIds.includes(product.id);
                 });
@@ -131,13 +152,13 @@ class ProductRenderer {
 
     renderProducts(products = this.filteredProducts) {
         if (!this.container) return;
-
         this.container.innerHTML = products.map(product => this.createProductHTML(product)).join('');
         this.initLikeButtons();
     }
 
     createProductHTML(product) {
         const likeClass = product.isLiked ? 'like-btn__liked' : '';
+        const rating = Math.round((product.rating || 0) * 10) / 10;
         return `
             <div class="col">
                 <article class="product-card">
@@ -155,9 +176,9 @@ class ProductRenderer {
                     </h3>
                     <p class="product-card__brand">${product.brand}</p>
                     <div class="product-card__row">
-                        <span class="product-card__price">$${product.price.toFixed(2)}</span>
+                        <span class="product-card__price">${formatVND(product.price)}</span>
                         <img src="./assets/icon/star.svg" alt="" class="product-card__star" />
-                        <span class="product-card__score">${product.rating}</span>
+                        <span class="product-card__score">${rating}</span>
                     </div>
                     <div class="product-card__row">
                         <button class="btn btn--primary js-add-to-cart"
@@ -165,7 +186,7 @@ class ProductRenderer {
                                 data-name="${product.name}"
                                 data-price="${product.price}"
                                 data-image="${product.image}">
-                            Add to cart
+                            Thêm vào giỏ
                         </button>
                     </div>
                 </article>
@@ -182,12 +203,10 @@ class ProductRenderer {
                 
                 const productId = button.getAttribute('data-product-id');
                 if (!productId) {
-                    // Fallback for static cards without product ID
                     button.classList.toggle('like-btn__liked');
                     return;
                 }
                 
-                // Call backend API
                 if (window.WishlistAPI) {
                     try {
                         const result = await window.WishlistAPI.toggleWishlist(productId);
@@ -198,30 +217,21 @@ class ProductRenderer {
                         console.error('Wishlist toggle error:', error);
                     }
                 } else {
-                    // Fallback if API not loaded
                     button.classList.toggle('like-btn__liked');
                 }
             };
         });
     }
 
-    // Deprecated per viewport bug; logic handled inline above
-    handleLikeClick() {
-        // no-op
-    }
+    handleLikeClick() {}
 
     filterProducts(filters = {}) {
         this.filteredProducts = this.products.filter(product => {
-            // Price filter
             if (filters.minPrice !== undefined && product.price < filters.minPrice) return false;
             if (filters.maxPrice !== undefined && product.price > filters.maxPrice) return false;
-
-            // Brand filter
             if (filters.brand && filters.brand !== 'all' && product.brand.toLowerCase() !== filters.brand.toLowerCase()) return false;
-
             return true;
         });
-
         this.renderProducts();
         this.updateProductCount();
     }
@@ -243,7 +253,6 @@ class ProductRenderer {
                 product.brand.toLowerCase().includes(query.toLowerCase())
             );
         }
-
         this.renderProducts();
         this.updateProductCount();
     }
@@ -255,11 +264,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (productContainer) {
         window.productRenderer = new ProductRenderer('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
     }
-    // Bind add-to-cart buttons for static category page as well
     bindAddToCartButtons();
 });
 
-// Also initialize when templates are loaded
 window.addEventListener('template-loaded', function () {
     const productContainer = document.querySelector('.row.row-cols-4.row-cols-lg-2.row-cols-sm-1.g-3');
     if (productContainer && !window.productRenderer) {
@@ -268,10 +275,9 @@ window.addEventListener('template-loaded', function () {
     bindAddToCartButtons();
 });
 
-// Filter functionality
 function applyFilters() {
-    const minPrice = parseFloat(document.getElementById('min-price')?.value) || 0;
-    const maxPrice = parseFloat(document.getElementById('max-price')?.value) || 200;
+    const minPrice = parseFloat(document.getElementById('min-price')?.value) * 25000 || 0;
+    const maxPrice = parseFloat(document.getElementById('max-price')?.value) * 25000 || 5000000;
     const brandSelect = document.querySelector('.weight-size');
     const selectedBrand = brandSelect ? brandSelect.value : 'all';
 
@@ -284,7 +290,6 @@ function applyFilters() {
     }
 }
 
-// Search functionality
 function searchProducts() {
     const searchInput = document.querySelector('.filter__form-input');
     if (searchInput && window.productRenderer) {
@@ -292,14 +297,12 @@ function searchProducts() {
     }
 }
 
-// ===== Add-to-cart for product cards =====
 function bindAddToCartButtons() {
     document.querySelectorAll('.js-add-to-cart').forEach((btn) => {
         btn.onclick = async function (e) {
             e.preventDefault();
             const productId = parseInt(this.dataset.productId, 10);
 
-            // Gọi API backend thay vì localStorage
             if (window.CartAPI && typeof window.CartAPI.addToCart === 'function') {
                 try {
                     await window.CartAPI.addToCart(productId, 1);
