@@ -8,12 +8,9 @@
 <!-- MAIN -->
 <main class="profile">
     <div class="container">
-        <!-- Success message -->
-        <div th:if="${successMessage}" class="profile-container">
-            <div style="background-color: #d4edda; color: #155724; padding: 12px 20px; border-radius: 8px; margin-bottom: 16px;">
-                <span th:text="${successMessage}"></span>
-            </div>
-        </div>
+        <!-- Success/Error messages sẽ được hiển thị qua modal -->
+        <div th:if="${successMessage}" id="serverSuccessMessage" th:data-message="${successMessage}" style="display:none;"></div>
+        <div th:if="${errorMessage}" id="serverErrorMessage" th:data-message="${errorMessage}" style="display:none;"></div>
 
         <!-- Search bar -->
         <div class="profile-container">
@@ -133,37 +130,6 @@
                           />
                         </span>
                                         Giỏ hàng
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Menu 3 -->
-                        <div class="profile-menu">
-                            <h3 class="profile-menu__title">Hỗ trợ</h3>
-                            <ul class="profile-menu__list">
-                                <li>
-                                    <a th:href="@{/}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/info.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Trợ giúp
-                                    </a>
-                                </li>
-                                <li>
-                                    <a th:href="@{/}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/calling.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Liên hệ
                                     </a>
                                 </li>
                             </ul>
@@ -298,10 +264,10 @@
                                     </div>
                                 </div>
 
-                                <div th:if="${recentOrders == null or recentOrders.empty}" style="text-align: center; padding: 40px 20px; background: var(--profile-menu-icon-bg); border-radius: 12px;">
-                                    <img th:src="@{/assets/icon/document.svg}" alt="" class="icon" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 16px;" />
-                                    <p style="color: var(--text-color); opacity: 0.7;">Bạn chưa có đơn hàng nào</p>
-                                    <a th:href="@{/products}" class="btn btn--primary btn--rounded" style="margin-top: 16px;">Mua sắm ngay</a>
+                                <div th:if="${recentOrders == null or recentOrders.empty}" class="empty-state-box">
+                                    <img th:src="@{/assets/icon/document.svg}" alt="" class="icon" />
+                                    <p>Bạn chưa có đơn hàng nào</p>
+                                    <a th:href="@{/}" class="btn btn--primary btn--rounded">Mua sắm ngay</a>
                                 </div>
                             </div>
 
@@ -336,10 +302,10 @@
                                     </div>
                                 </div>
 
-                                <div th:if="${wishlistItems == null or wishlistItems.empty}" style="text-align: center; padding: 40px 20px; background: var(--profile-menu-icon-bg); border-radius: 12px;">
-                                    <img th:src="@{/assets/icon/heart.svg}" alt="" class="icon" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 16px;" />
-                                    <p style="color: var(--text-color); opacity: 0.7;">Chưa có sản phẩm yêu thích</p>
-                                    <a th:href="@{/products}" class="btn btn--primary btn--rounded" style="margin-top: 16px;">Khám phá sản phẩm</a>
+                                <div th:if="${wishlistItems == null or wishlistItems.empty}" class="empty-state-box">
+                                    <img th:src="@{/assets/icon/heart.svg}" alt="" class="icon" />
+                                    <p>Chưa có sản phẩm yêu thích</p>
+                                    <a th:href="@{/}" class="btn btn--primary btn--rounded">Khám phá sản phẩm</a>
                                 </div>
                             </div>
                         </div>
@@ -352,52 +318,45 @@
 
 <!-- Footer -->
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
-
-<style>
-    .profile-user__avatar-wrapper {
-        position: relative;
-        display: inline-block;
-    }
-    .profile-user__avatar-edit {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        width: 32px;
-        height: 32px;
-        background: #77dae6;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    .profile-user__avatar-edit:hover {
-        background: #5bc7d4;
-        transform: scale(1.1);
-    }
-    .profile-user__avatar-edit .icon {
-        width: 16px;
-        height: 16px;
-        filter: brightness(0) invert(1);
-    }
-</style>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
+<link rel="stylesheet" th:href="@{/assets/css/profile.css}"/>
 
 <script>
+    // Hiển thị modal thông báo từ server
+    document.addEventListener('DOMContentLoaded', function() {
+        var successEl = document.getElementById('serverSuccessMessage');
+        var errorEl = document.getElementById('serverErrorMessage');
+        
+        if (successEl && successEl.dataset.message) {
+            setTimeout(function() {
+                if (typeof NotificationModal !== 'undefined' && NotificationModal.success) {
+                    NotificationModal.success(successEl.dataset.message, 'Thành công');
+                }
+            }, 100);
+        }
+        
+        if (errorEl && errorEl.dataset.message) {
+            setTimeout(function() {
+                if (typeof NotificationModal !== 'undefined' && NotificationModal.error) {
+                    NotificationModal.error(errorEl.dataset.message, 'Lỗi');
+                }
+            }, 100);
+        }
+    });
+
     function uploadAvatar(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
             
             // Validate file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
-                alert('Kích thước ảnh tối đa là 5MB');
+                NotificationModal.warning('Kích thước ảnh tối đa là 5MB');
                 return;
             }
             
             // Validate file type
             if (!file.type.startsWith('image/')) {
-                alert('Vui lòng chọn file ảnh');
+                NotificationModal.warning('Vui lòng chọn file ảnh');
                 return;
             }
 
@@ -421,14 +380,14 @@
                 return response.json();
             })
             .then(data => {
-                alert('Cập nhật avatar thành công!');
+                NotificationModal.success('Cập nhật avatar thành công!');
                 if (data.avatarUrl) {
                     document.getElementById('avatarPreview').src = data.avatarUrl;
                 }
             })
             .catch(error => {
                 console.error('Error uploading avatar:', error);
-                alert('Có lỗi xảy ra khi cập nhật avatar');
+                NotificationModal.error('Có lỗi xảy ra khi cập nhật avatar');
             });
         }
     }

@@ -1169,7 +1169,7 @@ html.dark .user-menu__link--admin:hover {
 .filter__checkbox {
     width: 18px !important;
     height: 18px !important;
-    accent-color: #ffb700 !important;
+    accent-color: #77dae6 !important;
     cursor: pointer !important;
 }
 
@@ -1182,7 +1182,7 @@ html.dark .user-menu__link--admin:hover {
 
 /* Hover effect */
 .filter__checkbox-label:hover .filter__checkbox-text {
-    color: #ffb700 !important;
+    color: #5bc7d4 !important;
 }
 
 
@@ -1250,8 +1250,9 @@ html.dark .user-menu__link--admin:hover {
 }
 
 #home-filter .rating-tag.selected {
-    background: #ffb700 !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    color: #1a162e !important;
+    border-color: #77dae6 !important;
 }
 
 /* Form label */
@@ -1271,7 +1272,7 @@ html.dark .user-menu__link--admin:hover {
 
 
 /* ========================================
-   PAGINATION STYLES
+   PAGINATION STYLES - Primary Color #77dae6
    ======================================== */
 
 .pagination-container {
@@ -1301,12 +1302,12 @@ html.dark .user-menu__link--admin:hover {
 }
 
 .pagination__btn:hover:not(:disabled) {
-    background: #ffb700;
-    border-color: #ffb700;
+    background: rgba(119, 218, 230, 0.1);
+    border-color: #77dae6;
 }
 
 .pagination__btn:hover:not(:disabled) .pagination__icon {
-    filter: brightness(0) invert(1);
+    filter: brightness(0) saturate(100%) invert(76%) sepia(31%) saturate(487%) hue-rotate(142deg) brightness(95%) contrast(91%);
 }
 
 .pagination__btn:disabled {
@@ -1334,17 +1335,41 @@ html.dark .user-menu__link--admin:hover {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .pagination__page:hover {
-    background: #fff3cd;
-    border-color: #ffb700;
+    background: rgba(119, 218, 230, 0.1);
+    border-color: #77dae6;
+    color: #5bc7d4;
 }
 
 .pagination__page--active {
-    background: #ffb700 !important;
-    border-color: #ffb700 !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border-color: #77dae6 !important;
+    color: #1a162e !important;
+    font-weight: 600 !important;
+}
+
+/* Dark mode pagination */
+html.dark .pagination__btn,
+html.dark .pagination__page {
+    background: var(--product-card-bg);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #b9babe;
+}
+
+html.dark .pagination__btn:hover:not(:disabled),
+html.dark .pagination__page:hover {
+    background: rgba(119, 218, 230, 0.1);
+    border-color: #77dae6;
+    color: #77dae6;
+}
+
+html.dark .pagination__page--active {
+    color: #1a162e !important;
 }
 
 /* ========================================
@@ -1365,4 +1390,537 @@ html.dark .user-menu__link--admin:hover {
 #top-rated-container .cate-item:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ========================================
+   HEADER & FOOTER UI ENHANCEMENTS
+   Primary Color: #77dae6 (Xanh lá/Cyan)
+   ======================================== */
+
+/* Header link hover effects */
+.navbar__link:hover {
+    color: #77dae6 !important;
+}
+
+.menu-column__link:hover {
+    color: #5bc7d4 !important;
+}
+
+.menu-column__heading a:hover {
+    color: #77dae6 !important;
+}
+
+/* Footer link hover effects */
+.footer__link:hover {
+    color: #77dae6 !important;
+    text-shadow: none !important;
+}
+
+/* Footer social icons hover */
+.footer__social:hover {
+    border-color: #77dae6 !important;
+    background: rgba(119, 218, 230, 0.1) !important;
+}
+
+/* Footer button primary color */
+.footer__search.btn--primary {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border: none !important;
+}
+
+.footer__search.btn--primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(119, 218, 230, 0.4) !important;
+}
+
+/* Footer input focus */
+.footer__input:focus-within {
+    border-color: #77dae6 !important;
+    box-shadow: 0 0 0 3px rgba(119, 218, 230, 0.15) !important;
+}
+
+/* Footer input button */
+.footer__input-btn {
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: transform 0.2s ease, opacity 0.2s ease !important;
+}
+
+.footer__input-btn:hover {
+    transform: scale(1.15) !important;
+    opacity: 0.8 !important;
+}
+
+/* Footer copyright */
+.footer__copyright {
+    text-align: center !important;
+    padding: 20px 0 !important;
+    border-top: 1px solid var(--separate-color, #d2d1d6) !important;
+    margin-top: 20px !important;
+}
+
+.footer__copyright p {
+    color: #9e9da8 !important;
+    font-size: 1.4rem !important;
+    margin: 0 !important;
+}
+
+/* Cart dropdown button color */
+.cart-dropdown__btn {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+}
+
+.cart-dropdown__btn:hover {
+    box-shadow: 0 6px 20px rgba(119, 218, 230, 0.4) !important;
+}
+
+/* Cart badge color */
+.top-act__cart-badge {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    box-shadow: 0 2px 6px rgba(119, 218, 230, 0.4) !important;
+}
+
+/* User menu admin link */
+.user-menu__link--admin {
+    color: #5bc7d4 !important;
+    font-weight: 500 !important;
+}
+
+.user-menu__link--admin:hover {
+    background: rgba(119, 218, 230, 0.1) !important;
+}
+
+/* Active navbar link */
+.navbar__item--active > .navbar__link,
+.navbar__item:hover > .navbar__link {
+    color: #77dae6 !important;
+}
+
+/* Sign in button */
+.top-act__sign-up.btn--primary {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border: none !important;
+    color: #1a162e !important;
+}
+
+.top-act__sign-up.btn--primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(119, 218, 230, 0.4) !important;
+}
+
+/* Dark mode adjustments */
+html.dark .footer__link:hover {
+    color: #77dae6 !important;
+}
+
+html.dark .navbar__link:hover {
+    color: #77dae6 !important;
+}
+
+html.dark .menu-column__link:hover {
+    color: #77dae6 !important;
+}
+
+html.dark .footer__social:hover {
+    border-color: #77dae6 !important;
+    background: rgba(119, 218, 230, 0.1) !important;
+}
+
+
+/* ========================================
+   PRODUCT CARD - PRIMARY COLOR THEME
+   Primary Color: #77dae6 (Cyan/Teal)
+   ======================================== */
+
+/* Product card hover effect */
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    border: 1px solid transparent !important;
+}
+
+.product-card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 20px 40px rgba(119, 218, 230, 0.15) !important;
+    border-color: rgba(119, 218, 230, 0.3) !important;
+}
+
+/* Product card title link */
+.product-card__title a {
+    transition: color 0.2s ease !important;
+}
+
+.product-card__title a:hover {
+    color: #5bc7d4 !important;
+}
+
+/* Product card price - primary color */
+.product-card__price {
+    color: #1a162e !important;
+    font-weight: 700 !important;
+    font-size: 1.6rem !important;
+}
+
+/* Like button */
+.product-card .like-btn {
+    transition: all 0.3s ease !important;
+}
+
+.product-card .like-btn:hover {
+    background: rgba(119, 218, 230, 0.15) !important;
+    border-color: #77dae6 !important;
+}
+
+.product-card .like-btn.like-btn__liked {
+    background: rgba(255, 107, 107, 0.1) !important;
+    border-color: #ff6b6b !important;
+}
+
+/* Product card star rating */
+.product-card__star {
+    filter: none !important;
+}
+
+.product-card__score {
+    color: #ffb700 !important;
+    font-weight: 600 !important;
+}
+
+/* Add to cart button on product card */
+.product-card .btn--primary {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border: none !important;
+    color: #1a162e !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.product-card .btn--primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(119, 218, 230, 0.4) !important;
+}
+
+/* Product card brand */
+.product-card__brand {
+    color: #9e9da8 !important;
+    font-size: 1.3rem !important;
+}
+
+/* Product image wrapper */
+.product-card__img-wrap {
+    background: var(--product-card-img-bg, #f8f9fa) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    transition: background 0.3s ease !important;
+}
+
+.product-card:hover .product-card__img-wrap {
+    background: rgba(119, 218, 230, 0.05) !important;
+}
+
+/* Product thumbnail */
+.product-card__thumb {
+    transition: transform 0.4s ease !important;
+}
+
+.product-card:hover .product-card__thumb {
+    transform: scale(1.05) !important;
+}
+
+/* Badge/Tag on product card */
+.product-card__badge {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    padding: 4px 10px !important;
+    border-radius: 20px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    z-index: 1 !important;
+}
+
+.product-card__badge--sale {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%) !important;
+    color: #fff !important;
+}
+
+.product-card__badge--new {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    color: #1a162e !important;
+}
+
+.product-card__badge--hot {
+    background: linear-gradient(135deg, #ffb700 0%, #ffa000 100%) !important;
+    color: #1a162e !important;
+}
+
+/* Dark mode product card */
+html.dark .product-card {
+    background: var(--product-card-bg) !important;
+}
+
+html.dark .product-card:hover {
+    box-shadow: 0 20px 40px rgba(119, 218, 230, 0.1) !important;
+    border-color: rgba(119, 218, 230, 0.2) !important;
+}
+
+html.dark .product-card__price {
+    color: #fff !important;
+}
+
+html.dark .product-card__title a:hover {
+    color: #77dae6 !important;
+}
+
+html.dark .product-card__img-wrap {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+html.dark .product-card:hover .product-card__img-wrap {
+    background: rgba(119, 218, 230, 0.08) !important;
+}
+
+
+/* ========================================
+   PRODUCTS PAGE STYLES
+   ======================================== */
+
+.products-page {
+    background: var(--body-bg, #f6f6f6) !important;
+    min-height: 100vh !important;
+}
+
+/* Filter Sidebar */
+.filter-sidebar {
+    background: var(--product-card-bg, #fff) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    position: sticky !important;
+    top: 20px !important;
+    border: none !important;
+}
+
+.filter-sidebar h5 {
+    color: var(--text-color, #1a162e) !important;
+    font-weight: 700 !important;
+    font-size: 1.8rem !important;
+    padding-bottom: 12px !important;
+    border-bottom: 2px solid #77dae6 !important;
+    margin-bottom: 20px !important;
+}
+
+.filter-title {
+    color: var(--text-color, #1a162e) !important;
+    font-weight: 600 !important;
+    font-size: 1.5rem !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--separate-color, #ebebeb) !important;
+}
+
+.filter-list {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    padding-right: 8px !important;
+}
+
+.filter-list::-webkit-scrollbar {
+    width: 4px !important;
+}
+
+.filter-list::-webkit-scrollbar-track {
+    background: #f1f1f1 !important;
+    border-radius: 4px !important;
+}
+
+.filter-list::-webkit-scrollbar-thumb {
+    background: #77dae6 !important;
+    border-radius: 4px !important;
+}
+
+/* Filter checkboxes/radios */
+.filter-sidebar .form-check {
+    padding: 8px 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.filter-sidebar .form-check-input {
+    width: 18px !important;
+    height: 18px !important;
+    margin-top: 0 !important;
+    cursor: pointer !important;
+}
+
+.filter-sidebar .form-check-input:checked {
+    background-color: #77dae6 !important;
+    border-color: #77dae6 !important;
+}
+
+.filter-sidebar .form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(119, 218, 230, 0.25) !important;
+    border-color: #77dae6 !important;
+}
+
+.filter-sidebar .form-check-label {
+    font-size: 1.4rem !important;
+    color: var(--text-color, #1a162e) !important;
+    cursor: pointer !important;
+    transition: color 0.2s ease !important;
+}
+
+.filter-sidebar .form-check-label:hover {
+    color: #5bc7d4 !important;
+}
+
+/* Price inputs */
+.filter-sidebar .form-control {
+    border-radius: 8px !important;
+    border: 1px solid var(--separate-color, #d2d1d6) !important;
+    font-size: 1.4rem !important;
+    padding: 10px 12px !important;
+    background: var(--filter-btn-bg, #fff) !important;
+    color: var(--text-color, #1a162e) !important;
+}
+
+.filter-sidebar .form-control:focus {
+    border-color: #77dae6 !important;
+    box-shadow: 0 0 0 3px rgba(119, 218, 230, 0.15) !important;
+}
+
+/* Filter buttons */
+.filter-sidebar .btn-primary {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border: none !important;
+    color: #1a162e !important;
+    font-weight: 600 !important;
+    padding: 12px 20px !important;
+    border-radius: 10px !important;
+    transition: all 0.3s ease !important;
+}
+
+.filter-sidebar .btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(119, 218, 230, 0.4) !important;
+}
+
+.filter-sidebar .btn-outline-secondary {
+    border: 1px solid var(--separate-color, #d2d1d6) !important;
+    color: var(--text-color, #1a162e) !important;
+    font-weight: 500 !important;
+    padding: 12px 20px !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    transition: all 0.2s ease !important;
+}
+
+.filter-sidebar .btn-outline-secondary:hover {
+    border-color: #77dae6 !important;
+    color: #5bc7d4 !important;
+    background: rgba(119, 218, 230, 0.05) !important;
+}
+
+/* Sort select */
+.products-page .form-select {
+    border-radius: 8px !important;
+    border: 1px solid var(--separate-color, #d2d1d6) !important;
+    font-size: 1.4rem !important;
+    padding: 10px 36px 10px 14px !important;
+    background-color: var(--filter-btn-bg, #fff) !important;
+    color: var(--text-color, #1a162e) !important;
+    cursor: pointer !important;
+}
+
+.products-page .form-select:focus {
+    border-color: #77dae6 !important;
+    box-shadow: 0 0 0 3px rgba(119, 218, 230, 0.15) !important;
+}
+
+/* Results info */
+#resultsInfo {
+    font-size: 1.4rem !important;
+    color: #9e9da8 !important;
+}
+
+/* Products grid loading */
+.products-page .spinner-border {
+    color: #77dae6 !important;
+}
+
+/* Pagination */
+.products-page .pagination {
+    gap: 6px !important;
+}
+
+.products-page .page-link {
+    border-radius: 8px !important;
+    border: 1px solid var(--separate-color, #d2d1d6) !important;
+    color: var(--text-color, #1a162e) !important;
+    font-size: 1.4rem !important;
+    padding: 10px 16px !important;
+    transition: all 0.2s ease !important;
+    background: var(--filter-btn-bg, #fff) !important;
+}
+
+.products-page .page-link:hover {
+    border-color: #77dae6 !important;
+    color: #5bc7d4 !important;
+    background: rgba(119, 218, 230, 0.05) !important;
+}
+
+.products-page .page-item.active .page-link {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border-color: #77dae6 !important;
+    color: #1a162e !important;
+    font-weight: 600 !important;
+}
+
+.products-page .page-item.disabled .page-link {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Dark mode products page */
+html.dark .filter-sidebar {
+    background: var(--product-card-bg) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+html.dark .filter-sidebar h5 {
+    color: #fff !important;
+}
+
+html.dark .filter-title {
+    color: #fff !important;
+}
+
+html.dark .filter-sidebar .form-check-label {
+    color: #b9babe !important;
+}
+
+html.dark .filter-sidebar .form-check-label:hover {
+    color: #77dae6 !important;
+}
+
+html.dark .filter-sidebar .form-control {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+html.dark .products-page .form-select {
+    background-color: var(--product-card-bg) !important;
+    color: #fff !important;
+}
+
+html.dark .products-page .page-link {
+    background: var(--product-card-bg) !important;
+    color: #b9babe !important;
+}
+
+html.dark .products-page .page-link:hover {
+    color: #77dae6 !important;
 }

@@ -8,7 +8,7 @@
     <div class="container">
         <div class="profile-container">
             <div class="row gy-md-3">
-                <div class="col-12 col-md-3">
+                <div class="col-3 col-xl-4 col-lg-5 col-md-12">
                     <aside class="profile__sidebar">
                         <div class="profile-user">
                             <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar.jpg'}" 
@@ -19,7 +19,7 @@
                         <div class="profile-menu">
                             <h3 class="profile-menu__title">Quản lý tài khoản</h3>
                             <ul class="profile-menu__list">
-                                <li><a th:href="@{/profile}" class="profile-menu__link">
+                                <li><a th:href="@{/edit-personal-info}" class="profile-menu__link">
                                     <span class="profile-menu__icon"><img th:src="@{/assets/icon/profile.svg}" alt="" class="icon"/></span>
                                     Thông tin cá nhân</a></li>
                                 <li><a th:href="@{/my-orders}" class="profile-menu__link">
@@ -36,13 +36,18 @@
                     </aside>
                 </div>
 
-                <div class="col-12 col-md-9">
+                <div class="col-9 col-xl-8 col-lg-7 col-md-12">
                     <div class="cart-info">
-                        <div class="cart-info__top">
-                            <h1 class="cart-info__heading">Địa Chỉ Giao Hàng</h1>
+                        <div class="page-header">
+                            <a th:href="@{/profile}" class="page-header__back">
+                                <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="icon"/>
+                            </a>
+                            <div class="page-header__content">
+                                <h1 class="cart-info__heading" style="margin-bottom: 4px;">Địa Chỉ Giao Hàng</h1>
+                                <p class="page-header__subtitle">Quản lý địa chỉ nhận hàng của bạn</p>
+                            </div>
                             <button type="button" onclick="showAddAddressModal()" class="btn btn--primary">
-                                <img th:src="@{/assets/icon/plus.svg}" alt="" class="icon" style="width: 14px; height: 14px; margin-right: 6px; filter: brightness(0) invert(1);"/>
-                                Thêm địa chỉ mới
+                                <span class="btn-icon-text">+ Thêm địa chỉ</span>
                             </button>
                         </div>
 
@@ -157,6 +162,8 @@
 </div>
 
 <th:block th:replace="~{shared/fragments/footer :: footer}"></th:block>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
+<link rel="stylesheet" th:href="@{/assets/css/profile.css}"/>
 <link rel="stylesheet" th:href="@{/assets/css/addresses.css}"/>
 <script th:src="@{/assets/js/address-api.js}"></script>
 <script th:src="@{/assets/js/addresses.js}"></script>
@@ -351,10 +358,10 @@ window.saveAddress = async function(event) {
         
         closeModal();
         loadAddresses();
-        alert(addressId ? 'Cập nhật địa chỉ thành công!' : 'Thêm địa chỉ thành công!');
+        NotificationModal.success(addressId ? 'Cập nhật địa chỉ thành công!' : 'Thêm địa chỉ thành công!');
     } catch (error) {
         console.error('Error saving address:', error);
-        alert('Có lỗi xảy ra khi lưu địa chỉ');
+        NotificationModal.error('Có lỗi xảy ra khi lưu địa chỉ');
     }
 };
 
@@ -376,7 +383,7 @@ window.editAddress = async function(id) {
     try {
         const address = await AddressAPI.getAddress(id);
         if (!address) {
-            alert('Không thể tải địa chỉ');
+            NotificationModal.error('Không thể tải địa chỉ');
             return;
         }
 
@@ -452,7 +459,7 @@ window.editAddress = async function(id) {
         document.getElementById('addressModal').classList.add('show');
     } catch (error) {
         console.error('Error loading address:', error);
-        alert('Có lỗi xảy ra khi tải địa chỉ');
+        NotificationModal.error('Có lỗi xảy ra khi tải địa chỉ');
     }
 };
 </script>

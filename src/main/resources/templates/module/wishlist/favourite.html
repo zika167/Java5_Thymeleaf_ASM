@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{shared/fragments/head :: head('Danh Sách Yêu Thích | grocerystore')}"></head>
 <body>
-<!-- Header -->
-<header th:replace="~{shared/fragments/header :: header}"></header>
+<th:block th:replace="~{shared/fragments/header :: header}"></th:block>
 
-<!-- MAIN -->
 <main class="checkout-page">
     <div class="container">
         <!-- Breadcrumbs -->
@@ -28,19 +26,56 @@
             <div class="row gy-xl-3">
                 <div class="col-12">
                     <div class="cart-info">
-                        <h1 class="cart-info__heading">Danh Sách Yêu Thích</h1>
-                        <div id="wishlistContainer" class="cart-info__list">
-                            <div class="loading-state"><p>Đang tải danh sách yêu thích...</p></div>
+                        <!-- Page Header -->
+                        <div class="page-header">
+                            <a th:href="@{/}" class="page-header__back">
+                                <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="icon"/>
+                            </a>
+                            <div class="page-header__content">
+                                <h1 class="cart-info__heading" style="margin-bottom: 4px;">Danh Sách Yêu Thích</h1>
+                                <p class="page-header__subtitle">Những sản phẩm bạn đã lưu để mua sau</p>
+                            </div>
                         </div>
-                        <div class="cart-info__bottom">
-                            <div class="cart-info__row cart-info__row-md--block">
-                                <div class="cart-info__continue">
-                                    <a th:href="@{/}" class="cart-info__continue-link">
-                                        <img class="cart-info__continue-icon icon" th:src="@{/assets/icon/arrow-down-2.svg}" alt=""/>
-                                        Tiếp tục mua sắm
-                                    </a>
+
+                        <!-- Stats -->
+                        <div class="wishlist-stats" id="wishlistStats" style="display: none;">
+                            <div class="wishlist-stat">
+                                <div class="wishlist-stat__icon">
+                                    <img th:src="@{/assets/icon/heart.svg}" alt="" class="icon"/>
+                                </div>
+                                <div>
+                                    <div class="wishlist-stat__value" id="totalItems">0</div>
+                                    <div class="wishlist-stat__label">Sản phẩm</div>
                                 </div>
                             </div>
+                            <div class="wishlist-stat">
+                                <div class="wishlist-stat__icon">
+                                    <img th:src="@{/assets/icon/bag.svg}" alt="" class="icon"/>
+                                </div>
+                                <div>
+                                    <div class="wishlist-stat__value" id="inStockItems">0</div>
+                                    <div class="wishlist-stat__label">Còn hàng</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wishlist Grid -->
+                        <div id="wishlistContainer">
+                            <div class="loading-state" id="loadingState">
+                                <div class="loading-spinner"></div>
+                                <p>Đang tải danh sách yêu thích...</p>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination" id="pagination"></div>
+
+                        <!-- Continue Shopping -->
+                        <div class="continue-shopping">
+                            <a th:href="@{/products}" class="continue-shopping__link">
+                                <img th:src="@{/assets/icon/arrow-down-2.svg}" alt="" class="icon"/>
+                                Tiếp tục mua sắm
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -49,81 +84,185 @@
     </div>
 </main>
 
-<!-- Footer -->
-<footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+<th:block th:replace="~{shared/fragments/footer :: footer}"></th:block>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
+<link rel="stylesheet" th:href="@{/assets/css/favourite.css}"/>
+<script th:src="@{/assets/js/notification-modal.js}"></script>
 
-<script th:src="@{/assets/js/wishlist-api.js}"></script>
 <script>
+const ITEMS_PER_PAGE = 4;
+let allWishlistItems = [];
+let currentPage = 1;
+
 document.addEventListener('DOMContentLoaded', loadWishlist);
 
 async function loadWishlist() {
     const container = document.getElementById('wishlistContainer');
+    const statsSection = document.getElementById('wishlistStats');
+    const pagination = document.getElementById('pagination');
     
     try {
         const response = await fetch('/api/wishlist');
         
         if (response.status === 401) {
+            statsSection.style.display = 'none';
+            pagination.innerHTML = '';
             container.innerHTML = `
-                <div class="empty-state" style="text-align: center; padding: 60px 20px;">
-                    <p style="color: #666; margin-bottom: 20px;">Bạn cần đăng nhập để xem danh sách yêu thích</p>
-                    <a href="/sign-in" class="btn btn--primary">Đăng nhập</a>
+                <div class="empty-state">
+                    <div class="empty-state__icon-wrap">
+                        <img src="/assets/icon/profile.svg" alt="" class="empty-state__icon"/>
+                    </div>
+                    <h2 class="empty-state__title">Chưa đăng nhập</h2>
+                    <p class="empty-state__desc">Bạn cần đăng nhập để xem danh sách yêu thích</p>
+                    <a href="/sign-in" class="btn btn--primary">Đăng nhập ngay</a>
                 </div>`;
             return;
         }
         
-        if (!response.ok) {
-            throw new Error('Lỗi tải dữ liệu');
-        }
+        if (!response.ok) throw new Error('Lỗi tải dữ liệu');
         
-        const wishlistItems = await response.json();
+        allWishlistItems = await response.json();
         
-        if (!wishlistItems || wishlistItems.length === 0) {
+        if (!allWishlistItems || allWishlistItems.length === 0) {
+            statsSection.style.display = 'none';
+            pagination.innerHTML = '';
             container.innerHTML = `
-                <div class="empty-state" style="text-align: center; padding: 60px 20px;">
-                    <p style="color: #666; margin-bottom: 20px;">Bạn chưa có sản phẩm yêu thích nào</p>
-                    <a href="/category" class="btn btn--primary">Khám phá sản phẩm</a>
+                <div class="empty-state">
+                    <div class="empty-state__icon-wrap">
+                        <svg class="empty-state__heart-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+                    <h2 class="empty-state__title">Chưa có sản phẩm yêu thích</h2>
+                    <p class="empty-state__desc">Hãy thêm sản phẩm vào danh sách yêu thích để mua sau nhé!</p>
+                    <a href="/" class="btn btn--primary empty-state__btn">
+                        <span>🛍️</span>
+                        <span>Khám phá sản phẩm</span>
+                    </a>
                 </div>`;
             return;
         }
         
-        container.innerHTML = wishlistItems.map(item => `
-            <article class="cart-item" data-product-id="${item.productId}">
-                <a href="/product/${item.productId}">
-                    <img src="${item.productImageUrl || '/assets/img/product/default.jpg'}" alt="${item.productName}" class="cart-item__thumb"/>
-                </a>
-                <div class="cart-item__content">
-                    <div class="cart-item__content-left">
-                        <h3 class="cart-item__title">
-                            <a href="/product/${item.productId}">${item.productName}</a>
-                        </h3>
-                        <p class="cart-item__price-wrap">
-                            ${formatPrice(item.productPrice)} |
-                            <span class="cart-item__status">${item.productStock > 0 ? 'Còn hàng' : 'Hết hàng'}</span>
-                        </p>
-                        <div class="cart-item__ctrl-wrap">
-                            <div class="cart-item__ctrl">
-                                <button onclick="addToCart(${item.productId})" class="cart-item__ctrl-btn">
-                                    <img src="/assets/icon/bag.svg" alt=""/>
-                                    Thêm vào giỏ
-                                </button>
-                                <button onclick="removeFromWishlist(${item.productId})" class="cart-item__ctrl-btn">
-                                    <img src="/assets/icon/trash.svg" alt=""/>
-                                    Xóa
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="cart-item__content-right">
-                        <p class="cart-item__total-price">${formatPrice(item.productPrice)}</p>
-                    </div>
-                </div>
-            </article>
-        `).join('');
+        // Update stats
+        const inStock = allWishlistItems.filter(item => item.productStock > 0).length;
+        document.getElementById('totalItems').textContent = allWishlistItems.length;
+        document.getElementById('inStockItems').textContent = inStock;
+        statsSection.style.display = 'flex';
+        
+        renderWishlist();
         
     } catch (error) {
         console.error('Error loading wishlist:', error);
-        container.innerHTML = '<p style="text-align: center; padding: 40px; color: #dc3545;">Lỗi tải danh sách yêu thích</p>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state__icon-wrap">
+                    <img src="/assets/icon/danger.svg" alt="" class="empty-state__icon"/>
+                </div>
+                <h2 class="empty-state__title">Có lỗi xảy ra</h2>
+                <p class="empty-state__desc">Không thể tải danh sách yêu thích. Vui lòng thử lại sau.</p>
+                <button onclick="loadWishlist()" class="btn btn--primary">Thử lại</button>
+            </div>`;
     }
+}
+
+function renderWishlist() {
+    const container = document.getElementById('wishlistContainer');
+    
+    // Calculate pagination
+    const totalPages = Math.ceil(allWishlistItems.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const itemsToShow = allWishlistItems.slice(startIndex, endIndex);
+    
+    // Render grid
+    container.innerHTML = `
+        <div class="wishlist-grid">
+            ${itemsToShow.map(item => `
+                <div class="wishlist-card" data-product-id="${item.productId}">
+                    <button onclick="removeFromWishlist(${item.productId})" class="wishlist-card__remove" title="Xóa khỏi yêu thích">
+                        <img src="/assets/icon/trash.svg" alt="" class="icon"/>
+                    </button>
+                    <a href="/product/${item.productId}" class="wishlist-card__img-wrap">
+                        <img src="${item.productImageUrl || '/assets/img/products/default.jpg'}" alt="${item.productName}" class="wishlist-card__img" onerror="this.src='/assets/img/products/default.jpg'"/>
+                        <span class="wishlist-card__stock ${item.productStock > 0 ? 'wishlist-card__stock--in' : 'wishlist-card__stock--out'}">
+                            ${item.productStock > 0 ? '✓ Còn hàng' : '✕ Hết hàng'}
+                        </span>
+                    </a>
+                    <div class="wishlist-card__content">
+                        <h3 class="wishlist-card__name">
+                            <a href="/product/${item.productId}">${item.productName}</a>
+                        </h3>
+                        <p class="wishlist-card__price">${formatPrice(item.productPrice)}</p>
+                        <div class="wishlist-card__actions">
+                            <button onclick="addToCart(${item.productId})" class="wishlist-card__btn wishlist-card__btn--cart" ${item.productStock <= 0 ? 'disabled' : ''}>
+                                <img src="/assets/icon/bag.svg" alt="" class="icon"/>
+                                ${item.productStock > 0 ? 'Thêm vào giỏ' : 'Hết hàng'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>`;
+    
+    renderPagination(totalPages);
+}
+
+function renderPagination(totalPages) {
+    const pagination = document.getElementById('pagination');
+    
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    
+    // Previous button
+    html += `<button class="pagination__btn ${currentPage === 1 ? 'disabled' : ''}" 
+                     onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                ‹ Trước
+             </button>`;
+    
+    // Page numbers
+    html += '<div class="pagination__pages">';
+    
+    if (currentPage > 3) {
+        html += `<button class="pagination__page" onclick="goToPage(1)">1</button>`;
+        if (currentPage > 4) html += `<span class="pagination__dots">...</span>`;
+    }
+    
+    for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+        html += `<button class="pagination__page ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    }
+    
+    if (currentPage < totalPages - 2) {
+        if (currentPage < totalPages - 3) html += `<span class="pagination__dots">...</span>`;
+        html += `<button class="pagination__page" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+    }
+    
+    html += '</div>';
+    
+    // Next button
+    html += `<button class="pagination__btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                     onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                Sau ›
+             </button>`;
+    
+    // Page info
+    const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+    const endItem = Math.min(currentPage * ITEMS_PER_PAGE, allWishlistItems.length);
+    html += `<div class="pagination__info">Hiển thị ${startItem}-${endItem} / ${allWishlistItems.length} sản phẩm</div>`;
+    
+    pagination.innerHTML = html;
+}
+
+function goToPage(page) {
+    const totalPages = Math.ceil(allWishlistItems.length / ITEMS_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    
+    currentPage = page;
+    renderWishlist();
+    document.querySelector('.cart-info').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function formatPrice(price) {
@@ -131,42 +270,54 @@ function formatPrice(price) {
 }
 
 async function removeFromWishlist(productId) {
-    if (!confirm('Bạn có chắc muốn xóa sản phẩm này khỏi danh sách yêu thích?')) return;
+    const confirmed = await NotificationModal.confirm('Bạn có chắc muốn xóa sản phẩm này khỏi danh sách yêu thích?', 'Xác nhận xóa');
+    if (!confirmed) return;
     
     try {
-        // Get CSRF token
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
         
         const headers = { 'Content-Type': 'application/json' };
-        if (csrfToken && csrfHeader) {
-            headers[csrfHeader] = csrfToken;
-        }
+        if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
         
         const response = await fetch(`/api/wishlist/products/${productId}`, { 
             method: 'DELETE',
             headers: headers
         });
+        
         if (response.ok) {
-            await loadWishlist();
-            showToast('Đã xóa khỏi danh sách yêu thích');
+            // Remove from local array
+            allWishlistItems = allWishlistItems.filter(item => item.productId !== productId);
+            
+            // Adjust page if needed
+            const totalPages = Math.ceil(allWishlistItems.length / ITEMS_PER_PAGE);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            
+            // Update stats
+            if (allWishlistItems.length > 0) {
+                const inStock = allWishlistItems.filter(item => item.productStock > 0).length;
+                document.getElementById('totalItems').textContent = allWishlistItems.length;
+                document.getElementById('inStockItems').textContent = inStock;
+                renderWishlist();
+            } else {
+                loadWishlist(); // Reload to show empty state
+            }
+            
+            NotificationModal.success('Đã xóa khỏi danh sách yêu thích');
         }
     } catch (error) {
         console.error('Error removing from wishlist:', error);
-        showToast('Có lỗi xảy ra', 'error');
+        NotificationModal.error('Có lỗi xảy ra');
     }
 }
 
 async function addToCart(productId) {
     try {
-        // Get CSRF token
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
         
         const headers = { 'Content-Type': 'application/json' };
-        if (csrfToken && csrfHeader) {
-            headers[csrfHeader] = csrfToken;
-        }
+        if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
         
         const response = await fetch('/api/cart/add', {
             method: 'POST',
@@ -175,35 +326,18 @@ async function addToCart(productId) {
         });
         
         if (response.ok) {
-            const cartData = await response.json();
-            showToast('Đã thêm vào giỏ hàng');
-            // Update cart badge and dropdown
+            NotificationModal.success('Đã thêm vào giỏ hàng');
             if (window.CartUI) {
                 window.CartUI.updateBadge();
                 window.CartUI.loadDropdown();
             }
         } else {
-            const errorText = await response.text();
-            console.error('Add to cart error:', errorText);
-            showToast('Có lỗi xảy ra', 'error');
+            NotificationModal.error('Có lỗi xảy ra');
         }
     } catch (error) {
         console.error('Error adding to cart:', error);
-        showToast('Có lỗi xảy ra', 'error');
+        NotificationModal.error('Có lỗi xảy ra');
     }
-}
-
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed; bottom: 20px; right: 20px;
-        background: ${type === 'error' ? '#dc3545' : '#28a745'};
-        color: white; padding: 15px 20px; border-radius: 8px;
-        z-index: 9999; animation: slideIn 0.3s ease;
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
 }
 </script>
 </body>

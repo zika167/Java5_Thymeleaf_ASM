@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import poly.edu.java5_asm.module.admin.dto.response.DashboardStatsResponse;
+import poly.edu.java5_asm.module.admin.dto.response.RevenueStatsResponse;
 import poly.edu.java5_asm.module.admin.dto.response.TrafficStatsResponse;
 import poly.edu.java5_asm.module.admin.dto.response.UserRegistrationStatsResponse;
 import poly.edu.java5_asm.module.admin.service.AdminStatisticsService;
@@ -101,6 +102,39 @@ public class AdminStatisticsController {
     @GetMapping("/traffic/last-30-days")
     public ResponseEntity<List<TrafficStatsResponse>> getLast30DaysTraffic() {
         List<TrafficStatsResponse> stats = statisticsService.getLast30DaysTrafficStats();
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * API: Lấy thống kê doanh thu theo khoảng thời gian
+     * GET /api/admin/statistics/revenue?startDate=2024-01-01&endDate=2024-01-31
+     */
+    @GetMapping("/revenue")
+    public ResponseEntity<List<RevenueStatsResponse>> getRevenueStats(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        List<RevenueStatsResponse> stats = statisticsService.getRevenueStats(startDate, endDate);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * API: Lấy thống kê doanh thu 7 ngày gần nhất
+     * GET /api/admin/statistics/revenue/last-7-days
+     */
+    @GetMapping("/revenue/last-7-days")
+    public ResponseEntity<List<RevenueStatsResponse>> getLast7DaysRevenue() {
+        List<RevenueStatsResponse> stats = statisticsService.getLast7DaysRevenueStats();
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * API: Lấy thống kê doanh thu 30 ngày gần nhất
+     * GET /api/admin/statistics/revenue/last-30-days
+     */
+    @GetMapping("/revenue/last-30-days")
+    public ResponseEntity<List<RevenueStatsResponse>> getLast30DaysRevenue() {
+        List<RevenueStatsResponse> stats = statisticsService.getLast30DaysRevenueStats();
         return ResponseEntity.ok(stats);
     }
 }

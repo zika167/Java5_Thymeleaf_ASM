@@ -8,286 +8,191 @@
     <title>Admin Dashboard | grocerystore</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --cyan-50: #ecfeff; --cyan-100: #cffafe; --cyan-200: #a5f3fc;
+            --cyan-300: #67e8f9; --cyan-400: #22d3ee; --cyan-500: #06b6d4;
+            --cyan-600: #0891b2; --cyan-700: #0e7490; --cyan-800: #155e75;
+        }
+        .admin-body { background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%); }
+        .admin-header {
+            background: linear-gradient(135deg, var(--cyan-500) 0%, var(--cyan-600) 100%);
+            color: white; border-bottom: none; box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+        }
+        .admin-header h1 { color: white; display: flex; align-items: center; gap: 12px; }
+        .admin-header h1::before { content: '📊'; font-size: 28px; }
+        .admin-user { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px; backdrop-filter: blur(10px); }
+        .admin-user span { color: white; font-weight: 500; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
+        .stat-card {
+            background: white; border-radius: 20px; padding: 28px; display: flex; gap: 20px; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--cyan-400), var(--cyan-500)); }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(6, 182, 212, 0.2); }
+        .stat-card__icon { font-size: 32px; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 16px; background: linear-gradient(135deg, var(--cyan-100) 0%, var(--cyan-200) 100%); }
+        .stat-card__content h3 { margin: 0 0 6px; font-size: 32px; font-weight: 700; background: linear-gradient(135deg, var(--cyan-600) 0%, var(--cyan-700) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .stat-card__content p { margin: 0; color: #64748b; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+        .chart-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
+        .chart-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--cyan-400), var(--cyan-500)); }
+        .chart-card h3 { margin: 0 0 24px; font-size: 18px; color: var(--cyan-800); display: flex; align-items: center; gap: 10px; }
+        .chart-card h3::before { content: '📈'; font-size: 20px; }
+        .chart-card:last-child h3::before { content: '💰'; }
+        .chart-wrapper { position: relative; height: 300px; width: 100%; }
+        .table-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
+        .table-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--cyan-400), var(--cyan-500)); }
+        .table-card__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .table-card__header h3 { margin: 0; font-size: 18px; color: var(--cyan-800); display: flex; align-items: center; gap: 10px; }
+        .table-card__header h3::before { content: '📋'; font-size: 20px; }
+        .admin-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .admin-table th { text-align: left; padding: 16px; background: linear-gradient(135deg, var(--cyan-50) 0%, var(--cyan-100) 100%); font-weight: 600; color: var(--cyan-700); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--cyan-200); }
+        .admin-table th:first-child { border-radius: 12px 0 0 0; }
+        .admin-table th:last-child { border-radius: 0 12px 0 0; }
+        .admin-table td { padding: 18px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+        .admin-table tr:hover td { background: var(--cyan-50); }
+        .badge { padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; }
+        .badge--pending { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #92400e; }
+        .badge--pending::before { background: #f59e0b; }
+        .badge--processing { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #1e40af; }
+        .badge--processing::before { background: #3b82f6; }
+        .badge--confirmed { background: linear-gradient(135deg, var(--cyan-100) 0%, var(--cyan-200) 100%); color: var(--cyan-800); }
+        .badge--confirmed::before { background: var(--cyan-500); }
+        .badge--shipped { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); color: #3730a3; }
+        .badge--shipped::before { background: #6366f1; }
+        .badge--delivered { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; }
+        .badge--delivered::before { background: #10b981; }
+        .badge--cancelled { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #991b1b; }
+        .badge--cancelled::before { background: #ef4444; }
+        .btn--small { padding: 10px 20px; font-size: 13px; background: linear-gradient(135deg, var(--cyan-400) 0%, var(--cyan-500) 100%); color: #fff; border: none; border-radius: 50px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s ease; font-weight: 500; }
+        .btn--small:hover { background: linear-gradient(135deg, var(--cyan-500) 0%, var(--cyan-600) 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4); color: #fff; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
+        .pagination button { padding: 10px 16px; border: none; border-radius: 10px; background: var(--cyan-100); color: var(--cyan-700); cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .pagination button:hover:not(:disabled) { background: var(--cyan-200); }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination button.active { background: linear-gradient(135deg, var(--cyan-400) 0%, var(--cyan-500) 100%); color: white; }
+        .pagination span { color: #64748b; font-size: 14px; }
+        @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .charts-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } .stat-card { padding: 20px; } .stat-card__content h3 { font-size: 24px; } }
+    </style>
 </head>
 <body class="admin-body">
-
 <th:block th:replace="~{shared/fragments/admin-sidebar :: admin-sidebar}"></th:block>
-
 <main class="admin-main">
     <div class="admin-header">
         <h1>Dashboard</h1>
         <div class="admin-user">
-            <img th:src="${session.user != null ? session.user.avatarUrlOrGravatar : '/assets/img/avatar.jpg'}" 
-                 alt="" class="admin-user__avatar"/>
+            <img th:src="${session.user != null ? session.user.avatarUrlOrGravatar : '/assets/img/avatar.jpg'}" alt="" class="admin-user__avatar"/>
             <span th:text="${session.user != null ? session.user.fullName : 'Admin'}">Admin</span>
         </div>
     </div>
-
     <div class="admin-content">
-        <!-- Stats Cards -->
         <div class="stats-grid">
-            <div class="stat-card stat-card--blue">
-                <div class="stat-card__icon">👥</div>
-                <div class="stat-card__content">
-                    <h3 id="totalUsers">0</h3>
-                    <p>Tổng Users</p>
-                </div>
-            </div>
-            <div class="stat-card stat-card--green">
-                <div class="stat-card__icon">🛍️</div>
-                <div class="stat-card__content">
-                    <h3 id="totalOrders">0</h3>
-                    <p>Tổng Orders</p>
-                </div>
-            </div>
-            <div class="stat-card stat-card--orange">
-                <div class="stat-card__icon">💰</div>
-                <div class="stat-card__content">
-                    <h3 id="totalRevenue">0đ</h3>
-                    <p>Doanh Thu</p>
-                </div>
-            </div>
-            <div class="stat-card stat-card--purple">
-                <div class="stat-card__icon">📦</div>
-                <div class="stat-card__content">
-                    <h3 id="totalProducts">0</h3>
-                    <p>Tổng Products</p>
-                </div>
-            </div>
+            <div class="stat-card"><div class="stat-card__icon">👥</div><div class="stat-card__content"><h3 id="totalUsers">0</h3><p>Tổng Users</p></div></div>
+            <div class="stat-card"><div class="stat-card__icon">🛍️</div><div class="stat-card__content"><h3 id="totalOrders">0</h3><p>Tổng Orders</p></div></div>
+            <div class="stat-card"><div class="stat-card__icon">💰</div><div class="stat-card__content"><h3 id="totalRevenue">0đ</h3><p>Doanh Thu</p></div></div>
+            <div class="stat-card"><div class="stat-card__icon">📦</div><div class="stat-card__content"><h3 id="totalProducts">0</h3><p>Tổng Products</p></div></div>
         </div>
-
-        <!-- Charts -->
         <div class="charts-grid">
-            <div class="chart-card">
-                <h3>Đăng Ký Users (7 ngày gần nhất)</h3>
-                <div class="chart-wrapper">
-                    <canvas id="registrationChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-card">
-                <h3>Doanh Thu (7 ngày gần nhất)</h3>
-                <div class="chart-wrapper">
-                    <canvas id="revenueChart"></canvas>
-                </div>
-            </div>
+            <div class="chart-card"><h3>Đăng Ký Users (7 ngày)</h3><div class="chart-wrapper"><canvas id="registrationChart"></canvas></div></div>
+            <div class="chart-card"><h3>Doanh Thu (7 ngày)</h3><div class="chart-wrapper"><canvas id="revenueChart"></canvas></div></div>
         </div>
-
-        <!-- Recent Orders -->
         <div class="table-card">
-            <h3>Đơn Hàng Gần Đây</h3>
+            <div class="table-card__header">
+                <h3>Đơn Hàng Gần Đây</h3>
+                <span id="orderInfo" style="color: #64748b; font-size: 14px;"></span>
+            </div>
             <div class="table-responsive">
                 <table class="admin-table">
-                    <thead>
-                    <tr>
-                        <th>Mã ĐH</th>
-                        <th>Khách Hàng</th>
-                        <th>Ngày</th>
-                        <th>Tổng Tiền</th>
-                        <th>Trạng Thái</th>
-                        <th>Hành Động</th>
-                    </tr>
-                    </thead>
-                    <tbody id="recentOrdersTable">
-                    <tr>
-                        <td colspan="6" class="text-center">Đang tải...</td>
-                    </tr>
-                    </tbody>
+                    <thead><tr><th>Mã ĐH</th><th>Khách Hàng</th><th>Ngày</th><th>Tổng Tiền</th><th>Trạng Thái</th><th>Hành Động</th></tr></thead>
+                    <tbody id="recentOrdersTable"><tr><td colspan="6" class="text-center">Đang tải...</td></tr></tbody>
                 </table>
             </div>
+            <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </main>
-
 <script>
-    // CSRF token
     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
-
     let registrationChart, revenueChart;
-
-    document.addEventListener('DOMContentLoaded', function () {
-        loadDashboardStats();
-        loadRegistrationChart();
-        loadRevenueChart();
-        loadRecentOrders();
-    });
-
+    let currentPage = 0, totalPages = 0;
+    const pageSize = 10;
+    const cyanColors = { primary: '#22d3ee', dark: '#06b6d4', light: '#67e8f9',
+        gradient: (ctx) => { const g = ctx.createLinearGradient(0, 0, 0, 300); g.addColorStop(0, 'rgba(34, 211, 238, 0.4)'); g.addColorStop(1, 'rgba(34, 211, 238, 0.05)'); return g; }
+    };
+    document.addEventListener('DOMContentLoaded', function () { loadDashboardStats(); loadRegistrationChart(); loadRevenueChart(); loadRecentOrders(0); });
     function loadDashboardStats() {
-        fetch('/api/admin/statistics/dashboard', {
-            headers: { [csrfHeader]: csrfToken },
-            credentials: 'same-origin'
-        })
-            .then(r => {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.json();
-            })
-            .then(data => {
-                document.getElementById('totalUsers').textContent = data.totalUsers || 0;
-                document.getElementById('totalOrders').textContent = data.totalOrders || 0;
-                document.getElementById('totalRevenue').textContent =
-                    new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.totalRevenue || 0);
-                document.getElementById('totalProducts').textContent = data.totalProducts || 0;
-            })
-            .catch(e => console.error('Error loading stats:', e));
+        fetch('/api/admin/statistics/dashboard', { headers: { [csrfHeader]: csrfToken }, credentials: 'same-origin' })
+            .then(r => r.ok ? r.json() : Promise.reject()).then(data => {
+                animateNumber('totalUsers', data.totalUsers || 0);
+                animateNumber('totalOrders', data.totalOrders || 0);
+                document.getElementById('totalRevenue').textContent = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.totalRevenue || 0);
+                animateNumber('totalProducts', data.totalProducts || 0);
+            }).catch(e => console.error('Error:', e));
     }
-
+    function animateNumber(id, target) {
+        const el = document.getElementById(id), duration = 1000, startTime = performance.now();
+        function update(t) { const p = Math.min((t - startTime) / duration, 1); el.textContent = Math.floor(target * (1 - Math.pow(1 - p, 3))).toLocaleString('vi-VN'); if (p < 1) requestAnimationFrame(update); }
+        requestAnimationFrame(update);
+    }
     function loadRegistrationChart() {
-        fetch('/api/admin/statistics/registrations/last-7-days', {
-            headers: { [csrfHeader]: csrfToken },
-            credentials: 'same-origin'
-        })
-            .then(r => {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.json();
-            })
-            .then(data => {
+        fetch('/api/admin/statistics/registrations/last-7-days', { headers: { [csrfHeader]: csrfToken }, credentials: 'same-origin' })
+            .then(r => r.ok ? r.json() : Promise.reject()).then(data => {
                 const ctx = document.getElementById('registrationChart').getContext('2d');
-                if (Array.isArray(data) && data.length > 0) {
-                    registrationChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.map(d => new Date(d.date).toLocaleDateString('vi-VN')),
-                            datasets: [{
-                                label: 'Đăng ký mới',
-                                data: data.map(d => d.count),
-                                borderColor: '#667eea',
-                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                                tension: 0.4,
-                                fill: true
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {legend: {display: false}}
-                        }
-                    });
-                } else {
-                    // No data - show empty chart
-                    registrationChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: getLast7Days(),
-                            datasets: [{
-                                label: 'Đăng ký mới',
-                                data: [0, 0, 0, 0, 0, 0, 0],
-                                borderColor: '#667eea',
-                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                                tension: 0.4,
-                                fill: true
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {legend: {display: false}}
-                        }
-                    });
-                }
-            })
-            .catch(e => {
-                console.error('Error loading registration chart:', e);
-                // Show empty chart on error
-                const ctx = document.getElementById('registrationChart').getContext('2d');
-                registrationChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: getLast7Days(),
-                        datasets: [{
-                            label: 'Đăng ký mới',
-                            data: [0, 0, 0, 0, 0, 0, 0],
-                            borderColor: '#667eea',
-                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {legend: {display: false}}
-                    }
-                });
-            });
+                const labels = data.length ? data.map(d => new Date(d.date).toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'})) : getLast7Days();
+                const values = data.length ? data.map(d => d.registrationCount || 0) : [0,0,0,0,0,0,0];
+                registrationChart = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Đăng ký', data: values, borderColor: cyanColors.primary, backgroundColor: cyanColors.gradient(ctx), borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: cyanColors.dark, pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } } } });
+            }).catch(() => createEmptyChart('registrationChart', 'line'));
     }
-
     function loadRevenueChart() {
-        // Simple revenue chart based on orders
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-        revenueChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: getLast7Days(),
-                datasets: [{
-                    label: 'Doanh thu',
-                    data: [0, 0, 0, 0, 0, 0, 0],
-                    backgroundColor: 'rgba(118, 75, 162, 0.8)',
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {legend: {display: false}}
-            }
-        });
+        fetch('/api/admin/statistics/revenue/last-7-days', { headers: { [csrfHeader]: csrfToken }, credentials: 'same-origin' })
+            .then(r => r.ok ? r.json() : Promise.reject()).then(data => {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                const labels = data.length ? data.map(d => new Date(d.date).toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'})) : getLast7Days();
+                const values = data.length ? data.map(d => d.revenue || 0) : [0,0,0,0,0,0,0];
+                const gradient = ctx.createLinearGradient(0, 0, 0, 300); gradient.addColorStop(0, 'rgba(6, 182, 212, 0.8)'); gradient.addColorStop(1, 'rgba(34, 211, 238, 0.6)');
+                revenueChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Doanh thu', data: values, backgroundColor: gradient, borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}, tooltip: { callbacks: { label: ctx => new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(ctx.raw) } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3)+'K' : v } }, x: { grid: { display: false } } } } });
+            }).catch(() => createEmptyChart('revenueChart', 'bar'));
     }
-
-    function getLast7Days() {
-        const days = [];
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            days.push(d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'}));
-        }
-        return days;
+    function createEmptyChart(id, type) {
+        const ctx = document.getElementById(id).getContext('2d');
+        new Chart(ctx, { type, data: { labels: getLast7Days(), datasets: [{ data: [0,0,0,0,0,0,0], borderColor: cyanColors.primary, backgroundColor: type === 'bar' ? 'rgba(6,182,212,0.6)' : cyanColors.gradient(ctx), borderWidth: type === 'bar' ? 0 : 3, tension: 0.4, fill: true, borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}} } });
     }
-
-    function loadRecentOrders() {
-        fetch('/api/orders/paginated?page=0&size=10', {
-            headers: { [csrfHeader]: csrfToken },
-            credentials: 'same-origin'
-        })
-            .then(r => {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.json();
-            })
-            .then(data => {
+    function getLast7Days() { const d = []; for (let i = 6; i >= 0; i--) { const t = new Date(); t.setDate(t.getDate() - i); d.push(t.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'})); } return d; }
+    function loadRecentOrders(page) {
+        currentPage = page;
+        fetch(`/api/orders/admin/all?page=${page}&size=${pageSize}`, { headers: { [csrfHeader]: csrfToken }, credentials: 'same-origin' })
+            .then(r => r.ok ? r.json() : Promise.reject()).then(data => {
+                totalPages = data.totalPages || 1;
+                document.getElementById('orderInfo').textContent = `Trang ${page + 1}/${totalPages} (${data.totalElements || 0} đơn)`;
                 const tbody = document.getElementById('recentOrdersTable');
-                if (data.content && data.content.length > 0) {
-                    tbody.innerHTML = data.content.map(order => `
-                        <tr>
-                            <td><strong>${order.orderNumber}</strong></td>
-                            <td>${order.userName || 'N/A'}</td>
-                            <td>${new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
-                            <td>${new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(order.totalAmount)}</td>
-                            <td><span class="badge badge--${order.status.toLowerCase()}">${getStatusText(order.status)}</span></td>
-                            <td><a href="/admin/orders?id=${order.id}" class="btn btn--small">Chi tiết</a></td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Chưa có đơn hàng</td></tr>';
-                }
-            })
-            .catch(e => {
-                console.error('Error loading orders:', e);
-                document.getElementById('recentOrdersTable').innerHTML =
-                    '<tr><td colspan="6" class="text-center">Lỗi tải dữ liệu</td></tr>';
-            });
+                if (data.content?.length) {
+                    tbody.innerHTML = data.content.map(o => `<tr>
+                        <td><strong style="color:#0891b2;">${o.orderNumber}</strong></td>
+                        <td>${o.userName || 'N/A'}</td>
+                        <td>${new Date(o.orderedAt || o.createdAt).toLocaleDateString('vi-VN')}</td>
+                        <td><strong>${new Intl.NumberFormat('vi-VN', {style:'currency',currency:'VND'}).format(o.totalAmount)}</strong></td>
+                        <td><span class="badge badge--${o.status.toLowerCase()}">${getStatusText(o.status)}</span></td>
+                        <td><a href="/admin/orders?id=${o.id}" class="btn btn--small">👁️ Chi tiết</a></td>
+                    </tr>`).join('');
+                } else { tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:40px;color:#64748b;">Chưa có đơn hàng</td></tr>'; }
+                renderPagination();
+            }).catch(() => { document.getElementById('recentOrdersTable').innerHTML = '<tr><td colspan="6" class="text-center" style="padding:40px;color:#ef4444;">❌ Lỗi tải dữ liệu</td></tr>'; });
     }
-
-    function getStatusText(status) {
-        const statusMap = {
-            'PENDING': 'Chờ xử lý',
-            'PROCESSING': 'Đang xử lý',
-            'CONFIRMED': 'Đã xác nhận',
-            'SHIPPED': 'Đang giao',
-            'DELIVERED': 'Đã giao',
-            'CANCELLED': 'Đã hủy'
-        };
-        return statusMap[status] || status;
+    function renderPagination() {
+        const pg = document.getElementById('pagination');
+        if (totalPages <= 1) { pg.innerHTML = ''; return; }
+        let html = `<button onclick="loadRecentOrders(0)" ${currentPage === 0 ? 'disabled' : ''}>«</button>`;
+        html += `<button onclick="loadRecentOrders(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>‹</button>`;
+        const start = Math.max(0, currentPage - 2), end = Math.min(totalPages, start + 5);
+        for (let i = start; i < end; i++) { html += `<button onclick="loadRecentOrders(${i})" class="${i === currentPage ? 'active' : ''}">${i + 1}</button>`; }
+        html += `<button onclick="loadRecentOrders(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>›</button>`;
+        html += `<button onclick="loadRecentOrders(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>»</button>`;
+        pg.innerHTML = html;
     }
+    function getStatusText(s) { return {'PENDING':'Chờ xử lý','PROCESSING':'Đang xử lý','CONFIRMED':'Đã xác nhận','SHIPPED':'Đang giao','DELIVERED':'Đã giao','CANCELLED':'Đã hủy'}[s] || s; }
 </script>
-
 </body>
 </html>

@@ -34,4 +34,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // Tìm đơn hàng trong khoảng thời gian
     List<Order> findByOrderedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+    
+    // Admin: Tìm tất cả đơn hàng với phân trang
+    Page<Order> findAllByOrderByOrderedAtDesc(Pageable pageable);
+    
+    // Admin: Tìm đơn hàng theo status với phân trang
+    Page<Order> findByStatusOrderByOrderedAtDesc(Order.OrderStatus status, Pageable pageable);
 }

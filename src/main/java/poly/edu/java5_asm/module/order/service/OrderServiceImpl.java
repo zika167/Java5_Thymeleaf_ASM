@@ -338,6 +338,25 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderResponse> getAllOrdersPaginated(Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllByOrderByOrderedAtDesc(pageable);
+        return orders.map(this::getOrderResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderResponse> getAllOrdersPaginated(Order.OrderStatus status, String search, Pageable pageable) {
+        Page<Order> orders;
+        if (status != null) {
+            orders = orderRepository.findByStatusOrderByOrderedAtDesc(status, pageable);
+        } else {
+            orders = orderRepository.findAllByOrderByOrderedAtDesc(pageable);
+        }
+        return orders.map(this::getOrderResponse);
+    }
+
     private OrderResponse getOrderResponse(Order order) {
         List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
 
@@ -387,8 +406,12 @@ public class OrderServiceImpl implements OrderService {
                 .confirmedAt(order.getConfirmedAt())
                 .shippedAt(order.getShippedAt())
                 .deliveredAt(order.getDeliveredAt())
+                .createdAt(order.getOrderedAt())
                 .customerNote(order.getCustomerNote())
                 .orderItems(itemResponses)
+                .userId(order.getUser() != null ? order.getUser().getId() : null)
+                .userName(order.getUser() != null ? order.getUser().getFullName() : null)
+                .userEmail(order.getUser() != null ? order.getUser().getEmail() : null)
                 .shippingName(shippingName)
                 .shippingPhone(shippingPhone)
                 .shippingAddress(shippingAddress)

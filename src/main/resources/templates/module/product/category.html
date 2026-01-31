@@ -4,46 +4,412 @@
 <body>
 <header th:replace="~{shared/fragments/header :: header}"></header>
 
+<style>
+:root {
+    --primary-color: #22d3ee;
+    --primary-dark: #06b6d4;
+    --primary-light: #67e8f9;
+    --primary-bg: #ecfeff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.category-page {
+    padding: 20px 0 60px;
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: "☕";
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 120px;
+    opacity: 0.15;
+}
+.page-header__title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+.page-header__subtitle {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Breadcrumbs */
+.breadcrumbs-wrap {
+    margin-bottom: 20px;
+}
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+}
+.breadcrumbs a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+.breadcrumbs a:hover { color: var(--primary-color); }
+.breadcrumbs__link--current { color: var(--text-dark); font-weight: 500; }
+</style>
+<style>
+/* Filter Bar */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #fff;
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: var(--card-shadow);
+    flex-wrap: wrap;
+}
+.filter-bar__left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.filter-bar__count {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+.filter-bar__count span { color: var(--primary-color); }
+.filter-bar__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.sort-select {
+    padding: 10px 40px 10px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    background: #fff;
+    color: var(--text-dark);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    transition: all 0.2s;
+}
+.sort-select:focus { outline: none; border-color: var(--primary-color); }
+.view-toggle {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: #f1f5f9;
+    border-radius: 8px;
+}
+.view-toggle__btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.6rem;
+}
+.view-toggle__btn.active { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+/* Products Grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+.products-grid.list-view {
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+/* Product Card */
+.product-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+.product-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary-light);
+    box-shadow: 0 12px 24px rgba(8, 145, 178, 0.15);
+}
+.product-card__img-wrap {
+    position: relative;
+    padding-top: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8fafc;
+    margin-bottom: 14px;
+}
+.product-card__thumb {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s;
+}
+.product-card:hover .product-card__thumb { transform: scale(1.05); }
+.product-card__like-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 2;
+}
+.product-card__like-btn:hover { transform: scale(1.1); }
+.product-card__like-btn .like-btn__icon { width: 18px; height: 18px; }
+.product-card__like-btn .like-btn__icon--liked { display: none; }
+.product-card__like-btn.like-btn__liked .like-btn__icon { display: none; }
+.product-card__like-btn.like-btn__liked .like-btn__icon--liked { display: block; }
+.product-card__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 6px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.product-card__title a { color: var(--text-dark); text-decoration: none; transition: color 0.2s; }
+.product-card__title a:hover { color: var(--primary-color); }
+.product-card__brand {
+    font-size: 1.3rem;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+}
+.product-card__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.product-card__price {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+.product-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.product-card__star { width: 16px; height: 16px; }
+.product-card__score { font-size: 1.4rem; font-weight: 600; color: #f59e0b; }
+.product-card__add-btn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.product-card__add-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+</style>
+<style>
+/* List View Card */
+.products-grid.list-view .product-card {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    gap: 24px;
+    align-items: center;
+    padding: 20px;
+}
+.products-grid.list-view .product-card__img-wrap {
+    padding-top: 0;
+    width: 180px;
+    height: 140px;
+    margin-bottom: 0;
+}
+.products-grid.list-view .product-card__info { flex: 1; }
+.products-grid.list-view .product-card__title { font-size: 1.7rem; margin-bottom: 8px; }
+.products-grid.list-view .product-card__brand { margin-bottom: 8px; }
+.products-grid.list-view .product-card__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+.products-grid.list-view .product-card__price { font-size: 2rem; }
+.products-grid.list-view .product-card__add-btn {
+    width: auto;
+    margin-top: 0;
+    padding: 12px 28px;
+}
+
+/* Pagination */
+.pagination-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pagination__link {
+    min-width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.pagination__link:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+.pagination__link--active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+.pagination__link--active:hover { color: #fff; }
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: #fff;
+    border-radius: 16px;
+}
+.empty-state__icon { font-size: 64px; margin-bottom: 20px; }
+.empty-state__title { font-size: 2rem; font-weight: 600; color: var(--text-dark); margin-bottom: 10px; }
+.empty-state__text { font-size: 1.5rem; color: var(--text-muted); }
+
+/* Responsive */
+@media (max-width: 1199px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 991px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 575px) {
+    .products-grid { grid-template-columns: 1fr; }
+    .page-header { padding: 30px 20px; }
+    .page-header__title { font-size: 2.2rem; }
+    .page-header::before { display: none; }
+    .filter-bar { padding: 12px 16px; }
+    .products-grid.list-view .product-card { grid-template-columns: 1fr; }
+    .products-grid.list-view .product-card__img-wrap { width: 100%; height: 200px; }
+}
+</style>
+
 <main class="category-page">
     <div class="container">
         <!-- Breadcrumbs -->
-        <ul class="breadcrumbs" style="margin-top: 20px;">
-            <li>
-                <a th:href="@{/}" class="breadcrumbs__link">
-                    Trang chủ
-                    <img th:src="@{/assets/icon/arrow-right.svg}" alt=""/>
-                </a>
-            </li>
-            <li>
-                <a href="#!" class="breadcrumbs__link breadcrumbs__link--current">Danh mục sản phẩm</a>
-            </li>
-        </ul>
-        
-        <h1 class="category-title">Danh mục sản phẩm</h1>
-        
-        <div class="row row-cols-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-2" id="productList">
-            <div class="col" th:each="product : ${products}">
-                <article class="product-card">
+        <div class="breadcrumbs-wrap">
+            <ul class="breadcrumbs">
+                <li><a th:href="@{/}">Trang chủ</a></li>
+                <li><img th:src="@{/assets/icon/arrow-right.svg}" alt="" style="width: 12px; opacity: 0.5;"/></li>
+                <li><span class="breadcrumbs__link--current">Danh mục sản phẩm</span></li>
+            </ul>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-header__title">Danh mục sản phẩm</h1>
+            <p class="page-header__subtitle">Khám phá các sản phẩm cà phê chất lượng cao</p>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-bar__left">
+                <span class="filter-bar__count">
+                    Hiển thị <span id="productCount" th:text="${products != null ? products.size() : 0}">0</span> sản phẩm
+                </span>
+            </div>
+            <div class="filter-bar__right">
+                <select class="sort-select" id="sortSelect" onchange="sortProducts()">
+                    <option value="default">Sắp xếp: Mặc định</option>
+                    <option value="price-asc">Giá: Thấp → Cao</option>
+                    <option value="price-desc">Giá: Cao → Thấp</option>
+                    <option value="name-asc">Tên: A → Z</option>
+                    <option value="rating-desc">Đánh giá cao nhất</option>
+                </select>
+                <div class="view-toggle">
+                    <button class="view-toggle__btn active" onclick="setView('grid')" title="Dạng lưới">⊞</button>
+                    <button class="view-toggle__btn" onclick="setView('list')" title="Dạng danh sách">☰</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productList" th:if="${products != null && !products.isEmpty()}">
+            <div th:each="product : ${products}">
+                <article class="product-card" th:data-price="${product.price}" th:data-name="${product.name}" th:data-rating="${product.averageRating}">
                     <div class="product-card__img-wrap">
                         <a th:href="@{/product/{id}(id=${product.id})}">
                             <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-card__thumb"/>
                         </a>
-                        <button class="like-btn product-card__like-btn" th:data-product-id="${product.id}">
+                        <button class="like-btn product-card__like-btn" th:data-product-id="${product.id}" onclick="toggleWishlist(this)">
                             <img th:src="@{/assets/icon/heart.svg}" alt="" class="like-btn__icon icon"/>
                             <img th:src="@{/assets/icon/heart-red.svg}" alt="" class="like-btn__icon--liked"/>
                         </button>
                     </div>
-                    <h3 class="product-card__title">
-                        <a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.name}">Tên sản phẩm</a>
-                    </h3>
-                    <p class="product-card__brand" th:text="${product.brandName}">Thương hiệu</p>
-                    <div class="product-card__row">
-                        <span class="product-card__price product-price-vnd" th:data-price="${product.price}">0đ</span>
-                        <img th:src="@{/assets/icon/star.svg}" alt="" class="product-card__star"/>
-                        <span class="product-card__score product-rating" th:data-rating="${product.averageRating != null ? product.averageRating : 0}">0</span>
+                    <div class="product-card__info">
+                        <h3 class="product-card__title">
+                            <a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.name}">Tên sản phẩm</a>
+                        </h3>
+                        <p class="product-card__brand" th:text="${product.brandName}">Thương hiệu</p>
+                        <div class="product-card__row">
+                            <span class="product-card__price product-price-vnd" th:data-price="${product.price}">0đ</span>
+                            <div class="product-card__rating">
+                                <img th:src="@{/assets/icon/star.svg}" alt="" class="product-card__star"/>
+                                <span class="product-card__score product-rating" th:data-rating="${product.averageRating != null ? product.averageRating : 0}">0</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="product-card__row">
-                        <button class="btn btn--primary js-add-to-cart" 
+                    <div class="product-card__actions">
+                        <button class="product-card__add-btn js-add-to-cart" 
                                 th:data-product-id="${product.id}"
                                 th:data-name="${product.name}"
                                 th:data-price="${product.price}"
@@ -55,51 +421,58 @@
             </div>
         </div>
 
+        <!-- Empty State -->
+        <div class="empty-state" th:if="${products == null || products.isEmpty()}">
+            <div class="empty-state__icon">📦</div>
+            <h3 class="empty-state__title">Chưa có sản phẩm</h3>
+            <p class="empty-state__text">Danh mục này hiện chưa có sản phẩm nào.</p>
+        </div>
+
         <!-- Pagination -->
-        <div class="pagination" th:if="${totalPages > 1}">
-            <a th:href="@{/category(page=${currentPage - 1})}" th:if="${currentPage > 0}" class="pagination__link">« Trước</a>
-            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                <a th:href="@{/category(page=${i})}" 
-                   th:text="${i + 1}" 
-                   th:class="${i == currentPage} ? 'pagination__link pagination__link--active' : 'pagination__link'">1</a>
-            </span>
-            <a th:href="@{/category(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}" class="pagination__link">Sau »</a>
+        <div class="pagination-wrap" th:if="${totalPages != null && totalPages > 1}">
+            <div class="pagination">
+                <a th:href="@{/category(page=${currentPage - 1})}" th:if="${currentPage > 0}" class="pagination__link">« Trước</a>
+                <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:href="@{/category(page=${i})}" 
+                       th:text="${i + 1}" 
+                       th:class="${i == currentPage} ? 'pagination__link pagination__link--active' : 'pagination__link'">1</a>
+                </span>
+                <a th:href="@{/category(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}" class="pagination__link">Sau »</a>
+            </div>
         </div>
     </div>
 </main>
 
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
 
+<script th:src="@{/assets/js/notification-modal.js}"></script>
 <script th:src="@{/assets/js/cart-api.js}"></script>
 <script th:src="@{/assets/js/wishlist-api.js}"></script>
 
 <script>
-    // Format VND
     function formatVND(price) {
         return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Format all prices to VND
+        // Format prices
         document.querySelectorAll('.product-price-vnd').forEach(el => {
             let price = parseFloat(el.getAttribute('data-price')) || 0;
-            // Convert USD to VND if price < 10000
-            if (price > 0 && price < 10000) {
-                price = price * 25000;
-            }
+            if (price > 0 && price < 10000) price = price * 25000;
             el.textContent = formatVND(price);
         });
 
-        // Format all ratings (round to 1 decimal)
+        // Format ratings
         document.querySelectorAll('.product-rating').forEach(el => {
             let rating = parseFloat(el.getAttribute('data-rating')) || 0;
-            el.textContent = Math.round(rating * 10) / 10;
+            el.textContent = rating.toFixed(1);
         });
 
-        // Sync wishlist status
+        // Sync wishlist
         syncWishlistStatus();
 
-        // Bind add to cart buttons
+        // Bind add to cart
         bindAddToCartButtons();
     });
 
@@ -107,19 +480,30 @@
         try {
             const response = await fetch('/api/wishlist');
             if (response.ok) {
-                const wishlistItems = await response.json();
-                const wishlistProductIds = wishlistItems.map(item => item.productId);
-                
+                const items = await response.json();
+                const ids = items.map(i => i.productId);
                 document.querySelectorAll('.like-btn[data-product-id]').forEach(btn => {
-                    const productId = parseInt(btn.getAttribute('data-product-id'));
-                    if (wishlistProductIds.includes(productId)) {
-                        btn.classList.add('like-btn__liked');
-                    }
+                    const pid = parseInt(btn.getAttribute('data-product-id'));
+                    if (ids.includes(pid)) btn.classList.add('like-btn__liked');
                 });
             }
-        } catch (error) {
-            console.log('Could not sync wishlist:', error);
-        }
+        } catch (e) { console.log('Could not sync wishlist'); }
+    }
+
+    async function toggleWishlist(btn) {
+        const productId = btn.getAttribute('data-product-id');
+        try {
+            const response = await fetch(`/api/wishlist/products/${productId}/toggle`, { method: 'POST' });
+            if (response.ok) {
+                const data = await response.json();
+                btn.classList.toggle('like-btn__liked', data.inWishlist);
+                if (typeof NotificationModal !== 'undefined') {
+                    NotificationModal.success(data.inWishlist ? 'Đã thêm vào yêu thích' : 'Đã xóa khỏi yêu thích');
+                }
+            } else if (response.status === 401) {
+                window.location.href = '/sign-in';
+            }
+        } catch (e) { console.error('Wishlist error:', e); }
     }
 
     function bindAddToCartButtons() {
@@ -130,12 +514,54 @@
                 if (window.CartAPI) {
                     try {
                         await window.CartAPI.addToCart(productId, 1);
+                        if (typeof NotificationModal !== 'undefined') {
+                            NotificationModal.success('Đã thêm vào giỏ hàng!');
+                        }
                     } catch (error) {
-                        console.error('Error adding to cart:', error);
+                        console.error('Error:', error);
                     }
                 }
             };
         });
+    }
+
+    function setView(view) {
+        const grid = document.getElementById('productList');
+        const btns = document.querySelectorAll('.view-toggle__btn');
+        btns.forEach(b => b.classList.remove('active'));
+        
+        if (view === 'list') {
+            grid.classList.add('list-view');
+            btns[1].classList.add('active');
+        } else {
+            grid.classList.remove('list-view');
+            btns[0].classList.add('active');
+        }
+    }
+
+    function sortProducts() {
+        const sortValue = document.getElementById('sortSelect').value;
+        const grid = document.getElementById('productList');
+        const cards = Array.from(grid.querySelectorAll('.product-card'));
+        
+        cards.sort((a, b) => {
+            const priceA = parseFloat(a.dataset.price) || 0;
+            const priceB = parseFloat(b.dataset.price) || 0;
+            const nameA = a.dataset.name || '';
+            const nameB = b.dataset.name || '';
+            const ratingA = parseFloat(a.dataset.rating) || 0;
+            const ratingB = parseFloat(b.dataset.rating) || 0;
+            
+            switch(sortValue) {
+                case 'price-asc': return priceA - priceB;
+                case 'price-desc': return priceB - priceA;
+                case 'name-asc': return nameA.localeCompare(nameB);
+                case 'rating-desc': return ratingB - ratingA;
+                default: return 0;
+            }
+        });
+        
+        cards.forEach(card => grid.appendChild(card.parentElement));
     }
 </script>
 </body>

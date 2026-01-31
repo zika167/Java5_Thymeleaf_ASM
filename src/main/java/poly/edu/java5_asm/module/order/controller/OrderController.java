@@ -205,4 +205,21 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    /**
+     * Lấy tất cả đơn hàng với phân trang (Admin)
+     */
+    @GetMapping("/admin/all")
+    public ResponseEntity<Page<OrderResponse>> getAllOrdersPaginated(
+            @RequestParam(required = false) Order.OrderStatus status,
+            @RequestParam(required = false) String search,
+            Pageable pageable) {
+        try {
+            Page<OrderResponse> orders = orderService.getAllOrdersPaginated(status, search, pageable);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy tất cả đơn hàng: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

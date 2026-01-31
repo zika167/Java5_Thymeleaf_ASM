@@ -10,6 +10,7 @@ import poly.edu.java5_asm.module.payment.dto.response.VNPayResponse;
 import poly.edu.java5_asm.module.order.entity.Order;
 import poly.edu.java5_asm.module.order.repository.OrderRepository;
 import poly.edu.java5_asm.module.payment.service.VNPayService;
+import poly.edu.java5_asm.module.email.service.EmailService;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,6 +30,7 @@ import java.util.*;
 public class VNPayServiceImpl implements VNPayService {
 
     private final OrderRepository orderRepository;
+    private final EmailService emailService;
 
     @Value("${vnpay.merchant.id:DEMO}")
     private String vnpTmnCode;
@@ -211,6 +213,14 @@ public class VNPayServiceImpl implements VNPayService {
             orderRepository.save(order);
             log.info("Thanh toán thành công cho đơn hàng: {}", orderNumber);
 
+            // Gửi email thông báo thanh toán thành công
+            try {
+                emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
+                log.info("Đã gửi email thông báo thanh toán VNPay thành công cho đơn hàng: {}", orderNumber);
+            } catch (Exception e) {
+                log.error("Lỗi gửi email thông báo thanh toán VNPay cho đơn hàng {}: {}", orderNumber, e.getMessage());
+            }
+
             return VNPayResponse.builder()
                     .success(true)
                     .message("Thanh toán thành công")
@@ -229,6 +239,14 @@ public class VNPayServiceImpl implements VNPayService {
             orderRepository.save(order);
 
             log.warn("Thanh toán thất bại cho đơn hàng: {}, mã lỗi: {}", orderNumber, responseCode);
+
+            // Gửi email thông báo thanh toán thất bại
+            try {
+                emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
+                log.info("Đã gửi email thông báo thanh toán VNPay thất bại cho đơn hàng: {}", orderNumber);
+            } catch (Exception e) {
+                log.error("Lỗi gửi email thông báo thanh toán VNPay cho đơn hàng {}: {}", orderNumber, e.getMessage());
+            }
 
             return VNPayResponse.builder()
                     .success(false)

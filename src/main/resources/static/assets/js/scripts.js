@@ -638,7 +638,7 @@ function injectAddToCartToProductCards() {
         row.className = 'product-card__row';
         const btn = document.createElement('button');
         btn.className = 'btn btn--primary js-add-to-cart';
-        btn.textContent = 'Add to cart';
+        btn.textContent = 'Thêm vào giỏ';
         btn.dataset.id = id;
         btn.dataset.name = name;
         btn.dataset.price = String(price);
@@ -913,8 +913,8 @@ function renderFavouritePage() {
           </div>
           <div class="cart-item__content-right">
             <div style="display:flex; gap:10px; justify-content:flex-end;">
-              <button class="btn btn--primary btn--rounded js-fav-add-to-cart">Add to cart</button>
-              <button class="btn btn--danger btn--rounded js-fav-remove">Unlike</button>
+              <button class="btn btn--primary btn--rounded js-fav-add-to-cart">Thêm vào giỏ</button>
+              <button class="btn btn--danger btn--rounded js-fav-remove">Bỏ thích</button>
             </div>
           </div>
         </div>

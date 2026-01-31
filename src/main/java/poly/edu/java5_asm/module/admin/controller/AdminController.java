@@ -49,4 +49,20 @@ public class AdminController {
     public String products(Model model) {
         return "shared/admin/products";
     }
+
+    /**
+     * Trang quản lý brands (thương hiệu)
+     */
+    @GetMapping("/brands")
+    public String brands(Model model) {
+        return "shared/admin/brands";
+    }
+
+    /**
+     * Trang quản lý categories (danh mục)
+     */
+    @GetMapping("/categories")
+    public String categories(Model model) {
+        return "shared/admin/categories";
+    }
 }

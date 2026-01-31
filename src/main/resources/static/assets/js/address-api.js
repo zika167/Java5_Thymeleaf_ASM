@@ -213,30 +213,19 @@
     }
 
     /**
-     * Hiển thị toast notification
+     * Hiển thị thông báo qua NotificationModal
      */
     function showAddressToast(message, type = 'success') {
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: ${type === 'error' ? '#dc3545' : '#28a745'};
-            color: white;
-            padding: 15px 20px;
-            border-radius: 4px;
-            z-index: 9999;
-            animation: slideIn 0.3s ease-in-out;
-        `;
-
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease-in-out';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        if (typeof NotificationModal !== 'undefined') {
+            if (type === 'error') {
+                NotificationModal.error(message);
+            } else {
+                NotificationModal.success(message);
+            }
+        } else {
+            // Fallback nếu NotificationModal chưa load
+            alert(message);
+        }
     }
 
     // Export functions to global scope

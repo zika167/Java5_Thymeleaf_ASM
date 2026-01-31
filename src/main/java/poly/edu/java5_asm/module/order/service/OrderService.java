@@ -34,4 +34,8 @@ public interface OrderService {
     List<OrderResponse> getUserOrders(User user);
     Page<OrderResponse> getUserOrdersPaginated(User user, Pageable pageable);
     List<OrderResponse> getOrdersByStatus(Order.OrderStatus status);
+    
+    // === Admin: Get All Orders ===
+    Page<OrderResponse> getAllOrdersPaginated(Pageable pageable);
+    Page<OrderResponse> getAllOrdersPaginated(Order.OrderStatus status, String search, Pageable pageable);
 }

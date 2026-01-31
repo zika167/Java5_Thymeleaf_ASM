@@ -4,110 +4,495 @@
 <body>
 <header th:replace="~{shared/fragments/header :: header}"></header>
 
-<main class="checkout-page">
+<style>
+:root {
+    --primary-color: #22d3ee;
+    --primary-dark: #06b6d4;
+    --primary-light: #67e8f9;
+    --primary-bg: #ecfeff;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --momo-color: #a50064;
+    --vnpay-color: #0066cc;
+}
+
+.payment-page {
+    min-height: 80vh;
+    padding: 20px 0 60px;
+    background: #fff;
+}
+</style>
+<style>
+/* Progress Steps */
+.payment-steps {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+.payment-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.payment-step__number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--border-color);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+.payment-step--done .payment-step__number {
+    background: var(--success-color);
+    color: #fff;
+}
+.payment-step--active .payment-step__number {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);
+}
+.payment-step__text {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.payment-step--active .payment-step__text { color: var(--text-dark); }
+.payment-step__line {
+    width: 80px;
+    height: 3px;
+    background: var(--border-color);
+    margin: 0 16px;
+}
+.payment-step--done + .payment-step__line { background: var(--success-color); }
+@media (max-width: 767px) {
+    .payment-step__text { display: none; }
+    .payment-step__line { width: 40px; }
+}
+</style>
+<style>
+/* Layout */
+.payment-layout {
+    display: grid;
+    grid-template-columns: 1fr 450px;
+    gap: 30px;
+    align-items: start;
+}
+@media (max-width: 991px) {
+    .payment-layout { grid-template-columns: 1fr; }
+}
+
+/* Cards */
+.payment-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+.payment-card__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background: var(--primary-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+.payment-card__icon { font-size: 2.4rem; }
+.payment-card__title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+.payment-card__body { padding: 24px; }
+
+/* Info Row */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.info-row:last-child { border-bottom: none; }
+.info-row__label { color: var(--text-muted); font-size: 1.4rem; }
+.info-row__value { font-weight: 600; color: var(--text-dark); font-size: 1.5rem; }
+</style>
+<style>
+/* Order Items */
+.order-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.order-item:last-child { border-bottom: none; }
+.order-item__image {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f8fafc;
+    padding: 6px;
+    flex-shrink: 0;
+}
+.order-item__info { flex: 1; }
+.order-item__name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0 0 6px;
+}
+.order-item__qty {
+    font-size: 1.3rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+.order-item__price {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-align: right;
+}
+
+/* QR Section */
+.qr-section {
+    text-align: center;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
+    border-radius: 16px;
+    margin-top: 20px;
+}
+.qr-section__title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 20px;
+}
+.qr-section__code {
+    display: inline-block;
+    padding: 16px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+.qr-section__code img {
+    width: 280px;
+    height: auto;
+    border-radius: 8px;
+}
+.qr-section__amount {
+    margin-top: 20px;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--danger-color);
+}
+.qr-section__hint {
+    margin-top: 16px;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+}
+</style>
+<style>
+/* Bank Info */
+.bank-info {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    text-align: left;
+}
+.bank-info--momo { background: #fdf2f8; border-left: 4px solid var(--momo-color); }
+.bank-info--vnpay { background: #eff6ff; border-left: 4px solid var(--vnpay-color); }
+.bank-info__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+}
+.bank-info--momo .bank-info__title { color: var(--momo-color); }
+.bank-info--vnpay .bank-info__title { color: var(--vnpay-color); }
+.bank-info__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 1.4rem;
+}
+.bank-info__label { color: var(--text-muted); }
+.bank-info__value { font-weight: 600; color: var(--text-dark); }
+.bank-info__amount-box {
+    margin: 16px 0;
+    padding: 16px;
+    border-radius: 10px;
+    text-align: center;
+    color: #fff;
+}
+.bank-info--momo .bank-info__amount-box { background: var(--momo-color); }
+.bank-info--vnpay .bank-info__amount-box { background: var(--vnpay-color); }
+.bank-info__amount-label { font-size: 1.3rem; margin: 0 0 6px; opacity: 0.9; }
+.bank-info__amount-value { font-size: 2.2rem; font-weight: 700; margin: 0; }
+.bank-info__note {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fef3c7;
+    border-radius: 8px;
+    font-size: 1.3rem;
+    color: #92400e;
+}
+
+/* Summary */
+.payment-summary {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    position: sticky;
+    top: 20px;
+    overflow: hidden;
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    font-size: 1.5rem;
+}
+.summary-row__label { color: var(--text-muted); }
+.summary-row__value { font-weight: 500; color: var(--text-dark); }
+.summary-row--total {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px dashed var(--border-color);
+    font-size: 1.8rem;
+}
+.summary-row--total .summary-row__label { font-weight: 600; color: var(--text-dark); }
+.summary-row--total .summary-row__value {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+</style>
+<style>
+/* Buttons */
+.payment-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px 24px;
+    border-radius: 14px;
+    font-size: 1.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    text-decoration: none;
+}
+.payment-btn--primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);
+}
+.payment-btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 211, 238, 0.5);
+}
+.payment-btn--momo {
+    background: linear-gradient(135deg, #d63384 0%, var(--momo-color) 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(165, 0, 100, 0.4);
+}
+.payment-btn--vnpay {
+    background: linear-gradient(135deg, #3b82f6 0%, var(--vnpay-color) 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0, 102, 204, 0.4);
+}
+.payment-btn--success {
+    background: linear-gradient(135deg, #34d399 0%, var(--success-color) 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+.payment-btn--outline {
+    background: transparent;
+    color: var(--text-dark);
+    border: 2px solid var(--border-color);
+    box-shadow: none;
+    margin-top: 12px;
+}
+.payment-btn--outline:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-dark);
+}
+.payment-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Shipping Info */
+.shipping-info {
+    padding: 16px;
+    background: var(--primary-bg);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+}
+.shipping-info__name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 6px;
+}
+.shipping-info__phone {
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    margin: 0 0 6px;
+}
+.shipping-info__address {
+    font-size: 1.4rem;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+/* Payment Method Badge */
+.payment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.payment-badge--cod { background: #dcfce7; color: #166534; }
+.payment-badge--vnpay { background: #dbeafe; color: #1e40af; }
+.payment-badge--momo { background: #fce7f3; color: #9d174d; }
+.payment-badge__icon { font-size: 2rem; }
+</style>
+
+<main class="payment-page">
     <div class="container">
-        <div class="checkout-container">
-            <ul class="breadcrumbs checkout-page__breadcrumbs">
-                <li>
-                    <a th:href="@{/}" class="breadcrumbs__link">
-                        Trang chủ
-                        <img th:src="@{/assets/icon/arrow-right.svg}" alt=""/>
-                    </a>
-                </li>
-                <li>
-                    <a th:href="@{/checkout}" class="breadcrumbs__link">
-                        Giỏ hàng
-                        <img th:src="@{/assets/icon/arrow-right.svg}" alt=""/>
-                    </a>
-                </li>
-                <li>
-                    <a href="#!" class="breadcrumbs__link breadcrumbs__link--current">Xác nhận thanh toán</a>
-                </li>
-            </ul>
+        <!-- Progress Steps -->
+        <div class="payment-steps">
+            <div class="payment-step payment-step--done">
+                <div class="payment-step__number">✓</div>
+                <span class="payment-step__text">Giỏ hàng</span>
+            </div>
+            <div class="payment-step__line"></div>
+            <div class="payment-step payment-step--done">
+                <div class="payment-step__number">✓</div>
+                <span class="payment-step__text">Thanh toán</span>
+            </div>
+            <div class="payment-step__line"></div>
+            <div class="payment-step payment-step--active">
+                <div class="payment-step__number">3</div>
+                <span class="payment-step__text">Xác nhận</span>
+            </div>
         </div>
 
-        <div class="checkout-container">
-            <div class="row gy-xl-3">
-                <div class="col-8 col-xl-12">
-                    <div class="cart-info">
-                        <h2 class="cart-info__heading cart-info__heading--lv2">Thông tin giao hàng</h2>
-                        <div class="cart-info__separate"></div>
-                        <div id="shipping-info" style="padding: 15px 0;">
-                            <p style="color: #666;">Đang tải thông tin...</p>
-                        </div>
+        <div class="payment-layout">
+            <!-- Left Column -->
+            <div class="payment-main">
+                <!-- Shipping Info -->
+                <div class="payment-card">
+                    <div class="payment-card__header">
+                        <span class="payment-card__icon">📍</span>
+                        <h2 class="payment-card__title">Thông tin giao hàng</h2>
                     </div>
-
-                    <div class="cart-info">
-                        <h2 class="cart-info__heading cart-info__heading--lv2">Sản phẩm đặt mua</h2>
-                        <div class="cart-info__separate"></div>
-                        <div id="order-items" class="cart-info__list"></div>
-                    </div>
-
-                    <div class="cart-info">
-                        <h2 class="cart-info__heading cart-info__heading--lv2">Phương thức thanh toán</h2>
-                        <div class="cart-info__separate"></div>
-                        <div id="payment-method-info" style="padding: 15px 0;">
-                            <p style="color: #666;">Đang tải...</p>
+                    <div class="payment-card__body">
+                        <div id="shipping-info" class="shipping-info">
+                            <p style="color: var(--text-muted);">Đang tải...</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-4 col-xl-12">
-                    <div class="cart-info">
-                        <h2 class="cart-info__heading cart-info__heading--lv2">Tóm tắt đơn hàng</h2>
-                        <div class="cart-info__separate"></div>
-                        <div class="cart-info__row">
-                            <span>Số lượng sản phẩm</span>
-                            <span id="summary-items">0</span>
-                        </div>
-                        <div class="cart-info__row">
-                            <span>Tạm tính</span>
-                            <span id="summary-subtotal">0đ</span>
-                        </div>
-                        <div class="cart-info__row">
-                            <span>Thuế (10%)</span>
-                            <span id="summary-tax">0đ</span>
-                        </div>
-                        <div class="cart-info__row">
-                            <span>Phí vận chuyển</span>
-                            <span>Miễn phí</span>
-                        </div>
-                        <div class="cart-info__separate"></div>
-                        <div class="cart-info__row" style="font-weight: bold; font-size: 18px;">
-                            <span>Tổng cộng</span>
-                            <span id="summary-total">0đ</span>
-                        </div>
-                        
-                        <!-- QR Code Section (hidden by default) -->
-                        <div id="qr-section" style="display: none; margin-top: 20px;">
-                            <div class="cart-info__separate"></div>
-                            <div style="text-align: center; padding: 20px;">
-                                <h3 id="qr-title" style="margin-bottom: 15px; color: #333;">Quét mã QR để thanh toán</h3>
-                                <div id="qr-code" style="display: inline-block; padding: 10px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                                    <!-- QR will be generated here -->
-                                </div>
-                                <div id="bank-info" style="margin-top: 15px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                                    <!-- Bank info will be shown here -->
-                                </div>
-                                <p style="margin-top: 15px; color: #666; font-size: 14px;">
-                                    Quét mã bằng <span id="qr-app-name" style="font-weight: bold;">App Ngân hàng / MoMo / ZaloPay</span>
-                                </p>
-                                <p style="color: #E53935; font-weight: bold; font-size: 20px; margin-top: 10px;">
-                                    Số tiền: <span id="qr-amount">0đ</span>
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button type="button" class="cart-info__next-btn btn btn--primary btn--rounded" id="place-order-btn" style="width: 100%; margin-top: 20px;">
-                            Đặt hàng
-                        </button>
-                        <button type="button" class="btn btn--primary btn--rounded" id="confirm-payment-btn" style="width: 100%; margin-top: 20px; display: none; background: #4CAF50;">
-                            Xác nhận đã thanh toán
-                        </button>
-                        <a th:href="@{/checkout}" class="btn btn--outline" style="width: 100%; text-align: center; margin-top: 10px; display: block;">
-                            Quay lại giỏ hàng
-                        </a>
+                <!-- Order Items -->
+                <div class="payment-card">
+                    <div class="payment-card__header">
+                        <span class="payment-card__icon">🛒</span>
+                        <h2 class="payment-card__title">Sản phẩm đặt mua (<span id="item-count">0</span>)</h2>
                     </div>
+                    <div class="payment-card__body">
+                        <div id="order-items">
+                            <p style="color: var(--text-muted);">Đang tải...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="payment-card">
+                    <div class="payment-card__header">
+                        <span class="payment-card__icon">💳</span>
+                        <h2 class="payment-card__title">Phương thức thanh toán</h2>
+                    </div>
+                    <div class="payment-card__body">
+                        <div id="payment-method-badge">
+                            <p style="color: var(--text-muted);">Đang tải...</p>
+                        </div>
+                        
+                        <!-- QR Section (hidden by default) -->
+                        <div id="qr-section" class="qr-section" style="display: none;">
+                            <h3 id="qr-title" class="qr-section__title">Quét mã QR để thanh toán</h3>
+                            <div id="qr-code" class="qr-section__code">
+                                <!-- QR will be generated here -->
+                            </div>
+                            <div id="bank-info" class="bank-info">
+                                <!-- Bank info will be shown here -->
+                            </div>
+                            <p class="qr-section__hint">
+                                Quét mã bằng <span id="qr-app-name">App Ngân hàng / MoMo</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Summary -->
+            <div class="payment-summary">
+                <div class="payment-card__header">
+                    <span class="payment-card__icon">📋</span>
+                    <h2 class="payment-card__title">Tổng đơn hàng</h2>
+                </div>
+                <div class="payment-card__body">
+                    <div class="summary-row">
+                        <span class="summary-row__label">Số lượng sản phẩm</span>
+                        <span class="summary-row__value" id="summary-items">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-row__label">Tạm tính</span>
+                        <span class="summary-row__value" id="summary-subtotal">0đ</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-row__label">Thuế VAT (10%)</span>
+                        <span class="summary-row__value" id="summary-tax">0đ</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-row__label">Phí vận chuyển</span>
+                        <span class="summary-row__value" style="color: var(--success-color);">Miễn phí</span>
+                    </div>
+                    <div class="summary-row summary-row--total">
+                        <span class="summary-row__label">Tổng cộng</span>
+                        <span class="summary-row__value" id="summary-total">0đ</span>
+                    </div>
+
+                    <button type="button" class="payment-btn payment-btn--primary" id="place-order-btn" style="margin-top: 24px;">
+                        🛒 Đặt hàng
+                    </button>
+                    <button type="button" class="payment-btn payment-btn--success" id="confirm-payment-btn" style="margin-top: 24px; display: none;">
+                        ✅ Xác nhận đã thanh toán
+                    </button>
+                    <a th:href="@{/checkout}" class="payment-btn payment-btn--outline">
+                        ← Quay lại
+                    </a>
                 </div>
             </div>
         </div>
@@ -115,253 +500,218 @@
 </main>
 
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
-
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
+<script th:src="@{/assets/js/notification-modal.js}"></script>
 <script th:src="@{/assets/js/cart-api.js}"></script>
 <script th:src="@{/assets/js/address-api.js}"></script>
+
 <script>
-    var orderTotal = 0;
+var orderTotal = 0;
+
+function formatVND(value) {
+    var price = parseFloat(value) || 0;
+    if (price > 0 && price < 10000) price = price * 25000;
+    return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+}
+
+function formatVNDNumber(value) {
+    var price = parseFloat(value) || 0;
+    if (price > 0 && price < 10000) price = price * 25000;
+    return Math.round(price);
+}
+
+function generateQRCode(paymentMethod, amount) {
+    var qrContainer = document.getElementById('qr-code');
+    var bankInfoContainer = document.getElementById('bank-info');
+    qrContainer.innerHTML = '<p style="color: var(--text-muted);">Đang tạo mã QR...</p>';
     
-    function formatVND(value) {
-        var price = parseFloat(value) || 0;
-        if (price > 0 && price < 10000) {
-            price = price * 25000;
-        }
-        return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+    var orderId = 'DH' + Date.now().toString().slice(-8);
+    var description = 'Thanh toan don hang ' + orderId;
+    var amountRounded = Math.round(amount);
+    
+    if (paymentMethod === 'MOMO') {
+        qrContainer.innerHTML = '<img src="/assets/img/qr_momo.jpg" alt="QR MoMo" style="width: 280px; height: auto; border-radius: 8px;" />';
+        
+        bankInfoContainer.className = 'bank-info bank-info--momo';
+        bankInfoContainer.innerHTML = 
+            '<p class="bank-info__title">📱 Thanh toán qua MoMo</p>' +
+            '<div class="bank-info__row"><span class="bank-info__label">Số điện thoại:</span><span class="bank-info__value">0359955950</span></div>' +
+            '<div class="bank-info__row"><span class="bank-info__label">Tên:</span><span class="bank-info__value">PHAN HOANG ANH KHOA</span></div>' +
+            '<div class="bank-info__amount-box"><p class="bank-info__amount-label">💰 VUI LÒNG NHẬP SỐ TIỀN:</p><p class="bank-info__amount-value">' + new Intl.NumberFormat('vi-VN').format(amountRounded) + 'đ</p></div>' +
+            '<div class="bank-info__row"><span class="bank-info__label">Nội dung:</span><span class="bank-info__value" style="color: var(--momo-color);">' + description + '</span></div>' +
+            '<div class="bank-info__note">⚠️ Sau khi quét mã, vui lòng <strong>nhập đúng số tiền</strong> và ghi nội dung chuyển khoản</div>';
+        
+        document.getElementById('qr-title').textContent = '📱 Quét mã MoMo để thanh toán';
+        document.getElementById('qr-app-name').textContent = 'Ví MoMo';
+        document.getElementById('confirm-payment-btn').className = 'payment-btn payment-btn--momo';
+        
+    } else {
+        var bankId = 'MB';
+        var accountNo = '2468523993743';
+        var accountName = 'PHAN HOANG ANH KHOA';
+        
+        var vietQRUrl = 'https://img.vietqr.io/image/' + bankId + '-' + accountNo + '-compact2.png' +
+            '?amount=' + amountRounded + '&addInfo=' + encodeURIComponent(description) + '&accountName=' + encodeURIComponent(accountName);
+        
+        qrContainer.innerHTML = '<img src="' + vietQRUrl + '" alt="QR VietQR" style="width: 280px; height: 280px; border-radius: 8px;" />';
+        
+        bankInfoContainer.className = 'bank-info bank-info--vnpay';
+        bankInfoContainer.innerHTML = 
+            '<p class="bank-info__title">🏦 Thông tin chuyển khoản</p>' +
+            '<div class="bank-info__row"><span class="bank-info__label">Ngân hàng:</span><span class="bank-info__value">MB Bank</span></div>' +
+            '<div class="bank-info__row"><span class="bank-info__label">Số tài khoản:</span><span class="bank-info__value">' + accountNo + '</span></div>' +
+            '<div class="bank-info__row"><span class="bank-info__label">Chủ tài khoản:</span><span class="bank-info__value">' + accountName + '</span></div>' +
+            '<div class="bank-info__amount-box"><p class="bank-info__amount-label">💰 SỐ TIỀN CẦN CHUYỂN:</p><p class="bank-info__amount-value">' + new Intl.NumberFormat('vi-VN').format(amountRounded) + 'đ</p></div>' +
+            '<div class="bank-info__row"><span class="bank-info__label">Nội dung CK:</span><span class="bank-info__value" style="color: var(--vnpay-color);">' + description + '</span></div>' +
+            '<div class="bank-info__note">💡 Quét bằng app Ngân hàng / VNPay / ZaloPay</div>';
+        
+        document.getElementById('qr-title').textContent = '🏦 Quét mã VietQR để thanh toán';
+        document.getElementById('qr-app-name').textContent = 'App Ngân hàng / VNPay';
+        document.getElementById('confirm-payment-btn').className = 'payment-btn payment-btn--vnpay';
     }
     
-    function formatVNDNumber(value) {
-        var price = parseFloat(value) || 0;
-        if (price > 0 && price < 10000) {
-            price = price * 25000;
-        }
-        return Math.round(price);
+    document.getElementById('qr-section').style.display = 'block';
+    document.getElementById('place-order-btn').style.display = 'none';
+    document.getElementById('confirm-payment-btn').style.display = 'flex';
+}
+
+async function loadPaymentPage() {
+    // Load cart data
+    var cartData = await window.CartAPI.getCart();
+    if (!cartData || !cartData.items || cartData.items.length === 0) {
+        NotificationModal.warning('Giỏ hàng trống!');
+        setTimeout(function() { window.location.href = '/'; }, 1500);
+        return;
     }
 
-    function generateQRCode(paymentMethod, amount) {
-        var qrContainer = document.getElementById('qr-code');
-        var bankInfoContainer = document.getElementById('bank-info');
-        qrContainer.innerHTML = '<p style="color: #666;">Đang tạo mã QR...</p>';
-        
-        var orderId = 'DH' + Date.now().toString().slice(-8);
-        var description = 'Thanh toan don hang ' + orderId;
-        var amountRounded = Math.round(amount);
-        
-        if (paymentMethod === 'MOMO') {
-            // MoMo: Sử dụng hình QR tĩnh đã upload
-            qrContainer.innerHTML = '<img src="/assets/img/qr_momo.jpg" alt="QR MoMo" style="width: 320px; height: auto; border-radius: 8px;" />';
+    // Render order items
+    document.getElementById('item-count').textContent = cartData.items.length;
+    var itemsHtml = '';
+    cartData.items.forEach(function(item) {
+        itemsHtml += '<div class="order-item">' +
+            '<img src="' + (item.productImage || '/assets/img/product/default.jpg') + '" alt="' + item.productName + '" class="order-item__image" />' +
+            '<div class="order-item__info">' +
+                '<h4 class="order-item__name">' + item.productName + '</h4>' +
+                '<p class="order-item__qty">Số lượng: ' + item.quantity + '</p>' +
+            '</div>' +
+            '<div class="order-item__price">' + formatVND(item.subtotal) + '</div>' +
+        '</div>';
+    });
+    document.getElementById('order-items').innerHTML = itemsHtml;
+
+    // Calculate totals
+    var subtotal = parseFloat(cartData.totalPrice) || 0;
+    if (subtotal > 0 && subtotal < 10000) subtotal = subtotal * 25000;
+    var tax = subtotal * 0.1;
+    var total = subtotal + tax;
+    orderTotal = total;
+
+    document.getElementById('summary-items').textContent = cartData.totalItems;
+    document.getElementById('summary-subtotal').textContent = formatVND(subtotal);
+    document.getElementById('summary-tax').textContent = formatVND(tax);
+    document.getElementById('summary-total').textContent = formatVND(total);
+
+    // Load shipping address
+    var addressId = localStorage.getItem('checkoutAddressId');
+    if (addressId) {
+        var addresses = await AddressAPI.getUserAddresses();
+        var selectedAddr = addresses.find(function(a) { return a.id == addressId; });
+        if (selectedAddr) {
+            var addrParts = [selectedAddr.addressLine1];
+            if (selectedAddr.addressLine2) addrParts.push(selectedAddr.addressLine2);
+            if (selectedAddr.state) addrParts.push(selectedAddr.state);
+            if (selectedAddr.city) addrParts.push(selectedAddr.city);
             
-            bankInfoContainer.innerHTML = 
-                '<p style="margin: 0 0 8px 0; font-weight: bold; color: #A50064; font-size: 16px;">📱 Thanh toán qua MoMo:</p>' +
-                '<p style="margin: 4px 0;"><strong>Số điện thoại:</strong> 0359955950</p>' +
-                '<p style="margin: 4px 0;"><strong>Tên:</strong> PHAN HOANG ANH KHOA</p>' +
-                '<div style="margin: 12px 0; padding: 12px; background: #A50064; color: white; border-radius: 8px; text-align: center;">' +
-                    '<p style="margin: 0; font-size: 14px;">💰 VUI LÒNG NHẬP SỐ TIỀN:</p>' +
-                    '<p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold;">' + new Intl.NumberFormat('vi-VN').format(amountRounded) + 'đ</p>' +
-                '</div>' +
-                '<p style="margin: 4px 0;"><strong>Nội dung:</strong> <span style="color: #A50064; font-weight: bold;">' + description + '</span></p>' +
-                '<p style="margin: 8px 0 0 0; font-size: 13px; color: #666; background: #fff3cd; padding: 10px; border-radius: 6px;">⚠️ Sau khi quét mã, vui lòng <strong>nhập đúng số tiền</strong> ở trên và ghi nội dung chuyển khoản</p>';
-            
-            document.getElementById('qr-title').textContent = 'Quét mã MoMo để thanh toán';
-            document.getElementById('qr-app-name').textContent = 'Ví MoMo';
-            document.getElementById('confirm-payment-btn').style.background = '#A50064';
-            
+            document.getElementById('shipping-info').innerHTML = 
+                '<p class="shipping-info__name">' + (selectedAddr.recipientName || 'N/A') + '</p>' +
+                '<p class="shipping-info__phone">📞 ' + (selectedAddr.phone || 'N/A') + '</p>' +
+                '<p class="shipping-info__address">📍 ' + addrParts.join(', ') + '</p>';
         } else {
-            // VNPay: Sử dụng VietQR API
-            var bankId = 'MB';
-            var accountNo = '2468523993743';
-            var accountName = 'PHAN HOANG ANH KHOA';
-            
-            var vietQRUrl = 'https://img.vietqr.io/image/' + 
-                bankId + '-' + accountNo + '-compact2.png' +
-                '?amount=' + amountRounded +
-                '&addInfo=' + encodeURIComponent(description) +
-                '&accountName=' + encodeURIComponent(accountName);
-            
-            qrContainer.innerHTML = '<img src="' + vietQRUrl + '" alt="QR VietQR" style="width: 250px; height: 250px; border-radius: 8px;" />';
-            
-            bankInfoContainer.innerHTML = 
-                '<p style="margin: 0 0 8px 0; font-weight: bold; color: #0066CC;">🏦 Thông tin chuyển khoản:</p>' +
-                '<p style="margin: 4px 0;"><strong>Ngân hàng:</strong> MB Bank</p>' +
-                '<p style="margin: 4px 0;"><strong>Số tài khoản:</strong> ' + accountNo + '</p>' +
-                '<p style="margin: 4px 0;"><strong>Chủ tài khoản:</strong> ' + accountName + '</p>' +
-                '<p style="margin: 4px 0;"><strong>Nội dung CK:</strong> <span style="color: #0066CC; font-weight: bold;">' + description + '</span></p>' +
-                '<p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">💡 Quét bằng app Ngân hàng / VNPay / ZaloPay</p>';
-            
-            document.getElementById('qr-title').textContent = 'Quét mã VietQR để thanh toán';
-            document.getElementById('qr-app-name').textContent = 'App Ngân hàng / VNPay';
-            document.getElementById('confirm-payment-btn').style.background = '#0066CC';
+            document.getElementById('shipping-info').innerHTML = '<p style="color: var(--danger-color);">Chưa chọn địa chỉ. <a href="/checkout">Quay lại chọn địa chỉ</a></p>';
         }
-        
-        document.getElementById('qr-amount').textContent = formatVND(amount);
-        
-        // Show QR section, hide place order button, show confirm button
-        document.getElementById('qr-section').style.display = 'block';
-        document.getElementById('place-order-btn').style.display = 'none';
-        document.getElementById('confirm-payment-btn').style.display = 'block';
+    } else {
+        document.getElementById('shipping-info').innerHTML = '<p style="color: var(--danger-color);">Chưa chọn địa chỉ. <a href="/checkout">Quay lại chọn địa chỉ</a></p>';
     }
 
-    async function loadPaymentPage() {
-        // Load cart data
-        var cartData = await window.CartAPI.getCart();
-        if (!cartData || !cartData.items || cartData.items.length === 0) {
-            alert('Giỏ hàng trống!');
-            window.location.href = '/';
-            return;
-        }
+    // Load payment method
+    var paymentMethod = localStorage.getItem('selectedPaymentMethod') || 'COD';
+    var badges = {
+        'COD': '<div class="payment-badge payment-badge--cod"><span class="payment-badge__icon">💵</span> Thanh toán khi nhận hàng (COD)</div>',
+        'VNPAY': '<div class="payment-badge payment-badge--vnpay"><span class="payment-badge__icon">🏦</span> Thanh toán qua VNPay</div>',
+        'MOMO': '<div class="payment-badge payment-badge--momo"><span class="payment-badge__icon">📱</span> Thanh toán qua ví MoMo</div>'
+    };
+    document.getElementById('payment-method-badge').innerHTML = badges[paymentMethod] || badges['COD'];
+    
+    // If VNPay or MoMo, show QR code
+    if (paymentMethod === 'VNPAY' || paymentMethod === 'MOMO') {
+        generateQRCode(paymentMethod, total);
+    }
+}
 
-        // Render order items
-        var itemsHtml = '';
-        cartData.items.forEach(function(item) {
-            itemsHtml += '<div style="display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee;">' +
-                '<img src="' + (item.productImage || '/assets/img/product/item-1.png') + '" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />' +
-                '<div style="flex: 1;">' +
-                    '<h4 style="margin: 0 0 8px 0;">' + item.productName + '</h4>' +
-                    '<p style="margin: 0; color: #666;">Số lượng: ' + item.quantity + '</p>' +
-                    '<p style="margin: 5px 0 0 0; font-weight: bold; color: #4CAF50;">' + formatVND(item.subtotal) + '</p>' +
-                '</div>' +
-            '</div>';
+async function completeOrder() {
+    var addressId = localStorage.getItem('checkoutAddressId');
+    var paymentMethod = localStorage.getItem('selectedPaymentMethod') || 'COD';
+
+    if (!addressId) {
+        NotificationModal.warning('Vui lòng chọn địa chỉ giao hàng!');
+        setTimeout(function() { window.location.href = '/checkout'; }, 1500);
+        return;
+    }
+
+    var placeOrderBtn = document.getElementById('place-order-btn');
+    var confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+    placeOrderBtn.disabled = true;
+    confirmPaymentBtn.disabled = true;
+    placeOrderBtn.innerHTML = '⏳ Đang xử lý...';
+    confirmPaymentBtn.innerHTML = '⏳ Đang xử lý...';
+
+    try {
+        var response = await fetch('/api/orders/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                shippingAddressId: parseInt(addressId),
+                shippingMethod: 'free',
+                paymentMethod: paymentMethod,
+                customerNote: ''
+            })
         });
-        document.getElementById('order-items').innerHTML = itemsHtml;
 
-        // Calculate totals
-        var subtotal = parseFloat(cartData.totalPrice) || 0;
-        if (subtotal > 0 && subtotal < 10000) {
-            subtotal = subtotal * 25000;
-        }
-        var tax = subtotal * 0.1;
-        var total = subtotal + tax;
-        orderTotal = total;
-
-        document.getElementById('summary-items').textContent = cartData.totalItems;
-        document.getElementById('summary-subtotal').textContent = formatVND(subtotal);
-        document.getElementById('summary-tax').textContent = formatVND(tax);
-        document.getElementById('summary-total').textContent = formatVND(total);
-
-        // Load shipping address
-        var addressId = localStorage.getItem('checkoutAddressId');
-        if (addressId) {
-            var addresses = await AddressAPI.getUserAddresses();
-            var selectedAddr = addresses.find(function(a) { return a.id == addressId; });
-            if (selectedAddr) {
-                document.getElementById('shipping-info').innerHTML = 
-                    '<div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">' +
-                        '<p style="margin: 0 0 5px 0; font-weight: bold;">' + selectedAddr.recipientName + '</p>' +
-                        '<p style="margin: 0 0 5px 0;">' + selectedAddr.phone + '</p>' +
-                        '<p style="margin: 0;">' + selectedAddr.addressLine1 + ', ' + selectedAddr.city + '</p>' +
-                    '</div>';
-            } else {
-                document.getElementById('shipping-info').innerHTML = '<p style="color: #dc3545;">Chưa chọn địa chỉ giao hàng. <a href="/checkout">Quay lại chọn địa chỉ</a></p>';
-            }
+        if (response.ok) {
+            var orderData = await response.json();
+            
+            localStorage.removeItem('checkoutAddressId');
+            localStorage.removeItem('selectedPaymentMethod');
+            
+            NotificationModal.success('🎉 Đặt hàng thành công! Mã đơn hàng: ' + orderData.orderNumber);
+            setTimeout(function() { window.location.href = '/'; }, 2000);
+        } else if (response.status === 401) {
+            NotificationModal.warning('Vui lòng đăng nhập để đặt hàng!');
+            setTimeout(function() { window.location.href = '/auth/sign-in'; }, 1500);
         } else {
-            document.getElementById('shipping-info').innerHTML = '<p style="color: #dc3545;">Chưa chọn địa chỉ giao hàng. <a href="/checkout">Quay lại chọn địa chỉ</a></p>';
-        }
-
-        // Load payment method
-        var paymentMethod = localStorage.getItem('selectedPaymentMethod') || 'COD';
-        var paymentLabels = {
-            'COD': 'Thanh toán khi nhận hàng (COD)',
-            'VNPAY': 'Thanh toán qua VNPay',
-            'MOMO': 'Thanh toán qua ví MoMo'
-        };
-        
-        var paymentColors = {
-            'COD': '#4CAF50',
-            'VNPAY': '#0066CC',
-            'MOMO': '#A50064'
-        };
-        
-        document.getElementById('payment-method-info').innerHTML = 
-            '<div style="background: #E8F5E9; padding: 15px; border-radius: 8px; border-left: 4px solid ' + (paymentColors[paymentMethod] || '#4CAF50') + ';">' +
-                '<p style="margin: 0; font-weight: bold;">' + (paymentLabels[paymentMethod] || paymentMethod) + '</p>' +
-            '</div>';
-        
-        // If VNPay or MoMo, show QR code immediately
-        if (paymentMethod === 'VNPAY' || paymentMethod === 'MOMO') {
-            generateQRCode(paymentMethod, total);
-        }
-    }
-
-    async function completeOrder() {
-        var addressId = localStorage.getItem('checkoutAddressId');
-        var paymentMethod = localStorage.getItem('selectedPaymentMethod') || 'COD';
-
-        if (!addressId) {
-            alert('Vui lòng chọn địa chỉ giao hàng!');
-            window.location.href = '/checkout';
-            return;
-        }
-
-        // Disable buttons to prevent double click
-        var placeOrderBtn = document.getElementById('place-order-btn');
-        var confirmPaymentBtn = document.getElementById('confirm-payment-btn');
-        placeOrderBtn.disabled = true;
-        confirmPaymentBtn.disabled = true;
-        placeOrderBtn.textContent = 'Đang xử lý...';
-        confirmPaymentBtn.textContent = 'Đang xử lý...';
-
-        try {
-            // Call API to create order
-            var response = await fetch('/api/orders/checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    shippingAddressId: parseInt(addressId),
-                    shippingMethod: 'free',
-                    paymentMethod: paymentMethod,
-                    customerNote: ''
-                })
-            });
-
-            if (response.ok) {
-                var orderData = await response.json();
-                
-                // Clear checkout data
-                localStorage.removeItem('checkoutAddressId');
-                localStorage.removeItem('selectedPaymentMethod');
-                
-                // Show success message with order number
-                alert('🎉 Đặt hàng thành công!\n\nMã đơn hàng: ' + orderData.orderNumber + '\n\nChúng tôi đã gửi email xác nhận đơn hàng đến địa chỉ email của bạn.\n\nCảm ơn bạn đã mua hàng tại Grocery Store!');
-                
-                // Redirect to home or order history
-                window.location.href = '/';
-            } else if (response.status === 401) {
-                alert('Vui lòng đăng nhập để đặt hàng!');
-                window.location.href = '/auth/sign-in';
-            } else {
-                var errorText = await response.text();
-                alert('Đặt hàng thất bại! ' + (errorText || 'Vui lòng thử lại.'));
-                // Re-enable buttons
-                placeOrderBtn.disabled = false;
-                confirmPaymentBtn.disabled = false;
-                placeOrderBtn.textContent = 'Đặt hàng';
-                confirmPaymentBtn.textContent = 'Xác nhận đã thanh toán';
-            }
-        } catch (error) {
-            console.error('Error creating order:', error);
-            alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!');
-            // Re-enable buttons
+            var errorText = await response.text();
+            NotificationModal.error('Đặt hàng thất bại! ' + (errorText || 'Vui lòng thử lại.'));
             placeOrderBtn.disabled = false;
             confirmPaymentBtn.disabled = false;
-            placeOrderBtn.textContent = 'Đặt hàng';
-            confirmPaymentBtn.textContent = 'Xác nhận đã thanh toán';
+            placeOrderBtn.innerHTML = '🛒 Đặt hàng';
+            confirmPaymentBtn.innerHTML = '✅ Xác nhận đã thanh toán';
         }
+    } catch (error) {
+        console.error('Error creating order:', error);
+        NotificationModal.error('Có lỗi xảy ra. Vui lòng thử lại!');
+        placeOrderBtn.disabled = false;
+        confirmPaymentBtn.disabled = false;
+        placeOrderBtn.innerHTML = '🛒 Đặt hàng';
+        confirmPaymentBtn.innerHTML = '✅ Xác nhận đã thanh toán';
     }
+}
 
-    document.addEventListener('DOMContentLoaded', function() {
-        loadPaymentPage();
-
-        // Place order button (for COD)
-        document.getElementById('place-order-btn').addEventListener('click', async function() {
-            await completeOrder();
-        });
-        
-        // Confirm payment button (for VNPay/MoMo after scanning QR)
-        document.getElementById('confirm-payment-btn').addEventListener('click', async function() {
-            await completeOrder();
-        });
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    loadPaymentPage();
+    
+    document.getElementById('place-order-btn').addEventListener('click', completeOrder);
+    document.getElementById('confirm-payment-btn').addEventListener('click', completeOrder);
+});
 </script>
 </body>
 </html>

@@ -36,7 +36,14 @@ class ProductRenderer {
                     image: p.imageUrl || './assets/img/product/item-1.png',
                     isLiked: false
                 }));
-                this.filteredProducts = [...this.products];
+                // For homepage featured products: only show products with ratings > 0
+                // Check if we're on homepage by looking for top-rated-container
+                const isHomepage = document.getElementById('top-rated-container') !== null;
+                if (isHomepage) {
+                    this.filteredProducts = this.products.filter(p => p.rating > 0);
+                } else {
+                    this.filteredProducts = [...this.products];
+                }
                 console.log('Loaded products from API:', this.products.length);
             }
         } catch (error) {
@@ -53,21 +60,38 @@ class ProductRenderer {
                 this.products.forEach(product => {
                     product.isLiked = wishlistProductIds.includes(product.id);
                 });
-                this.filteredProducts = [...this.products];
+                // Maintain homepage filter (only products with ratings)
+                const isHomepage = document.getElementById('top-rated-container') !== null;
+                if (isHomepage) {
+                    this.filteredProducts = this.products.filter(p => p.rating > 0);
+                } else {
+                    this.filteredProducts = [...this.products];
+                }
             }
         } catch (error) {
             console.log('Could not sync wishlist status');
         }
     }
 
-    // Render top 3 rated products
+    // Render top 3 rated products (only products with ratings > 0)
     renderTopRated() {
         const container = document.getElementById('top-rated-container');
         if (!container || this.products.length === 0) return;
 
+        // Filter products that have ratings > 0, then sort by rating
         const topRated = [...this.products]
+            .filter(p => p.rating > 0)
             .sort((a, b) => b.rating - a.rating)
             .slice(0, 3);
+
+        if (topRated.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-4">
+                    <p style="color: #9e9da8;">Chưa có sản phẩm nào được đánh giá</p>
+                </div>
+            `;
+            return;
+        }
 
         container.innerHTML = topRated.map(product => {
             const imageUrl = this.getImageUrl(product.image);
@@ -255,7 +279,12 @@ class ProductRenderer {
     }
 
     filterProducts(filters = {}) {
+        const isHomepage = document.getElementById('top-rated-container') !== null;
+        
         this.filteredProducts = this.products.filter(product => {
+            // On homepage, always require rating > 0 for featured products
+            if (isHomepage && product.rating <= 0) return false;
+            
             if (filters.minPrice !== undefined && product.price < filters.minPrice) return false;
             if (filters.maxPrice !== undefined && product.price > filters.maxPrice) return false;
             if (filters.wishlistOnly && !product.isLiked) return false;
@@ -267,13 +296,22 @@ class ProductRenderer {
     }
 
     searchProducts(query) {
+        const isHomepage = document.getElementById('top-rated-container') !== null;
+        
         if (!query.trim()) {
-            this.filteredProducts = [...this.products];
+            if (isHomepage) {
+                this.filteredProducts = this.products.filter(p => p.rating > 0);
+            } else {
+                this.filteredProducts = [...this.products];
+            }
         } else {
-            this.filteredProducts = this.products.filter(product =>
-                product.name.toLowerCase().includes(query.toLowerCase()) ||
-                product.brand.toLowerCase().includes(query.toLowerCase())
-            );
+            this.filteredProducts = this.products.filter(product => {
+                // On homepage, always require rating > 0
+                if (isHomepage && product.rating <= 0) return false;
+                
+                return product.name.toLowerCase().includes(query.toLowerCase()) ||
+                    product.brand.toLowerCase().includes(query.toLowerCase());
+            });
         }
         this.currentPage = 1;
         this.renderProducts();

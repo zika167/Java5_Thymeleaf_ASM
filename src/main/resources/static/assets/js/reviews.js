@@ -302,14 +302,22 @@ function escapeHtml(text) {
  * Show success message
  */
 function showSuccess(message) {
-    alert(message); // Replace with your toast/notification system
+    if (typeof NotificationModal !== 'undefined') {
+        NotificationModal.success(message);
+    } else {
+        alert(message);
+    }
 }
 
 /**
  * Show error message
  */
 function showError(message) {
-    alert(message); // Replace with your toast/notification system
+    if (typeof NotificationModal !== 'undefined') {
+        NotificationModal.error(message);
+    } else {
+        alert(message);
+    }
 }
 
 /**

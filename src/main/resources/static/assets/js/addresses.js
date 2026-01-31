@@ -17,7 +17,7 @@ async function loadAddresses() {
         }
 
         container.innerHTML = addresses.map(addr => `
-          <div class="address-item">
+          <div class="address-item${addr.isDefault ? ' address-item--default' : ''}">
             <div class="address-item__content">
               <div class="address-item__header">
                 <span class="address-item__name">${addr.recipientName}</span>
@@ -29,9 +29,9 @@ async function loadAddresses() {
               ${addr.isDefault ? '<span class="address-item__badge">Mặc định</span>' : ''}
             </div>
             <div class="address-item__actions">
-              <a href="javascript:void(0)" onclick="editAddress(${addr.id})" class="address-action-link">Cập nhật</a>
-              ${!addr.isDefault ? `<a href="javascript:void(0)" onclick="deleteAddress(${addr.id})" class="address-action-link address-action-link--danger">Xóa</a>` : ''}
-              ${!addr.isDefault ? `<button type="button" onclick="setDefault(${addr.id})" class="btn btn--outline-dark btn--small">Thiết lập mặc định</button>` : ''}
+              <a href="javascript:void(0)" onclick="editAddress(${addr.id})" class="address-action-link">✏️ Sửa</a>
+              ${!addr.isDefault ? `<a href="javascript:void(0)" onclick="deleteAddress(${addr.id})" class="address-action-link address-action-link--danger">🗑️ Xóa</a>` : ''}
+              ${!addr.isDefault ? `<button type="button" onclick="setDefault(${addr.id})" class="btn btn--outline-dark btn--small">Đặt mặc định</button>` : ''}
             </div>
           </div>
         `).join('');
@@ -46,7 +46,11 @@ function showAddAddressModal() {
     const modal = document.getElementById('addressModal');
     if (!modal) {
         console.error('Modal element not found!');
-        alert('Lỗi: Không tìm thấy modal!');
+        if (typeof NotificationModal !== 'undefined') {
+            NotificationModal.error('Lỗi: Không tìm thấy modal!');
+        } else {
+            alert('Lỗi: Không tìm thấy modal!');
+        }
         return;
     }
     document.getElementById('modalTitle').textContent = 'Địa chỉ mới';
@@ -59,7 +63,11 @@ function showAddAddressModal() {
 async function editAddress(id) {
     const address = await AddressAPI.getAddress(id);
     if (!address) {
-        alert('Không thể tải địa chỉ');
+        if (typeof NotificationModal !== 'undefined') {
+            NotificationModal.error('Không thể tải địa chỉ');
+        } else {
+            alert('Không thể tải địa chỉ');
+        }
         return;
     }
 
@@ -84,7 +92,11 @@ async function saveAddress(e) {
     
     // Validate phone number format
     if (!/^[0-9]{10,11}$/.test(phone)) {
-        alert('Số điện thoại phải từ 10-11 chữ số (chỉ số, không có ký tự khác)');
+        if (typeof NotificationModal !== 'undefined') {
+            NotificationModal.warning('Số điện thoại phải từ 10-11 chữ số (chỉ số, không có ký tự khác)');
+        } else {
+            alert('Số điện thoại phải từ 10-11 chữ số (chỉ số, không có ký tự khác)');
+        }
         document.getElementById('phone').focus();
         return;
     }
@@ -115,12 +127,14 @@ async function saveAddress(e) {
 }
 
 async function deleteAddress(id) {
-    if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+    const confirmed = await NotificationModal.confirm('Bạn có chắc chắn muốn xóa địa chỉ này?', 'Xác nhận xóa');
+    if (confirmed) {
         try {
             await AddressAPI.deleteAddress(id);
             await loadAddresses();
         } catch (error) {
             console.error('Error deleting address:', error);
+            NotificationModal.error('Không thể xóa địa chỉ. Vui lòng thử lại.');
         }
     }
 }

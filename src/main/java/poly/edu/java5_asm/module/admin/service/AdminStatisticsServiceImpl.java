@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import poly.edu.java5_asm.module.admin.dto.response.DashboardStatsResponse;
+import poly.edu.java5_asm.module.admin.dto.response.RevenueStatsResponse;
 import poly.edu.java5_asm.module.admin.dto.response.TrafficStatsResponse;
 import poly.edu.java5_asm.module.admin.dto.response.UserRegistrationStatsResponse;
 import poly.edu.java5_asm.module.order.entity.Order;
@@ -143,5 +144,52 @@ public class AdminStatisticsServiceImpl implements AdminStatisticsService {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(29);
         return getTrafficStats(startDate, endDate);
+    }
+
+    @Override
+    public List<RevenueStatsResponse> getRevenueStats(LocalDate startDate, LocalDate endDate) {
+        List<RevenueStatsResponse> stats = new ArrayList<>();
+
+        LocalDate currentDate = startDate;
+        while (!currentDate.isAfter(endDate)) {
+            LocalDateTime dayStart = currentDate.atStartOfDay();
+            LocalDateTime dayEnd = currentDate.atTime(LocalTime.MAX);
+
+            List<Order> ordersInDay = orderRepository.findByOrderedAtBetween(dayStart, dayEnd);
+            
+            // Chỉ tính doanh thu từ đơn hàng đã giao (DELIVERED)
+            BigDecimal dailyRevenue = ordersInDay.stream()
+                    .filter(o -> o.getStatus() == Order.OrderStatus.DELIVERED)
+                    .map(Order::getTotalAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            long orderCount = ordersInDay.stream()
+                    .filter(o -> o.getStatus() == Order.OrderStatus.DELIVERED)
+                    .count();
+
+            stats.add(RevenueStatsResponse.builder()
+                    .date(currentDate)
+                    .revenue(dailyRevenue)
+                    .orderCount(orderCount)
+                    .build());
+
+            currentDate = currentDate.plusDays(1);
+        }
+
+        return stats;
+    }
+
+    @Override
+    public List<RevenueStatsResponse> getLast7DaysRevenueStats() {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(6);
+        return getRevenueStats(startDate, endDate);
+    }
+
+    @Override
+    public List<RevenueStatsResponse> getLast30DaysRevenueStats() {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(29);
+        return getRevenueStats(startDate, endDate);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import poly.edu.java5_asm.common.security.CustomUserDetails;
+import poly.edu.java5_asm.common.audit.AuditLog;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,7 +48,7 @@ public class AuditService {
      */
     @Async
     @Transactional
-    public void logWithValues(AuditAction action, String entityType, Long entityId, 
+    public void logWithValues(AuditAction action, String entityType, Long entityId,
                               String description, String oldValue, String newValue) {
         try {
             AuditLog auditLog = buildAuditLog(action, entityType, entityId, description);
@@ -64,7 +65,7 @@ public class AuditService {
      */
     @Async
     @Transactional
-    public void logError(AuditAction action, String entityType, Long entityId, 
+    public void logError(AuditAction action, String entityType, Long entityId,
                          String description, String errorMessage) {
         try {
             AuditLog auditLog = buildAuditLog(action, entityType, entityId, description);

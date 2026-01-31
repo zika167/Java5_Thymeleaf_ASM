@@ -39,7 +39,7 @@ public class SecurityConfig {
                 http
                                 // ===== CSRF CONFIGURATION =====
                                 .csrf(csrf -> csrf
-                                                .ignoringRequestMatchers("/api/**", "/profile/**") // Tắt CSRF cho API và profile endpoints
+                                                .ignoringRequestMatchers("/api/**", "/profile/**", "/auth/**") // Tắt CSRF cho API, profile và auth endpoints
                                 )
 
                                 // ===== SESSION MANAGEMENT =====

@@ -1,0 +1,544 @@
+/* ========================================
+   PROFILE PAGE STYLES - Enhanced UX/UI
+   ======================================== */
+
+/* Profile sidebar margin for mobile */
+.profile__sidebar {
+    margin-bottom: 30px;
+}
+
+/* ========================================
+   USER PROFILE CARD
+   ======================================== */
+
+.profile-user {
+    position: relative;
+    background: url("https://phongvu.vn/cong-nghe/wp-content/uploads/2024/10/background-ghep-anh-4-1344x840.jpg") center/cover no-repeat !important;
+    padding: 50px 20px 30px !important;
+    overflow: hidden;
+}
+
+.profile-user::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%);
+}
+
+.profile-user__avatar-wrapper {
+    position: relative;
+    z-index: 2;
+}
+
+.profile-user__avatar {
+    width: 130px !important;
+    height: 130px !important;
+    border: 4px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-user__avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+.profile-user__avatar-edit {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(119, 218, 230, 0.4);
+    border: 2px solid #fff;
+}
+
+.profile-user__avatar-edit:hover {
+    transform: scale(1.15) rotate(15deg);
+    box-shadow: 0 6px 20px rgba(119, 218, 230, 0.5);
+}
+
+.profile-user__avatar-edit .icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1);
+}
+
+.profile-user__name {
+    position: relative;
+    z-index: 2;
+    font-size: 2rem !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.profile-user__desc {
+    position: relative;
+    z-index: 2;
+    opacity: 0.9;
+    font-size: 1.4rem !important;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   PROFILE MENU
+   ======================================== */
+
+.profile-menu {
+    padding: 0 24px !important;
+    margin-top: 24px !important;
+}
+
+.profile-menu__title {
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #77dae6;
+    margin-bottom: 12px;
+    padding-left: 4px;
+}
+
+.profile-menu__list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profile-menu__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px !important;
+    border-radius: 10px !important;
+    font-size: 1.4rem !important;
+    font-weight: 500;
+    transition: all 0.25s ease !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-menu__link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #77dae6;
+    transform: scaleY(0);
+    transition: transform 0.25s ease;
+}
+
+.profile-menu__link:hover {
+    background: linear-gradient(90deg, rgba(119, 218, 230, 0.1) 0%, transparent 100%) !important;
+    padding-left: 18px !important;
+}
+
+.profile-menu__link:hover::before {
+    transform: scaleY(1);
+}
+
+.profile-menu__link--active {
+    background: linear-gradient(90deg, rgba(119, 218, 230, 0.15) 0%, transparent 100%) !important;
+    color: #77dae6;
+}
+
+.profile-menu__link--active::before {
+    transform: scaleY(1);
+}
+
+.profile-menu__icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(119, 218, 230, 0.1);
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.profile-menu__link:hover .profile-menu__icon {
+    background: rgba(119, 218, 230, 0.2);
+    transform: scale(1.1);
+}
+
+.profile-menu__icon .icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* ========================================
+   ACCOUNT INFO CARDS
+   ======================================== */
+
+.account-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--account-info-bg);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    height: 100%;
+}
+
+.account-info:hover {
+    border-color: #77dae6;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(119, 218, 230, 0.15);
+}
+
+.account-info__icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(119, 218, 230, 0.15) 0%, rgba(119, 218, 230, 0.05) 100%);
+    border-radius: 14px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.account-info:hover .account-info__icon {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%);
+    transform: rotate(-5deg) scale(1.1);
+}
+
+.account-info:hover .account-info__icon .icon {
+    filter: brightness(0) invert(1);
+}
+
+.account-info__icon .icon {
+    width: 24px;
+    height: 24px;
+    transition: filter 0.3s ease;
+}
+
+.account-info__title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #77dae6;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.account-info__desc {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+    word-break: break-word;
+}
+
+/* ========================================
+   CART INFO SECTION
+   ======================================== */
+
+.cart-info {
+    background: var(--checkout-cart-info-bg);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+}
+
+.cart-info__heading {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-info__heading::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(180deg, #77dae6 0%, #5bc7d4 100%);
+    border-radius: 2px;
+}
+
+.cart-info__desc {
+    color: #888;
+    font-size: 1.4rem;
+}
+
+.profile__desc {
+    margin-bottom: 20px !important;
+}
+
+.profile__desc a {
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.profile__desc a:hover {
+    opacity: 0.8;
+}
+
+/* ========================================
+   FAVOURITE ITEM (Recent Orders & Wishlist)
+   ======================================== */
+
+.favourite-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--account-info-bg);
+    border-radius: 14px;
+    transition: all 0.3s ease;
+    border: 1.5px solid transparent;
+}
+
+.favourite-item:hover {
+    border-color: rgba(119, 218, 230, 0.3);
+    transform: translateX(4px);
+}
+
+.favourite-item__thumb {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid rgba(119, 218, 230, 0.1);
+}
+
+.favourite-item__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-color);
+}
+
+.favourite-item__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.favourite-item__price {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #77dae6;
+}
+
+/* ========================================
+   BADGES
+   ======================================== */
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge--success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.badge--warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    color: #856404;
+}
+
+.badge--danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+}
+
+.badge--info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+
+.empty-state-box {
+    text-align: center;
+    padding: 50px 20px;
+    background: linear-gradient(135deg, rgba(119, 218, 230, 0.05) 0%, transparent 100%);
+    border-radius: 16px;
+    border: 2px dashed rgba(119, 218, 230, 0.2);
+}
+
+.empty-state-box .icon {
+    width: 60px;
+    height: 60px;
+    opacity: 0.3;
+    margin-bottom: 16px;
+}
+
+.empty-state-box p {
+    color: #888;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.btn--primary {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 15px rgba(119, 218, 230, 0.3);
+}
+
+.btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(119, 218, 230, 0.4);
+}
+
+.btn--rounded {
+    border-radius: 25px;
+    padding: 10px 24px;
+}
+
+/* ========================================
+   SEARCH BAR
+   ======================================== */
+
+.search-bar {
+    background: var(--search-bar-bg);
+    border-radius: 12px;
+    padding: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.search-bar:focus-within {
+    border-color: #77dae6;
+    box-shadow: 0 4px 20px rgba(119, 218, 230, 0.15);
+}
+
+.search-bar__input {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 1.5rem;
+    background: transparent;
+}
+
+.search-bar__submit {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%);
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.search-bar__submit:hover {
+    transform: scale(1.05);
+}
+
+.search-bar__icon {
+    filter: brightness(0) invert(1);
+}
+
+/* ========================================
+   SUCCESS MESSAGE
+   ======================================== */
+
+.success-message {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
+}
+
+.success-message::before {
+    content: '✓';
+    width: 24px;
+    height: 24px;
+    background: #28a745;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 991.98px) {
+    .cart-info {
+        padding: 24px;
+    }
+    
+    .account-info {
+        padding: 16px;
+    }
+    
+    .account-info__icon {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .profile-user {
+        padding: 40px 16px 24px !important;
+    }
+    
+    .profile-user__avatar {
+        width: 100px !important;
+        height: 100px !important;
+    }
+    
+    .cart-info {
+        padding: 20px 16px;
+        border-radius: 16px;
+    }
+    
+    .cart-info__heading {
+        font-size: 1.8rem;
+    }
+    
+    .favourite-item {
+        padding: 12px;
+    }
+    
+    .favourite-item__thumb {
+        width: 60px;
+        height: 60px;
+    }
+}

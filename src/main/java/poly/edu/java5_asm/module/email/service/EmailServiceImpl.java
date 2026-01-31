@@ -32,7 +32,7 @@ public class EmailServiceImpl implements EmailService {
     private final OrderItemRepository orderItemRepository;
     private final UserRepository userRepository;
 
-    @Value("${spring.mail.from}")
+    @Value("${spring.mail.from:noreply@grocerystore.com}")
     private String fromEmail;
 
     private static final int MAX_RETRY_ATTEMPTS = 3;
@@ -66,10 +66,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    @Async
     @Transactional(readOnly = true)
     public void sendOrderStatusUpdate(Long orderId, Long userId) {
-        log.info("Sending order status update email for orderId={}", orderId);
+        log.info("=== START sendOrderStatusUpdate === orderId={}, userId={}", orderId, userId);
 
         try {
             Order order = orderRepository.findById(orderId)
@@ -77,22 +76,24 @@ public class EmailServiceImpl implements EmailService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found: " + userId));
             List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+
+            log.info("Found order {} with status {} for user {}", 
+                    order.getOrderNumber(), order.getStatus(), user.getEmail());
 
             String subject = "Cập nhật đơn hàng #" + order.getOrderNumber();
             String htmlContent = buildOrderStatusUpdateEmail(order, user, orderItems);
 
             sendEmailWithRetry(user.getEmail(), subject, htmlContent);
-            log.info("Order status update email sent successfully for order {}", order.getOrderNumber());
+            log.info("=== END sendOrderStatusUpdate === email sent successfully for order {}", order.getOrderNumber());
         } catch (Exception e) {
-            log.error("Failed to send order status update email for orderId {}: {}", orderId, e.getMessage(), e);
+            log.error("=== ERROR sendOrderStatusUpdate === orderId {}: {}", orderId, e.getMessage(), e);
         }
     }
 
     @Override
-    @Async
     @Transactional(readOnly = true)
     public void sendPaymentStatusUpdate(Long orderId, Long userId) {
-        log.info("Sending payment status update email for orderId={}", orderId);
+        log.info("=== START sendPaymentStatusUpdate === orderId={}, userId={}", orderId, userId);
 
         try {
             Order order = orderRepository.findById(orderId)
@@ -101,13 +102,16 @@ public class EmailServiceImpl implements EmailService {
                     .orElseThrow(() -> new RuntimeException("User not found: " + userId));
             List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
 
+            log.info("Found order {} with payment status {} for user {}", 
+                    order.getOrderNumber(), order.getPaymentStatus(), user.getEmail());
+
             String subject = getPaymentEmailSubject(order);
             String htmlContent = buildPaymentStatusUpdateEmail(order, user, orderItems);
 
             sendEmailWithRetry(user.getEmail(), subject, htmlContent);
-            log.info("Payment status update email sent successfully for order {}", order.getOrderNumber());
+            log.info("=== END sendPaymentStatusUpdate === email sent successfully for order {}", order.getOrderNumber());
         } catch (Exception e) {
-            log.error("Failed to send payment status update email for orderId {}: {}", orderId, e.getMessage(), e);
+            log.error("=== ERROR sendPaymentStatusUpdate === orderId {}: {}", orderId, e.getMessage(), e);
         }
     }
 

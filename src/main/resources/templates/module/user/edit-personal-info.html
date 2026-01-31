@@ -8,30 +8,10 @@
 <!-- MAIN -->
 <main class="profile">
     <div class="container">
-        <!-- Search bar -->
-        <div class="profile-container">
-            <div class="search-bar d-none d-md-flex">
-                <input
-                        type="text"
-                        name=""
-                        id=""
-                        placeholder="Tìm kiếm sản phẩm"
-                        class="search-bar__input"
-                />
-                <button class="search-bar__submit">
-                    <img
-                            th:src="@{/assets/icon/search.svg}"
-                            alt=""
-                            class="search-bar__icon icon"
-                    />
-                </button>
-            </div>
-        </div>
-
         <!-- Profile content -->
         <div class="profile-container">
             <div class="row gy-md-3">
-                <div class="col-3 col-xl-4 d-lg-none">
+                <div class="col-3 col-xl-4 col-lg-5 col-md-12">
                     <aside class="profile__sidebar">
                         <!-- User -->
                         <div class="profile-user">
@@ -52,26 +32,18 @@
                             <h3 class="profile-menu__title">Quản lý tài khoản</h3>
                             <ul class="profile-menu__list">
                                 <li>
-                                    <a th:href="@{/edit-personal-info}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/profile.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
+                                    <a th:href="@{/edit-personal-info}" class="profile-menu__link profile-menu__link--active">
+                                        <span class="profile-menu__icon">
+                                            <img th:src="@{/assets/icon/profile.svg}" alt="" class="icon"/>
+                                        </span>
                                         Thông tin cá nhân
                                     </a>
                                 </li>
                                 <li>
                                     <a th:href="@{/addresses}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/location.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
+                                        <span class="profile-menu__icon">
+                                            <img th:src="@{/assets/icon/location.svg}" alt="" class="icon"/>
+                                        </span>
                                         Địa chỉ
                                     </a>
                                 </li>
@@ -84,225 +56,119 @@
                             <ul class="profile-menu__list">
                                 <li>
                                     <a th:href="@{/my-orders}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/document.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
+                                        <span class="profile-menu__icon">
+                                            <img th:src="@{/assets/icon/document.svg}" alt="" class="icon"/>
+                                        </span>
                                         Lịch sử đơn hàng
                                     </a>
                                 </li>
                                 <li>
                                     <a th:href="@{/favourite}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/heart.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
+                                        <span class="profile-menu__icon">
+                                            <img th:src="@{/assets/icon/heart.svg}" alt="" class="icon"/>
+                                        </span>
                                         Sản phẩm yêu thích
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Menu 3 -->
-                        <div class="profile-menu">
-                            <h3 class="profile-menu__title">Hỗ trợ</h3>
-                            <ul class="profile-menu__list">
-                                <li>
-                                    <a th:href="@{/}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/info.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Trợ giúp
                                     </a>
                                 </li>
                             </ul>
                         </div>
                     </aside>
                 </div>
-                <div class="col-9 col-xl-8 col-lg-12">
+                <div class="col-9 col-xl-8 col-lg-7 col-md-12">
                     <div class="cart-info">
-                        <div class="row gy-3">
-                            <div class="col-12">
-                                <h2 class="cart-info__heading">
-                                    <a th:href="@{/profile}">
-                                        <img
-                                                th:src="@{/assets/icon/arrow-left.svg}"
-                                                alt=""
-                                                class="icon cart-info__back-arrow"
-                                        />
-                                    </a>
-                                    Thông tin cá nhân
-                                </h2>
-
-                                <form action="/profile/update" th:action="@{/profile/update}" th:object="${profileRequest}" method="post"
-                                      class="form form-card">
-                                    <!-- Thông báo lỗi -->
-                                    <div th:if="${errorMessage}" class="form__error-message"
-                                         style="color: #dc3545; margin-bottom: 16px;">
-                                        <span th:text="${errorMessage}"></span>
-                                    </div>
-
-                                    <!-- Form row 1 -->
-                                    <div class="form__row">
-                                        <div class="form__group">
-                                            <label
-                                                    for="full-name"
-                                                    class="form__label form-card__label"
-                                            >
-                                                Họ và tên
-                                            </label>
-                                            <div class="form__text-input"
-                                                 th:classappend="${#fields.hasErrors('fullName')} ? 'form__text-input--error' : ''">
-                                                <input
-                                                        type="text"
-                                                        th:field="*{fullName}"
-                                                        id="full-name"
-                                                        placeholder="Nhập họ và tên"
-                                                        class="form__input"
-                                                        autofocus
-                                                />
-                                                <img
-                                                        th:src="@{/assets/icon/error.svg}"
-                                                        alt=""
-                                                        class="form__input-icon-error"
-                                                />
-                                            </div>
-                                            <p class="form__error" th:if="${#fields.hasErrors('fullName')}"
-                                               th:errors="*{fullName}">Vui lòng nhập họ và tên</p>
-                                        </div>
-                                        <div class="form__group">
-                                            <label
-                                                    for="email-address"
-                                                    class="form__label form-card__label"
-                                            >
-                                                Email
-                                            </label>
-                                            <div class="form__text-input"
-                                                 th:classappend="${#fields.hasErrors('email')} ? 'form__text-input--error' : ''">
-                                                <input
-                                                        type="email"
-                                                        th:field="*{email}"
-                                                        id="email-address"
-                                                        placeholder="Nhập địa chỉ email"
-                                                        class="form__input"
-                                                />
-                                                <img
-                                                        th:src="@{/assets/icon/error.svg}"
-                                                        alt=""
-                                                        class="form__input-icon-error"
-                                                />
-                                            </div>
-                                            <p class="form__error" th:if="${#fields.hasErrors('email')}"
-                                               th:errors="*{email}">
-                                                Vui lòng nhập email hợp lệ
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Form row 2 -->
-                                    <div class="form__row">
-                                        <div class="form__group">
-                                            <label
-                                                    for="phone-number"
-                                                    class="form__label form-card__label"
-                                            >
-                                                Số điện thoại
-                                            </label>
-                                            <div class="form__text-input"
-                                                 th:classappend="${#fields.hasErrors('phone')} ? 'form__text-input--error' : ''">
-                                                <input
-                                                        type="text"
-                                                        th:field="*{phone}"
-                                                        id="phone-number"
-                                                        placeholder="Nhập số điện thoại"
-                                                        class="form__input"
-                                                />
-                                                <img
-                                                        th:src="@{/assets/icon/error.svg}"
-                                                        alt=""
-                                                        class="form__input-icon-error"
-                                                />
-                                            </div>
-                                            <p class="form__error" th:if="${#fields.hasErrors('phone')}"
-                                               th:errors="*{phone}">
-                                                Vui lòng nhập số điện thoại hợp lệ
-                                            </p>
-                                        </div>
-                                        <div class="form__group">
-                                            <label
-                                                    for="new-password"
-                                                    class="form__label form-card__label"
-                                            >
-                                                Mật khẩu mới (để trống nếu không đổi)
-                                            </label>
-                                            <div class="form__text-input"
-                                                 th:classappend="${#fields.hasErrors('newPassword')} ? 'form__text-input--error' : ''">
-                                                <input
-                                                        type="password"
-                                                        th:field="*{newPassword}"
-                                                        id="new-password"
-                                                        placeholder="Nhập mật khẩu mới"
-                                                        class="form__input"
-                                                />
-                                                <img
-                                                        th:src="@{/assets/icon/error.svg}"
-                                                        alt=""
-                                                        class="form__input-icon-error"
-                                                />
-                                            </div>
-                                            <p class="form__error" th:if="${#fields.hasErrors('newPassword')}"
-                                               th:errors="*{newPassword}">Vui lòng nhập mật khẩu mới</p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Form row 3: Confirm Password -->
-                                    <div class="form__row">
-                                        <div class="form__group">
-                                            <!-- Empty for alignment -->
-                                        </div>
-                                        <div class="form__group">
-                                            <label
-                                                    for="confirm-password"
-                                                    class="form__label form-card__label"
-                                            >
-                                                Xác nhận mật khẩu
-                                            </label>
-                                            <div class="form__text-input">
-                                                <input
-                                                        type="password"
-                                                        th:field="*{confirmPassword}"
-                                                        id="confirm-password"
-                                                        placeholder="Nhập lại mật khẩu"
-                                                        class="form__input"
-                                                />
-                                                <img
-                                                        th:src="@{/assets/icon/error.svg}"
-                                                        alt=""
-                                                        class="form__input-icon-error"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-card__bottom">
-                                        <a class="btn btn--text" th:href="@{/profile}">Hủy</a>
-                                        <button type="submit" class="btn btn--primary btn--rounded">
-                                            Lưu thay đổi
-                                        </button>
-                                    </div>
-                                </form>
+                        <div class="edit-form-header">
+                            <a th:href="@{/profile}" class="edit-form-back">
+                                <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="icon"/>
+                            </a>
+                            <div>
+                                <h2 class="cart-info__heading" style="margin-bottom: 4px;">Thông tin cá nhân</h2>
+                                <p class="edit-form-subtitle">Cập nhật thông tin tài khoản của bạn</p>
                             </div>
                         </div>
+
+                        <!-- Success/Error messages sẽ được hiển thị qua modal -->
+                        <div th:if="${successMessage}" id="serverSuccessMessage" th:data-message="${successMessage}" style="display:none;"></div>
+                        <div th:if="${errorMessage}" id="serverErrorMessage" th:data-message="${errorMessage}" style="display:none;"></div>
+
+                        <form th:action="@{/profile/update}" th:object="${profileRequest}" method="post" class="edit-form">
+                            <!-- Section: Thông tin cơ bản -->
+                            <div class="edit-form__section">
+                                <h3 class="edit-form__section-title">Thông tin cơ bản</h3>
+                                
+                                <div class="edit-form__row">
+                                    <div class="edit-form__group">
+                                        <label for="full-name" class="edit-form__label">
+                                            Họ và tên <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-form__input-wrap" th:classappend="${#fields.hasErrors('fullName')} ? 'edit-form__input-wrap--error' : ''">
+                                            <img th:src="@{/assets/icon/profile.svg}" alt="" class="edit-form__input-icon icon"/>
+                                            <input type="text" th:field="*{fullName}" id="full-name" 
+                                                   placeholder="Nhập họ và tên" class="edit-form__input" autofocus/>
+                                        </div>
+                                        <p class="edit-form__error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Lỗi</p>
+                                    </div>
+                                    
+                                    <div class="edit-form__group">
+                                        <label for="phone-number" class="edit-form__label">Số điện thoại</label>
+                                        <div class="edit-form__input-wrap" th:classappend="${#fields.hasErrors('phone')} ? 'edit-form__input-wrap--error' : ''">
+                                            <img th:src="@{/assets/icon/calling.svg}" alt="" class="edit-form__input-icon icon"/>
+                                            <input type="text" th:field="*{phone}" id="phone-number" 
+                                                   placeholder="Nhập số điện thoại" class="edit-form__input"/>
+                                        </div>
+                                        <p class="edit-form__error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Lỗi</p>
+                                    </div>
+                                </div>
+
+                                <div class="edit-form__row">
+                                    <div class="edit-form__group edit-form__group--full">
+                                        <label for="email-address" class="edit-form__label">
+                                            Email <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-form__input-wrap" th:classappend="${#fields.hasErrors('email')} ? 'edit-form__input-wrap--error' : ''">
+                                            <img th:src="@{/assets/icon/email.svg}" alt="" class="edit-form__input-icon icon"/>
+                                            <input type="email" th:field="*{email}" id="email-address" 
+                                                   placeholder="Nhập địa chỉ email" class="edit-form__input"/>
+                                        </div>
+                                        <p class="edit-form__error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Lỗi</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section: Đổi mật khẩu -->
+                            <div class="edit-form__section">
+                                <h3 class="edit-form__section-title">Đổi mật khẩu</h3>
+                                <p class="edit-form__section-desc">Để trống nếu không muốn thay đổi mật khẩu</p>
+                                
+                                <div class="edit-form__row">
+                                    <div class="edit-form__group">
+                                        <label for="new-password" class="edit-form__label">Mật khẩu mới</label>
+                                        <div class="edit-form__input-wrap" th:classappend="${#fields.hasErrors('newPassword')} ? 'edit-form__input-wrap--error' : ''">
+                                            <img th:src="@{/assets/icon/lock.svg}" alt="" class="edit-form__input-icon icon"/>
+                                            <input type="password" th:field="*{newPassword}" id="new-password" 
+                                                   placeholder="Nhập mật khẩu mới" class="edit-form__input"/>
+                                        </div>
+                                        <p class="edit-form__error" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}">Lỗi</p>
+                                    </div>
+                                    
+                                    <div class="edit-form__group">
+                                        <label for="confirm-password" class="edit-form__label">Xác nhận mật khẩu</label>
+                                        <div class="edit-form__input-wrap">
+                                            <img th:src="@{/assets/icon/lock.svg}" alt="" class="edit-form__input-icon icon"/>
+                                            <input type="password" th:field="*{confirmPassword}" id="confirm-password" 
+                                                   placeholder="Nhập lại mật khẩu" class="edit-form__input"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="edit-form__actions">
+                                <a th:href="@{/profile}" class="btn btn--outline-secondary">Hủy</a>
+                                <button type="submit" class="btn btn--primary">
+                                    💾 Lưu thay đổi
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -312,5 +178,32 @@
 
 <!-- Footer -->
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
+<link rel="stylesheet" th:href="@{/assets/css/profile.css}"/>
+<link rel="stylesheet" th:href="@{/assets/css/edit-personal-info.css}"/>
+
+<script>
+// Hiển thị modal thông báo từ server
+document.addEventListener('DOMContentLoaded', function() {
+    var successEl = document.getElementById('serverSuccessMessage');
+    var errorEl = document.getElementById('serverErrorMessage');
+    
+    if (successEl && successEl.dataset.message) {
+        setTimeout(function() {
+            if (typeof NotificationModal !== 'undefined' && NotificationModal.success) {
+                NotificationModal.success(successEl.dataset.message, 'Thành công');
+            }
+        }, 100);
+    }
+    
+    if (errorEl && errorEl.dataset.message) {
+        setTimeout(function() {
+            if (typeof NotificationModal !== 'undefined' && NotificationModal.error) {
+                NotificationModal.error(errorEl.dataset.message, 'Lỗi');
+            }
+        }, 100);
+    }
+});
+</script>
 </body>
 </html>

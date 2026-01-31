@@ -28,8 +28,14 @@ public class OrderResponse {
     private LocalDateTime confirmedAt;
     private LocalDateTime shippedAt;
     private LocalDateTime deliveredAt;
+    private LocalDateTime createdAt; // Alias for orderedAt
     private String customerNote;
     private List<OrderItemResponse> orderItems;
+    
+    // User info (for admin)
+    private Long userId;
+    private String userName;
+    private String userEmail;
     
     // Shipping info
     private String shippingName;

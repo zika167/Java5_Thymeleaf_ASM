@@ -1,7 +1,9 @@
 package poly.edu.java5_asm.common.audit;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +21,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class AuditLog {
 
     @Id
@@ -65,7 +65,6 @@ public class AuditLog {
     private String requestMethod;
 
     @Column(name = "status", length = 20)
-    @Builder.Default
     private String status = "SUCCESS";
 
     @Column(name = "error_message", length = 1000)
@@ -77,5 +76,117 @@ public class AuditLog {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    // Static builder method
+    public static AuditLogBuilder builder() {
+        return new AuditLogBuilder();
+    }
+
+    // Inner Builder class
+    public static class AuditLogBuilder {
+        private Long userId;
+        private String username;
+        private AuditAction action;
+        private String entityType;
+        private Long entityId;
+        private String description;
+        private String oldValue;
+        private String newValue;
+        private String ipAddress;
+        private String userAgent;
+        private String requestUrl;
+        private String requestMethod;
+        private String status = "SUCCESS";
+        private String errorMessage;
+
+        public AuditLogBuilder userId(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public AuditLogBuilder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public AuditLogBuilder action(AuditAction action) {
+            this.action = action;
+            return this;
+        }
+
+        public AuditLogBuilder entityType(String entityType) {
+            this.entityType = entityType;
+            return this;
+        }
+
+        public AuditLogBuilder entityId(Long entityId) {
+            this.entityId = entityId;
+            return this;
+        }
+
+        public AuditLogBuilder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public AuditLogBuilder oldValue(String oldValue) {
+            this.oldValue = oldValue;
+            return this;
+        }
+
+        public AuditLogBuilder newValue(String newValue) {
+            this.newValue = newValue;
+            return this;
+        }
+
+        public AuditLogBuilder ipAddress(String ipAddress) {
+            this.ipAddress = ipAddress;
+            return this;
+        }
+
+        public AuditLogBuilder userAgent(String userAgent) {
+            this.userAgent = userAgent;
+            return this;
+        }
+
+        public AuditLogBuilder requestUrl(String requestUrl) {
+            this.requestUrl = requestUrl;
+            return this;
+        }
+
+        public AuditLogBuilder requestMethod(String requestMethod) {
+            this.requestMethod = requestMethod;
+            return this;
+        }
+
+        public AuditLogBuilder status(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public AuditLogBuilder errorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+            return this;
+        }
+
+        public AuditLog build() {
+            AuditLog log = new AuditLog();
+            log.userId = this.userId;
+            log.username = this.username;
+            log.action = this.action;
+            log.entityType = this.entityType;
+            log.entityId = this.entityId;
+            log.description = this.description;
+            log.oldValue = this.oldValue;
+            log.newValue = this.newValue;
+            log.ipAddress = this.ipAddress;
+            log.userAgent = this.userAgent;
+            log.requestUrl = this.requestUrl;
+            log.requestMethod = this.requestMethod;
+            log.status = this.status;
+            log.errorMessage = this.errorMessage;
+            return log;
+        }
     }
 }

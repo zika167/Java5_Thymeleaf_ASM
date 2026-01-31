@@ -5,360 +5,243 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="_current_user_id" th:content="${session.user != null ? session.user.id : ''}"/>
     <title>Quản Lý Users | Admin</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}"/>
-    <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --cyan-50: #ecfeff; --cyan-100: #cffafe; --cyan-200: #a5f3fc;
+            --cyan-300: #67e8f9; --cyan-400: #22d3ee; --cyan-500: #06b6d4;
+            --cyan-600: #0891b2; --cyan-700: #0e7490; --cyan-800: #155e75;
+        }
+        .admin-body { background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%); }
+        .admin-header {
+            background: linear-gradient(135deg, var(--cyan-500) 0%, var(--cyan-600) 100%);
+            color: white; border-bottom: none; box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+        }
+        .admin-header h1 { color: white; display: flex; align-items: center; gap: 12px; }
+        .admin-header h1::before { content: '👥'; font-size: 28px; }
+        .admin-user { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px; backdrop-filter: blur(10px); }
+        .admin-user span { color: white; font-weight: 500; }
+        .table-card {
+            background: white; border-radius: 20px; padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: relative; overflow: hidden;
+        }
+        .table-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--cyan-400), var(--cyan-500)); }
+        .table-card__header { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+        .search-input, .filter-select {
+            padding: 14px 20px; border: 2px solid #e2e8f0; border-radius: 12px;
+            font-size: 14px; background: #fff; transition: all 0.3s ease;
+        }
+        .search-input:focus, .filter-select:focus { outline: none; border-color: var(--cyan-400); box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.15); }
+        .search-input { flex: 1; min-width: 250px; }
+        .filter-select { min-width: 160px; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2306b6d4' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+        .user-count { margin-left: auto; color: #64748b; font-size: 14px; background: var(--cyan-50); padding: 10px 20px; border-radius: 50px; }
+        .admin-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .admin-table th { text-align: left; padding: 16px; background: linear-gradient(135deg, var(--cyan-50) 0%, var(--cyan-100) 100%); font-weight: 600; color: var(--cyan-700); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--cyan-200); }
+        .admin-table th:first-child { border-radius: 12px 0 0 0; }
+        .admin-table th:last-child { border-radius: 0 12px 0 0; }
+        .admin-table td { padding: 16px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+        .admin-table tr:hover td { background: var(--cyan-50); }
+        .table-avatar { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; border: 3px solid var(--cyan-100); }
+        .user-info { display: flex; flex-direction: column; gap: 2px; }
+        .user-info strong { color: var(--cyan-700); font-size: 15px; }
+        .user-info small { color: #64748b; font-size: 12px; }
+        .badge { padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; }
+        .badge--admin { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; }
+        .badge--admin::before { background: white; }
+        .badge--user { background: linear-gradient(135deg, var(--cyan-100) 0%, var(--cyan-200) 100%); color: var(--cyan-800); }
+        .badge--user::before { background: var(--cyan-500); }
+        .badge--active { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; }
+        .badge--active::before { background: #10b981; }
+        .badge--inactive { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #991b1b; }
+        .badge--inactive::before { background: #ef4444; }
+        .action-buttons { display: flex; gap: 8px; }
+        .btn--icon { width: 40px; height: 40px; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.3s ease; }
+        .btn--icon:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn--view { background: linear-gradient(135deg, var(--cyan-400) 0%, var(--cyan-500) 100%); color: white; }
+        .btn--role { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; }
+        .btn--lock { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+        .btn--unlock { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
+        .pagination button { padding: 10px 16px; border: none; border-radius: 10px; background: var(--cyan-100); color: var(--cyan-700); cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .pagination button:hover:not(:disabled) { background: var(--cyan-200); }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination button.active { background: linear-gradient(135deg, var(--cyan-400) 0%, var(--cyan-500) 100%); color: white; }
+        .swal2-popup { border-radius: 20px !important; }
+        .swal-user-detail { text-align: left; }
+        .swal-avatar { width: 100px; height: 100px; border-radius: 20px; object-fit: cover; display: block; margin: 0 auto 20px; border: 4px solid var(--cyan-100); box-shadow: 0 8px 20px rgba(6, 182, 212, 0.2); }
+        .swal-info { background: linear-gradient(135deg, var(--cyan-50) 0%, #f8fafc 100%); border-radius: 16px; padding: 20px; }
+        .swal-info p { margin: 12px 0; font-size: 14px; display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+        .swal-info p:last-child { border-bottom: none; padding-bottom: 0; }
+        @media (max-width: 1200px) { .table-card__header { flex-direction: column; } .search-input { width: 100%; } .user-count { margin-left: 0; } }
+    </style>
 </head>
 <body class="admin-body">
-
 <th:block th:replace="~{shared/fragments/admin-sidebar :: admin-sidebar}"></th:block>
-
 <main class="admin-main">
     <div class="admin-header">
         <h1>Quản Lý Users</h1>
         <div class="admin-user">
-            <img th:src="${session.user != null ? session.user.avatarUrlOrGravatar : '/assets/img/avatar.jpg'}" 
-                 alt="" class="admin-user__avatar"/>
+            <img th:src="${session.user != null ? session.user.avatarUrlOrGravatar : '/assets/img/avatar.jpg'}" alt="" class="admin-user__avatar"/>
             <span th:text="${session.user != null ? session.user.fullName : 'Admin'}">Admin</span>
         </div>
     </div>
-
     <div class="admin-content">
         <div class="table-card">
             <div class="table-card__header">
-                <input type="text" id="searchInput" placeholder="Tìm kiếm user..." class="search-input"/>
+                <input type="text" id="searchInput" placeholder="🔍 Tìm kiếm theo username hoặc email..." class="search-input"/>
                 <select id="roleFilter" class="filter-select">
                     <option value="">Tất cả roles</option>
-                    <option value="USER">USER</option>
-                    <option value="ADMIN">ADMIN</option>
+                    <option value="USER">👤 USER</option>
+                    <option value="ADMIN">👑 ADMIN</option>
                 </select>
+                <select id="statusFilter" class="filter-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="active">✅ Active</option>
+                    <option value="inactive">🚫 Inactive</option>
+                </select>
+                <span class="user-count" id="userCount">Đang tải...</span>
             </div>
-
             <div class="table-responsive">
                 <table class="admin-table">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Avatar</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Họ Tên</th>
-                        <th>Role</th>
-                        <th>Trạng Thái</th>
-                        <th>Hành Động</th>
-                    </tr>
-                    </thead>
-                    <tbody id="usersTable">
-                    <tr>
-                        <td colspan="8" class="text-center">Đang tải...</td>
-                    </tr>
-                    </tbody>
+                    <thead><tr><th>User</th><th>Email</th><th>Họ Tên</th><th>Role</th><th>Trạng Thái</th><th>Đăng Nhập</th><th>Hành Động</th></tr></thead>
+                    <tbody id="usersTable"><tr><td colspan="7" class="text-center">Đang tải...</td></tr></tbody>
                 </table>
             </div>
+            <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </main>
-
-<script th:src="@{/assets/js/admin-utils.js}"></script>
 <script>
-    // CSRF token - with fallback
-    const csrfMeta = document.querySelector('meta[name="_csrf"]');
-    const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
-    const csrfToken = csrfMeta ? csrfMeta.content : '';
-    const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN';
-
-    let currentPage = 0;
-    let currentRole = '';
-    let searchQuery = '';
-    let searchTimeout;
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content || '';
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
+    const currentUserId = parseInt(document.querySelector('meta[name="_current_user_id"]')?.content) || null;
+    let currentPage = 0, totalPages = 0, currentRole = '', currentStatus = '', searchQuery = '', searchTimeout;
+    const pageSize = 10;
 
     document.addEventListener('DOMContentLoaded', function () {
         loadUsers();
-
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                searchQuery = e.target.value;
-                currentPage = 0;
-                loadUsers();
-            }, 300);
-        });
-
-        document.getElementById('roleFilter').addEventListener('change', (e) => {
-            currentRole = e.target.value;
-            currentPage = 0;
-            loadUsers();
-        });
+        document.getElementById('searchInput').addEventListener('input', e => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { searchQuery = e.target.value; currentPage = 0; loadUsers(); }, 300); });
+        document.getElementById('roleFilter').addEventListener('change', e => { currentRole = e.target.value; currentPage = 0; loadUsers(); });
+        document.getElementById('statusFilter').addEventListener('change', e => { currentStatus = e.target.value; currentPage = 0; loadUsers(); });
     });
 
     function loadUsers() {
-        let url = `/api/admin/users?page=${currentPage}&size=20`;
+        let url = `/api/admin/users?page=${currentPage}&size=${pageSize}`;
         if (currentRole) url += `&role=${currentRole}`;
         if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
-
-        fetch(url, {
-            credentials: 'same-origin'
-        })
-            .then(r => {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.json();
-            })
-            .then(data => {
-                const tbody = document.getElementById('usersTable');
-                if (data.content && data.content.length > 0) {
-                    tbody.innerHTML = data.content.map(user => `
-                        <tr>
-                            <td>${user.id}</td>
-                            <td><img src="${user.avatarUrl || '/assets/img/avatar.jpg'}" alt="" class="table-avatar"/></td>
-                            <td><strong>${user.username}</strong></td>
-                            <td>${user.email}</td>
-                            <td>${user.fullName || 'N/A'}</td>
-                            <td><span class="badge badge--${user.role === 'ADMIN' ? 'admin' : 'user'}">${user.role}</span></td>
-                            <td><span class="badge badge--${user.active ? 'delivered' : 'cancelled'}">${user.active ? 'Active' : 'Inactive'}</span></td>
-                            <td class="action-buttons">
-                                <button onclick="viewUser(${user.id})" class="btn btn--small btn--info" title="Xem chi tiết">👁️</button>
-                                <button onclick="changeRole(${user.id}, '${user.role}')" class="btn btn--small btn--warning" title="Đổi role">🔑</button>
-                                <button onclick="toggleStatus(${user.id}, ${user.active}, '${user.username}')" class="btn btn--small ${user.active ? 'btn--danger' : 'btn--success'}" title="${user.active ? 'Khóa' : 'Mở khóa'}">
-                                    ${user.active ? '🔒' : '🔓'}
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có user</td></tr>';
-                }
-            })
-            .catch(e => {
-                console.error('Error:', e);
-                document.getElementById('usersTable').innerHTML = 
-                    '<tr><td colspan="8" class="text-center">Lỗi tải dữ liệu</td></tr>';
-                showError('Lỗi tải dữ liệu');
-            });
+        fetch(url, { credentials: 'same-origin' }).then(r => r.ok ? r.json() : Promise.reject()).then(data => {
+            totalPages = data.totalPages || 1;
+            let users = data.content || [];
+            if (currentStatus === 'active') users = users.filter(u => u.active);
+            else if (currentStatus === 'inactive') users = users.filter(u => !u.active);
+            document.getElementById('userCount').textContent = `📊 ${data.totalElements || 0} users | Trang ${currentPage + 1}/${totalPages}`;
+            const tbody = document.getElementById('usersTable');
+            if (users.length) {
+                tbody.innerHTML = users.map(u => `<tr>
+                    <td><div style="display:flex;align-items:center;gap:14px;">
+                        <img src="${u.avatarUrl || '/assets/img/avatar.jpg'}" class="table-avatar"/>
+                        <div class="user-info"><strong>${u.username}</strong><small>ID: ${u.id}</small></div>
+                    </div></td>
+                    <td>${u.email}</td>
+                    <td>${u.fullName || '<span style="color:#94a3b8;">Chưa cập nhật</span>'}</td>
+                    <td><span class="badge badge--${u.role.toLowerCase()}">${u.role === 'ADMIN' ? '👑 ' : '👤 '}${u.role}</span></td>
+                    <td><span class="badge badge--${u.active ? 'active' : 'inactive'}">${u.active ? '✅ Active' : '🚫 Inactive'}</span></td>
+                    <td><div class="user-info"><strong>${u.loginCount || 0} lần</strong><small>${u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('vi-VN') : 'Chưa đăng nhập'}</small></div></td>
+                    <td><div class="action-buttons">
+                        <button onclick="viewUser(${u.id})" class="btn--icon btn--view" title="Xem chi tiết">👁️</button>
+                        <button onclick="changeRole(${u.id}, '${u.role}')" class="btn--icon btn--role" title="Đổi role">🔑</button>
+                        <button onclick="toggleStatus(${u.id}, ${u.active}, '${u.username}')" class="btn--icon ${u.active ? 'btn--lock' : 'btn--unlock'}" title="${u.active ? 'Khóa' : 'Mở khóa'}" ${u.id === currentUserId ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>${u.active ? '🔒' : '🔓'}</button>
+                    </div></td>
+                </tr>`).join('');
+            } else { tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding:40px;color:#64748b;">Không tìm thấy user nào</td></tr>'; }
+            renderPagination();
+        }).catch(() => { document.getElementById('usersTable').innerHTML = '<tr><td colspan="7" class="text-center" style="padding:40px;color:#ef4444;">❌ Lỗi tải dữ liệu</td></tr>'; });
     }
 
+    function renderPagination() {
+        const pg = document.getElementById('pagination');
+        if (totalPages <= 1) { pg.innerHTML = ''; return; }
+        let html = `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>«</button>`;
+        html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>‹</button>`;
+        const start = Math.max(0, currentPage - 2), end = Math.min(totalPages, start + 5);
+        for (let i = start; i < end; i++) html += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i + 1}</button>`;
+        html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>›</button>`;
+        html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>»</button>`;
+        pg.innerHTML = html;
+    }
+    function goToPage(p) { currentPage = p; loadUsers(); }
+
     function viewUser(id) {
-        fetch(`/api/admin/users/${id}`, {
-            credentials: 'same-origin'
-        })
-            .then(r => r.json())
-            .then(user => {
-                Swal.fire({
-                    title: 'Chi Tiết User',
-                    html: `
-                        <div class="swal-user-detail">
-                            <img src="${user.avatarUrl || '/assets/img/avatar.jpg'}" class="swal-avatar"/>
-                            <div class="swal-info">
-                                <p><strong>ID:</strong> ${user.id}</p>
-                                <p><strong>Username:</strong> ${user.username}</p>
-                                <p><strong>Email:</strong> ${user.email}</p>
-                                <p><strong>Họ tên:</strong> ${user.fullName || 'N/A'}</p>
-                                <p><strong>Điện thoại:</strong> ${user.phone || 'N/A'}</p>
-                                <p><strong>Role:</strong> <span class="badge badge--${user.role === 'ADMIN' ? 'admin' : 'user'}">${user.role}</span></p>
-                                <p><strong>Trạng thái:</strong> <span class="badge badge--${user.active ? 'delivered' : 'cancelled'}">${user.active ? 'Active' : 'Inactive'}</span></p>
-                                <p><strong>Provider:</strong> ${user.provider || 'local'}</p>
-                                <p><strong>Ngày tạo:</strong> ${user.createdAt ? new Date(user.createdAt).toLocaleString('vi-VN') : 'N/A'}</p>
-                                <p><strong>Đăng nhập cuối:</strong> ${user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('vi-VN') : 'Chưa đăng nhập'}</p>
-                                <p><strong>Số lần đăng nhập:</strong> ${user.loginCount || 0}</p>
-                            </div>
-                        </div>
-                    `,
-                    width: 500,
-                    showCloseButton: true,
-                    showConfirmButton: false
-                });
-            })
-            .catch(e => showError('Lỗi tải thông tin'));
+        fetch(`/api/admin/users/${id}`, { credentials: 'same-origin' }).then(r => r.json()).then(u => {
+            Swal.fire({
+                title: '👤 Chi Tiết User',
+                html: `<div class="swal-user-detail">
+                    <img src="${u.avatarUrl || '/assets/img/avatar.jpg'}" class="swal-avatar"/>
+                    <div class="swal-info">
+                        <p><span>ID</span><strong>${u.id}</strong></p>
+                        <p><span>Username</span><strong>${u.username}</strong></p>
+                        <p><span>Email</span><strong>${u.email}</strong></p>
+                        <p><span>Họ tên</span><strong>${u.fullName || 'N/A'}</strong></p>
+                        <p><span>Điện thoại</span><strong>${u.phone || 'N/A'}</strong></p>
+                        <p><span>Role</span><span class="badge badge--${u.role.toLowerCase()}">${u.role}</span></p>
+                        <p><span>Trạng thái</span><span class="badge badge--${u.active ? 'active' : 'inactive'}">${u.active ? 'Active' : 'Inactive'}</span></p>
+                        <p><span>Provider</span><strong>${u.provider || 'local'}</strong></p>
+                        <p><span>Ngày tạo</span><strong>${u.createdAt ? new Date(u.createdAt).toLocaleString('vi-VN') : 'N/A'}</strong></p>
+                        <p><span>Đăng nhập cuối</span><strong>${u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString('vi-VN') : 'Chưa'}</strong></p>
+                        <p><span>Số lần đăng nhập</span><strong>${u.loginCount || 0}</strong></p>
+                    </div>
+                </div>`, width: 480, showCloseButton: true, showConfirmButton: false
+            });
+        }).catch(() => Swal.fire('Lỗi', 'Không thể tải thông tin user', 'error'));
     }
 
     function changeRole(id, currentRole) {
         Swal.fire({
-            title: 'Thay Đổi Role',
+            title: '🔑 Thay Đổi Role',
             input: 'select',
-            inputOptions: {
-                'USER': 'USER',
-                'ADMIN': 'ADMIN'
-            },
+            inputOptions: { 'USER': '👤 USER', 'ADMIN': '👑 ADMIN' },
             inputValue: currentRole,
             showCancelButton: true,
-            confirmButtonColor: '#667eea',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Cập nhật',
-            cancelButtonText: 'Hủy',
-            inputValidator: (value) => {
-                if (!value) return 'Vui lòng chọn role!';
-            }
-        }).then((result) => {
+            confirmButtonColor: '#06b6d4',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '✓ Cập nhật',
+            cancelButtonText: 'Hủy'
+        }).then(result => {
             if (result.isConfirmed) {
-                fetch(`/api/admin/users/${id}/role?role=${result.value}`, { 
-                    method: 'PUT',
-                    credentials: 'same-origin'
-                })
-                    .then(r => r.json())
-                    .then(data => {
-                        showSuccess(data.message);
-                        loadUsers();
-                    })
-                    .catch(e => showError('Có lỗi xảy ra'));
+                fetch(`/api/admin/users/${id}/role?role=${result.value}`, { method: 'PUT', credentials: 'same-origin' })
+                    .then(r => r.json()).then(data => { Swal.fire('Thành công!', data.message, 'success'); loadUsers(); })
+                    .catch(() => Swal.fire('Lỗi', 'Có lỗi xảy ra', 'error'));
             }
         });
     }
 
-    function toggleStatus(id, currentStatus, username) {
-        const action = currentStatus ? 'khóa' : 'mở khóa';
-        const icon = currentStatus ? '🔒' : '🔓';
-        
+    function toggleStatus(id, active, username) {
+        if (id === currentUserId) {
+            Swal.fire('Không thể thực hiện', 'Bạn không thể khóa chính mình!', 'warning');
+            return;
+        }
         Swal.fire({
-            title: `${icon} ${currentStatus ? 'Khóa' : 'Mở khóa'} user?`,
-            html: `Bạn có chắc muốn <strong>${action}</strong> user <strong>${username}</strong>?`,
+            title: active ? '🔒 Khóa user?' : '🔓 Mở khóa user?',
+            html: `Bạn có chắc muốn <strong>${active ? 'khóa' : 'mở khóa'}</strong> user <strong>${username}</strong>?`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: currentStatus ? '#dc3545' : '#28a745',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: `${icon} ${currentStatus ? 'Khóa' : 'Mở khóa'}`,
+            confirmButtonColor: active ? '#ef4444' : '#10b981',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: active ? '🔒 Khóa' : '🔓 Mở khóa',
             cancelButtonText: 'Hủy'
-        }).then((result) => {
+        }).then(result => {
             if (result.isConfirmed) {
-                fetch(`/api/admin/users/${id}/toggle-status`, { 
-                    method: 'PUT',
-                    credentials: 'same-origin'
-                })
-                    .then(r => r.json())
-                    .then(data => {
-                        showSuccess(data.message);
-                        loadUsers();
-                    })
-                    .catch(e => showError('Có lỗi xảy ra'));
+                fetch(`/api/admin/users/${id}/toggle-status`, { method: 'PUT', credentials: 'same-origin' })
+                    .then(r => r.json()).then(data => { Swal.fire('Thành công!', data.message, 'success'); loadUsers(); })
+                    .catch(() => Swal.fire('Lỗi', 'Có lỗi xảy ra', 'error'));
             }
         });
     }
 </script>
-
-<style>
-    .table-card__header {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-    .search-input, .filter-select {
-        padding: 12px 16px;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        font-size: 14px;
-        background: #fff;
-        transition: all 0.3s ease;
-    }
-    .search-input:focus, .filter-select:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    .search-input { flex: 1; }
-    .filter-select { 
-        min-width: 160px;
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 12px center;
-        padding-right: 36px;
-    }
-    
-    .table-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #f0f0f0;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 6px;
-    }
-    
-    .btn--info { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); }
-    .btn--warning { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #333; }
-    .btn--success { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); }
-    .btn--danger { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); }
-    
-    .badge--admin { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
-    .badge--user { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #fff; }
-    
-    /* SweetAlert custom styles */
-    .swal2-popup {
-        border-radius: 20px !important;
-        padding: 24px !important;
-    }
-    .swal2-title {
-        font-size: 22px !important;
-        font-weight: 600 !important;
-    }
-    .swal2-input, .swal2-select {
-        border-radius: 12px !important;
-        border: 2px solid #e0e0e0 !important;
-        padding: 12px 16px !important;
-        font-size: 15px !important;
-        transition: all 0.3s ease !important;
-    }
-    .swal2-input:focus, .swal2-select:focus {
-        border-color: #667eea !important;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
-    }
-    .swal2-confirm {
-        border-radius: 10px !important;
-        padding: 12px 28px !important;
-        font-weight: 500 !important;
-    }
-    .swal2-cancel {
-        border-radius: 10px !important;
-        padding: 12px 28px !important;
-        font-weight: 500 !important;
-    }
-    
-    .swal-user-detail {
-        text-align: left;
-        padding: 10px 0;
-    }
-    .swal-avatar {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        object-fit: cover;
-        display: block;
-        margin: 0 auto 20px;
-        border: 4px solid #f0f0f0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .swal-info {
-        background: #f8f9fa;
-        border-radius: 12px;
-        padding: 16px;
-    }
-    .swal-info p {
-        margin: 10px 0;
-        font-size: 14px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 4px 0;
-        border-bottom: 1px solid #eee;
-    }
-    .swal-info p:last-child {
-        border-bottom: none;
-    }
-    .swal-info .badge {
-        padding: 5px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 500;
-    }
-    .swal-info .badge--admin { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
-    .swal-info .badge--user { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #fff; }
-    .swal-info .badge--delivered { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); color: #fff; }
-    .swal-info .badge--cancelled { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: #fff; }
-</style>
-
 </body>
 </html>

@@ -12,6 +12,7 @@ import poly.edu.java5_asm.module.payment.dto.response.MomoResponse;
 import poly.edu.java5_asm.module.order.entity.Order;
 import poly.edu.java5_asm.module.order.repository.OrderRepository;
 import poly.edu.java5_asm.module.payment.service.MomoService;
+import poly.edu.java5_asm.module.email.service.EmailService;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -35,6 +36,7 @@ public class MomoServiceImpl implements MomoService {
 
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper;
+    private final EmailService emailService;
 
     @Value("${momo.partner.code:DEMO}")
     private String partnerCode;
@@ -215,6 +217,14 @@ public class MomoServiceImpl implements MomoService {
             orderRepository.save(order);
             log.info("Thanh toán Momo thành công cho đơn hàng: {}", orderNumber);
 
+            // Gửi email thông báo thanh toán thành công
+            try {
+                emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
+                log.info("Đã gửi email thông báo thanh toán Momo thành công cho đơn hàng: {}", orderNumber);
+            } catch (Exception e) {
+                log.error("Lỗi gửi email thông báo thanh toán Momo cho đơn hàng {}: {}", orderNumber, e.getMessage());
+            }
+
             return MomoResponse.builder()
                     .success(true)
                     .message("Thanh toán thành công")
@@ -233,6 +243,14 @@ public class MomoServiceImpl implements MomoService {
             orderRepository.save(order);
 
             log.warn("Thanh toán Momo thất bại cho đơn hàng: {}, mã lỗi: {}", orderNumber, resultCode);
+
+            // Gửi email thông báo thanh toán thất bại
+            try {
+                emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
+                log.info("Đã gửi email thông báo thanh toán Momo thất bại cho đơn hàng: {}", orderNumber);
+            } catch (Exception e) {
+                log.error("Lỗi gửi email thông báo thanh toán Momo cho đơn hàng {}: {}", orderNumber, e.getMessage());
+            }
 
             return MomoResponse.builder()
                     .success(false)

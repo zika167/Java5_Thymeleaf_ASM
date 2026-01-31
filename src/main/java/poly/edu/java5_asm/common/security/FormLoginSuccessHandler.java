@@ -40,6 +40,12 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
 
         log.info("Form login success for user: {}", authentication.getName());
 
+        // Check if "remember-me" checkbox was checked
+        String rememberMe = request.getParameter("remember-me");
+        boolean isRememberMe = "on".equals(rememberMe) || "true".equals(rememberMe);
+        
+        log.info("Remember me: {}", isRememberMe);
+
         // Clear any existing JWT cookie first to prevent duplicates
         clearExistingJwtCookie(response);
 
@@ -47,10 +53,13 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
         String jwt = jwtUtils.generateToken(authentication);
 
         // Create new HTTP-Only Cookie with JWT
-        Cookie jwtCookie = createJwtCookie(jwt);
+        // If remember-me is checked, cookie lasts for JWT expiration time
+        // If not checked, cookie is session-only (deleted when browser closes)
+        Cookie jwtCookie = createJwtCookie(jwt, isRememberMe);
         response.addCookie(jwtCookie);
 
-        log.info("JWT token created and stored in cookie for user: {}", authentication.getName());
+        log.info("JWT token created and stored in cookie for user: {} (remember-me: {})", 
+                authentication.getName(), isRememberMe);
 
         // Redirect to home page
         getRedirectStrategy().sendRedirect(request, response, "/");
@@ -69,13 +78,24 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
 
     /**
      * Create JWT cookie with proper security settings
+     * @param jwt JWT token
+     * @param rememberMe if true, cookie persists; if false, session-only cookie
      */
-    private Cookie createJwtCookie(String jwt) {
+    private Cookie createJwtCookie(String jwt, boolean rememberMe) {
         Cookie jwtCookie = new Cookie(jwtCookieName, jwt);
         jwtCookie.setHttpOnly(true); // Prevent XSS attacks
         jwtCookie.setSecure(false); // Set true for HTTPS in production
         jwtCookie.setPath("/");
-        jwtCookie.setMaxAge((int) (jwtExpiration / 1000));
+        
+        if (rememberMe) {
+            // Persistent cookie - lasts for JWT expiration time (e.g., 7 days)
+            jwtCookie.setMaxAge((int) (jwtExpiration / 1000));
+        } else {
+            // Session cookie - deleted when browser closes
+            // MaxAge = -1 means session cookie
+            jwtCookie.setMaxAge(-1);
+        }
+        
         jwtCookie.setAttribute("SameSite", "Lax"); // CSRF protection
         return jwtCookie;
     }

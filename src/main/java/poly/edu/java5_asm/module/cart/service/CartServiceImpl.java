@@ -265,9 +265,8 @@ public class CartServiceImpl implements CartService {
     public Integer getCartItemCount(User user) {
         Cart cart = getOrCreateCart(user);
         List<CartItem> items = cartItemRepository.findByCart(cart);
-        return items.stream()
-                .mapToInt(CartItem::getQuantity)
-                .sum();
+        // Trả về số sản phẩm riêng biệt (unique items) để đồng bộ với dropdown
+        return items.size();
     }
 
     @Override
@@ -275,8 +274,7 @@ public class CartServiceImpl implements CartService {
     public Integer getCartItemCountByIdentifier(String identifier) {
         Cart cart = getOrCreateCartByIdentifier(identifier);
         List<CartItem> items = cartItemRepository.findByCart(cart);
-        return items.stream()
-                .mapToInt(CartItem::getQuantity)
-                .sum();
+        // Trả về số sản phẩm riêng biệt (unique items) để đồng bộ với dropdown
+        return items.size();
     }
 }
