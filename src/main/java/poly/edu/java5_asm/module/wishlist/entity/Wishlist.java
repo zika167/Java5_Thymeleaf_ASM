@@ -12,7 +12,11 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "wishlists",
-        uniqueConstraints = @UniqueConstraint(name = "unique_user_product", columnNames = {"user_id", "product_id"}))
+        uniqueConstraints = @UniqueConstraint(name = "unique_user_product", columnNames = {"user_id", "product_id"}),
+        indexes = {
+            @Index(name = "idx_wishlist_user_id", columnList = "user_id"),
+            @Index(name = "idx_wishlist_product_id", columnList = "product_id")
+        })
 @Getter
 @Setter
 @NoArgsConstructor

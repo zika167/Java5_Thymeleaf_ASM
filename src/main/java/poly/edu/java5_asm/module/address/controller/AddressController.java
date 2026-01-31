@@ -11,7 +11,7 @@ import poly.edu.java5_asm.module.address.dto.request.CreateAddressRequest;
 import poly.edu.java5_asm.module.address.dto.response.AddressResponse;
 import poly.edu.java5_asm.module.user.entity.User;
 import poly.edu.java5_asm.module.user.repository.UserRepository;
-import poly.edu.java5_asm.module.address.service.AddressServiceImpl;
+import poly.edu.java5_asm.module.address.service.AddressService;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import java.util.List;
 @Slf4j
 public class AddressController {
 
-    private final AddressServiceImpl addressService;
+    private final AddressService addressService;
     private final UserRepository userRepository;
 
     /**

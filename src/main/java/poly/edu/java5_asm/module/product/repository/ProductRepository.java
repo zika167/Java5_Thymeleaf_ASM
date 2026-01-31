@@ -10,6 +10,7 @@ import poly.edu.java5_asm.module.product.entity.Product;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Repository cho Product - Xử lý truy vấn database
@@ -72,4 +73,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // Đếm số sản phẩm theo brand
     long countByBrandId(Long brandId);
+
+    // Batch count products by all categories (fix N+1)
+    @Query("SELECT p.category.id as categoryId, COUNT(p) as productCount " +
+           "FROM Product p WHERE p.isActive = true GROUP BY p.category.id")
+    List<Object[]> countProductsByAllCategories();
+
+    // Batch count products by all brands (fix N+1)
+    @Query("SELECT p.brand.id as brandId, COUNT(p) as productCount " +
+           "FROM Product p WHERE p.isActive = true GROUP BY p.brand.id")
+    List<Object[]> countProductsByAllBrands();
 }

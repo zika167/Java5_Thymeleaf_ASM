@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import poly.edu.java5_asm.common.exception.AddressException;
+import poly.edu.java5_asm.common.exception.AddressNotFoundException;
 import poly.edu.java5_asm.module.address.dto.request.CreateAddressRequest;
 import poly.edu.java5_asm.module.address.dto.response.AddressResponse;
 import poly.edu.java5_asm.module.address.entity.Address;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AddressServiceImpl {
+public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
 
@@ -34,7 +36,7 @@ public class AddressServiceImpl {
         // Kiểm tra số lượng địa chỉ
         Long addressCount = addressRepository.countByUser(user);
         if (addressCount >= 5) {
-            throw new RuntimeException("Bạn đã đạt giới hạn 5 địa chỉ. Vui lòng xóa một địa chỉ trước khi thêm mới");
+            throw AddressException.limitReached();
         }
 
         // Nếu đây là địa chỉ đầu tiên, tự động set làm mặc định
@@ -78,7 +80,7 @@ public class AddressServiceImpl {
     @Transactional
     public AddressResponse updateAddress(User user, Long addressId, CreateAddressRequest request) {
         Address address = addressRepository.findByIdAndUser(addressId, user)
-                .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại hoặc bạn không có quyền cập nhật"));
+                .orElseThrow(() -> new AddressNotFoundException(addressId));
 
         // Nếu set isDefault=true, unset các địa chỉ khác
         if (request.getIsDefault() != null && request.getIsDefault()) {
@@ -117,7 +119,7 @@ public class AddressServiceImpl {
     @Transactional
     public void deleteAddress(User user, Long addressId) {
         Address address = addressRepository.findByIdAndUser(addressId, user)
-                .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại hoặc bạn không có quyền xóa"));
+                .orElseThrow(() -> new AddressNotFoundException(addressId));
 
         boolean wasDefault = address.getIsDefault() != null && address.getIsDefault();
         addressRepository.delete(address);
@@ -142,7 +144,7 @@ public class AddressServiceImpl {
     @Transactional
     public AddressResponse setDefaultAddress(User user, Long addressId) {
         Address address = addressRepository.findByIdAndUser(addressId, user)
-                .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại hoặc bạn không có quyền cập nhật"));
+                .orElseThrow(() -> new AddressNotFoundException(addressId));
 
         // Unset các địa chỉ khác
         addressRepository.findByUserAndIsDefaultTrue(user)
@@ -178,7 +180,7 @@ public class AddressServiceImpl {
     @Transactional(readOnly = true)
     public AddressResponse getDefaultAddress(User user) {
         Address address = addressRepository.findByUserAndIsDefaultTrue(user)
-                .orElseThrow(() -> new RuntimeException("Bạn chưa có địa chỉ mặc định"));
+                .orElseThrow(() -> new AddressNotFoundException("Bạn chưa có địa chỉ mặc định"));
         return convertToResponse(address);
     }
 
@@ -188,7 +190,7 @@ public class AddressServiceImpl {
     @Transactional(readOnly = true)
     public AddressResponse getAddress(User user, Long addressId) {
         Address address = addressRepository.findByIdAndUser(addressId, user)
-                .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại hoặc bạn không có quyền xem"));
+                .orElseThrow(() -> new AddressNotFoundException(addressId));
         return convertToResponse(address);
     }
 

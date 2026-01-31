@@ -1,0 +1,95 @@
+# ============================================
+# PRODUCTION PROFILE CONFIGURATION
+# ============================================
+# Activate with: SPRING_PROFILES_ACTIVE=prod
+
+spring:
+  # ===== DATASOURCE =====
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+
+  # ===== JPA/HIBERNATE =====
+  jpa:
+    hibernate:
+      ddl-auto: validate  # KHÔNG tự động thay đổi schema trong production
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+
+  # ===== THYMELEAF =====
+  thymeleaf:
+    cache: true  # Enable cache trong production
+
+  # ===== MAIL =====
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # ===== SECURITY =====
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+
+# ===== SERVER =====
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-exception: false
+
+# ===== LOGGING =====
+logging:
+  level:
+    root: WARN
+    poly.edu.java5_asm: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# ===== JWT =====
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+  cookie-name: JWT_TOKEN
+
+# ===== APPLICATION =====
+app:
+  base-url: ${APP_BASE_URL}
+
+# ===== ACTUATOR =====
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: never
+  info:
+    env:
+      enabled: false

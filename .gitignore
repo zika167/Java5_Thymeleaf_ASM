@@ -153,6 +153,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+compile_log.txt
+startup_log.txt
 
 # Temporary files
 *.tmp

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import poly.edu.java5_asm.common.exception.PaymentException;
 import poly.edu.java5_asm.module.payment.dto.response.VNPayResponse;
 import poly.edu.java5_asm.module.order.entity.Order;
 import poly.edu.java5_asm.module.order.repository.OrderRepository;
@@ -264,7 +265,7 @@ public class VNPayServiceImpl implements VNPayService {
             return hexString.toString();
         } catch (Exception e) {
             log.error("Lỗi tạo HMAC SHA512: {}", e.getMessage());
-            throw new RuntimeException("Lỗi tạo chữ ký", e);
+            throw PaymentException.signatureError();
         }
     }
 

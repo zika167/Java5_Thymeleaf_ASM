@@ -1,5 +1,6 @@
 package poly.edu.java5_asm.module.cart.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import poly.edu.java5_asm.module.cart.entity.Cart;
@@ -12,12 +13,20 @@ import java.util.Optional;
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    // Tìm tất cả items trong giỏ hàng
+    /**
+     * Tìm tất cả items trong giỏ hàng với Product được fetch eager
+     * Sử dụng EntityGraph để tránh N+1 query khi load product info
+     */
+    @EntityGraph(attributePaths = {"product"})
     List<CartItem> findByCart(Cart cart);
 
-    // Tìm item theo giỏ hàng và sản phẩm
+    /**
+     * Tìm item theo giỏ hàng và sản phẩm
+     */
     Optional<CartItem> findByCartAndProduct(Cart cart, Product product);
 
-    // Xóa tất cả items của giỏ hàng
+    /**
+     * Xóa tất cả items của giỏ hàng
+     */
     void deleteByCart(Cart cart);
 }

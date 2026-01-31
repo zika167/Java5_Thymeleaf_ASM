@@ -14,7 +14,13 @@ import java.util.List;
  * Entity Đơn hàng
  */
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+    @Index(name = "idx_order_user", columnList = "user_id"),
+    @Index(name = "idx_order_number", columnList = "order_number"),
+    @Index(name = "idx_order_status", columnList = "status"),
+    @Index(name = "idx_order_payment_status", columnList = "payment_status"),
+    @Index(name = "idx_order_ordered_at", columnList = "ordered_at")
+})
 @Getter
 @Setter
 @NoArgsConstructor

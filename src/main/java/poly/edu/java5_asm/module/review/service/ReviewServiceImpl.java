@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import poly.edu.java5_asm.common.exception.ProductNotFoundException;
+import poly.edu.java5_asm.common.exception.ReviewException;
 import poly.edu.java5_asm.module.review.dto.request.CreateReviewRequest;
 import poly.edu.java5_asm.module.review.dto.response.ReviewResponse;
 import poly.edu.java5_asm.module.product.entity.Product;
@@ -32,11 +34,11 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponse createReview(User user, CreateReviewRequest request) {
         // Kiểm tra sản phẩm tồn tại
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ProductNotFoundException(request.getProductId()));
 
         // Kiểm tra user đã đánh giá sản phẩm này chưa
         if (reviewRepository.findByProductAndUser(product, user).isPresent()) {
-            throw new RuntimeException("Bạn đã đánh giá sản phẩm này rồi");
+            throw ReviewException.alreadyReviewed();
         }
 
         // Kiểm tra user đã mua sản phẩm này chưa (verified purchase)
@@ -64,11 +66,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public ReviewResponse updateReview(User user, Long reviewId, CreateReviewRequest request) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("Đánh giá không tồn tại"));
+                .orElseThrow(() -> ReviewException.notFound(reviewId));
 
         // Kiểm tra quyền sở hữu
         if (!review.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Bạn không có quyền cập nhật đánh giá này");
+            throw ReviewException.notOwner();
         }
 
         // Cập nhật thông tin
@@ -86,11 +88,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void deleteReview(User user, Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("Đánh giá không tồn tại"));
+                .orElseThrow(() -> ReviewException.notFound(reviewId));
 
         // Kiểm tra quyền sở hữu
         if (!review.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Bạn không có quyền xóa đánh giá này");
+            throw ReviewException.notOwner();
         }
 
         reviewRepository.delete(review);
@@ -101,7 +103,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public List<ReviewResponse> getProductReviews(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         List<Review> reviews = reviewRepository.findByProductOrderByCreatedAtDesc(product);
         return reviews.stream()
@@ -113,7 +115,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public Page<ReviewResponse> getProductReviewsPaginated(Long productId, Pageable pageable) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         Page<Review> reviews = reviewRepository.findByProductOrderByCreatedAtDesc(product, pageable);
         return reviews.map(this::convertToResponse);
@@ -132,10 +134,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public ReviewResponse getUserProductReview(User user, Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         Review review = reviewRepository.findByProductAndUser(product, user)
-                .orElseThrow(() -> new RuntimeException("Bạn chưa đánh giá sản phẩm này"));
+                .orElseThrow(() -> new ReviewException("Bạn chưa đánh giá sản phẩm này"));
 
         return convertToResponse(review);
     }
@@ -144,7 +146,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public Double getProductAverageRating(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         List<Review> reviews = reviewRepository.findByProductOrderByCreatedAtDesc(product);
         if (reviews.isEmpty()) {
@@ -161,7 +163,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public Long getProductReviewCount(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         return reviewRepository.countByProduct(product);
     }

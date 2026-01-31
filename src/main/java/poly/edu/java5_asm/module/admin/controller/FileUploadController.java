@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -26,6 +27,16 @@ import java.util.UUID;
 public class FileUploadController {
     
     private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
+    
+    // Whitelist các extension được phép upload
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
+            ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"
+    );
+    
+    // Whitelist các MIME types được phép
+    private static final Set<String> ALLOWED_MIME_TYPES = Set.of(
+            "image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"
+    );
 
     @Value("${app.upload.dir:src/main/resources/static/assets/img/product}")
     private String uploadDir;
@@ -43,11 +54,24 @@ public class FileUploadController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        // Validate file type
+        // Validate MIME type
         String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
+        if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType.toLowerCase())) {
             response.put("success", false);
-            response.put("message", "Chỉ chấp nhận file hình ảnh");
+            response.put("message", "Chỉ chấp nhận file hình ảnh (jpg, png, gif, webp, svg)");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // Validate file extension
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+        }
+        
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
+            response.put("success", false);
+            response.put("message", "Extension không được phép. Chỉ chấp nhận: jpg, jpeg, png, gif, webp, svg");
             return ResponseEntity.badRequest().body(response);
         }
 
@@ -59,12 +83,7 @@ public class FileUploadController {
         }
 
         try {
-            // Generate unique filename
-            String originalFilename = file.getOriginalFilename();
-            String extension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
+            // Generate unique filename with validated extension
             String newFilename = "product-" + UUID.randomUUID().toString().substring(0, 8) + extension;
 
             // Create upload directory if not exists
