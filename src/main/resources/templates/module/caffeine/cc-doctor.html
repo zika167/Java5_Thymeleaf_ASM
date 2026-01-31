@@ -286,6 +286,24 @@
         });
         updatePregnantState();
         
+        // Add quantity validation listener
+        const quantityInput = document.getElementById('quantity');
+        quantityInput.addEventListener('change', function() {
+            const value = parseInt(this.value);
+            if (value < 1 || value > 20) {
+                alert('Vui lòng nhập số lượng hợp lệ (1-20)');
+                this.value = '1';
+            }
+        });
+        
+        quantityInput.addEventListener('blur', function() {
+            const value = parseInt(this.value);
+            if (value < 1 || value > 20) {
+                alert('Vui lòng nhập số lượng hợp lệ (1-20)');
+                this.value = '1';
+            }
+        });
+        
         // Calculate function
         function calculateCaffeine() {
             const age = parseInt(document.getElementById('age').value);
@@ -316,8 +334,8 @@
                 alert('Vui lòng chọn loại đồ uống');
                 return;
             }
-            if (!quantity || quantity < 1) {
-                alert('Vui lòng nhập số lượng hợp lệ');
+            if (!quantity || quantity < 1 || quantity > 20) {
+                alert('Vui lòng nhập số lượng hợp lệ (1-20)');
                 return;
             }
             
