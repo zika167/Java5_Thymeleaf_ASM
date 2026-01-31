@@ -7,6 +7,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import poly.edu.java5_asm.common.exception.PaymentException;
 import poly.edu.java5_asm.module.payment.dto.response.MomoResponse;
 import poly.edu.java5_asm.module.order.entity.Order;
 import poly.edu.java5_asm.module.order.repository.OrderRepository;
@@ -108,14 +109,16 @@ public class MomoServiceImpl implements MomoService {
                 } else {
                     String message = jsonResponse.get("message").asText();
                     log.error("Lỗi tạo URL Momo: {} - {}", resultCode, message);
-                    throw new RuntimeException("Lỗi tạo URL thanh toán Momo: " + message);
+                    throw PaymentException.momoError(message);
                 }
             } else {
-                throw new RuntimeException("Lỗi kết nối đến Momo API");
+                throw PaymentException.momoError("Lỗi kết nối đến Momo API");
             }
+        } catch (PaymentException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Lỗi tạo URL thanh toán Momo: {}", e.getMessage());
-            throw new RuntimeException("Lỗi tạo URL thanh toán Momo", e);
+            throw new PaymentException("Lỗi tạo URL thanh toán Momo", e);
         }
     }
 
@@ -266,7 +269,7 @@ public class MomoServiceImpl implements MomoService {
             return hexString.toString();
         } catch (Exception e) {
             log.error("Lỗi tạo HMAC SHA256: {}", e.getMessage());
-            throw new RuntimeException("Lỗi tạo chữ ký", e);
+            throw PaymentException.signatureError();
         }
     }
 

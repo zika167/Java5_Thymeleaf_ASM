@@ -1,79 +1,18 @@
 package poly.edu.java5_asm.module.user.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import poly.edu.java5_asm.module.user.dto.request.ProfileUpdateRequest;
 import poly.edu.java5_asm.module.user.entity.User;
-import poly.edu.java5_asm.module.user.repository.UserRepository;
 
 /**
- * Service xử lý các nghiệp vụ liên quan đến User.
+ * Interface cho User Service
  */
-@Service
-@RequiredArgsConstructor
-public class UserService {
+public interface UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    User findByUsername(String username);
 
-    /**
-     * Lấy thông tin user theo username.
-     */
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
-    }
+    User findById(Long id);
 
-    /**
-     * Lấy thông tin user theo ID.
-     */
-    public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
-    }
+    User updateProfile(Long userId, ProfileUpdateRequest request);
 
-    /**
-     * Cập nhật thông tin cá nhân của user.
-     */
-    @Transactional
-    public User updateProfile(Long userId, ProfileUpdateRequest request) {
-        User user = findById(userId);
-
-        // Kiểm tra email đã được sử dụng bởi user khác chưa
-        if (!user.getEmail().equals(request.getEmail())
-                && userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email đã được sử dụng bởi tài khoản khác");
-        }
-
-        // Cập nhật thông tin cơ bản
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
-
-        // Cập nhật password nếu có nhập mới
-        if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
-            // Validate password length
-            if (request.getNewPassword().length() < 6 || request.getNewPassword().length() > 100) {
-                throw new RuntimeException("Mật khẩu phải từ 6-100 ký tự");
-            }
-            if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-                throw new RuntimeException("Mật khẩu xác nhận không khớp");
-            }
-            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        }
-
-        return userRepository.saveAndFlush(user);
-    }
-
-    /**
-     * Cập nhật avatar của user.
-     */
-    @Transactional
-    public User updateAvatar(Long userId, String avatarUrl) {
-        User user = findById(userId);
-        user.setAvatarUrl(avatarUrl);
-        return userRepository.saveAndFlush(user);
-    }
+    User updateAvatar(Long userId, String avatarUrl);
 }

@@ -60,8 +60,11 @@ public class SecurityConfig {
                                                 .requestMatchers("/", "/index", "/products/**", "/product/**", "/category/**")
                                                 .permitAll()
                                                 .requestMatchers("/auth/**", "/sign-in", "/sign-up").permitAll()
-                                                .requestMatchers("/actuator/health").permitAll() // Health check cho
-                                                                                                 // Docker
+                                                .requestMatchers("/actuator/health").permitAll() // Health check cho Docker
+                                                
+                                                // Swagger UI endpoints
+                                                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**")
+                                                .permitAll()
 
                                                 // API endpoints - Review APIs are public for GET, require auth for
                                                 // POST/DELETE

@@ -14,7 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "addresses")
+@Table(name = "addresses",
+        indexes = {
+            @Index(name = "idx_address_user_id", columnList = "user_id")
+        })
 public class Address {
 
     @Id

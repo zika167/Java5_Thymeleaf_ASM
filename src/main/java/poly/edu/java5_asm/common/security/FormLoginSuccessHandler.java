@@ -76,6 +76,7 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
         jwtCookie.setSecure(false); // Set true for HTTPS in production
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge((int) (jwtExpiration / 1000));
+        jwtCookie.setAttribute("SameSite", "Lax"); // CSRF protection
         return jwtCookie;
     }
 }

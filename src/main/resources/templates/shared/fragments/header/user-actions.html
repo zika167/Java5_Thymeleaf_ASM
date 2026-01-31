@@ -5,8 +5,7 @@
 <div th:fragment="userActions" class="top-act">
     <!-- User NOT logged in -->
     <div th:if="${session.user == null}">
-        <a th:href="@{/sign-in}" class="btn btn--text d-md-none">Sign in</a>
-        <a th:href="@{/sign-up}" class="top-act__sign-up btn btn--primary btn--no-margin">Sign up</a>
+        <a th:href="@{/sign-in}" class="top-act__sign-up btn btn--primary btn--no-margin">Sign in</a>
     </div>
 
     <!-- User logged in -->
@@ -48,13 +47,7 @@
                             <a th:href="@{/favourite}" class="user-menu__link">Favourite list</a>
                         </li>
                         <li class="user-menu__separate">
-                            <a href="#!" class="user-menu__link" id="switch-theme-btn">
-                                <span>Dark mode</span>
-                                <img th:src="@{/assets/icon/theme.svg}" alt="" class="icon user-menu__icon" />
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#!" class="user-menu__link">Settings</a>
+                            <a th:href="@{/edit-personal-info}" class="user-menu__link">Settings</a>
                         </li>
                         <li class="user-menu__separate">
                             <form th:action="@{/auth/logout}" method="post" style="margin: 0;">

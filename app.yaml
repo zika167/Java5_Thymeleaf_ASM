@@ -1,0 +1,45 @@
+# ============================================
+# GOOGLE CLOUD APP ENGINE CONFIGURATION
+# ============================================
+# File này định nghĩa cách Google Cloud App Engine deploy ứng dụng
+# Docs: https://cloud.google.com/appengine/docs/standard/java-gen2/config/appref
+
+runtime: java21
+instance_class: F2  # F1 (free tier), F2, F4, F4_1G
+
+# Automatic scaling configuration
+automatic_scaling:
+  min_instances: 0
+  max_instances: 2
+  target_cpu_utilization: 0.65
+  target_throughput_utilization: 0.65
+
+# Environment variables
+env_variables:
+  SPRING_PROFILES_ACTIVE: "prod"
+  # Các biến khác set qua Google Cloud Console hoặc gcloud command
+
+# Health check
+liveness_check:
+  path: "/actuator/health"
+  check_interval_sec: 30
+  timeout_sec: 4
+  failure_threshold: 4
+  success_threshold: 2
+
+readiness_check:
+  path: "/actuator/health"
+  check_interval_sec: 5
+  timeout_sec: 4
+  failure_threshold: 2
+  success_threshold: 2
+
+# Handlers (optional - for static files)
+handlers:
+  - url: /assets/.*
+    static_dir: src/main/resources/static/assets
+    expiration: "1d"
+  
+  - url: /.*
+    script: auto
+    secure: always

@@ -1,0 +1,65 @@
+# ============================================
+# RENDER DEPLOYMENT CONFIGURATION
+# ============================================
+# File này định nghĩa cách Render deploy ứng dụng
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # ============================================
+  # WEB SERVICE (Spring Boot Application)
+  # ============================================
+  - type: web
+    name: fat-c-grocery-store
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free  # Hoặc starter, standard tùy nhu cầu
+    healthCheckPath: /actuator/health
+    envVars:
+      # Database (sử dụng Render PostgreSQL hoặc external MariaDB)
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      
+      # Google OAuth2
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      
+      # JWT Configuration
+      - key: JWT_SECRET
+        generateValue: true  # Render tự generate random value
+      - key: JWT_EXPIRATION
+        value: "86400000"
+      
+      # Application
+      - key: APP_BASE_URL
+        fromService:
+          type: web
+          name: fat-c-grocery-store
+          property: host
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      
+      # Email (optional)
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+
+  # ============================================
+  # DATABASE SERVICE (PostgreSQL - Render native)
+  # ============================================
+  # Lưu ý: Render không hỗ trợ MariaDB native
+  # Có 2 lựa chọn:
+  # 1. Dùng PostgreSQL của Render (cần đổi driver)
+  # 2. Dùng external MariaDB (PlanetScale, Railway, etc.)
+  
+  # - type: pserv
+  #   name: fat-c-grocery-db
+  #   plan: free
+  #   databaseName: java5_asm
+  #   user: java5_user

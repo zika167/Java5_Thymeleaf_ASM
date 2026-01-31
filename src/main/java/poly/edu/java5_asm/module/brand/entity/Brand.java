@@ -12,7 +12,11 @@ import java.util.List;
  * Entity Thương hiệu
  */
 @Entity
-@Table(name = "brands")
+@Table(name = "brands",
+        indexes = {
+            @Index(name = "idx_brand_slug", columnList = "slug"),
+            @Index(name = "idx_brand_is_active", columnList = "is_active")
+        })
 @Getter
 @Setter
 @NoArgsConstructor

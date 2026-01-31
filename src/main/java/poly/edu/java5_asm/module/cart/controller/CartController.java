@@ -1,6 +1,12 @@
 package poly.edu.java5_asm.module.cart.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +24,7 @@ import poly.edu.java5_asm.module.cart.service.CartService;
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Cart", description = "API quản lý giỏ hàng")
 public class CartController {
 
     private final CartService cartService;
@@ -39,6 +46,11 @@ public class CartController {
      * Lấy giỏ hàng hiện tại
      */
     @GetMapping
+    @Operation(summary = "Lấy giỏ hàng", description = "Lấy thông tin giỏ hàng hiện tại của user hoặc guest")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Thành công"),
+            @ApiResponse(responseCode = "500", description = "Lỗi server")
+    })
     public ResponseEntity<CartResponse> getCart(Authentication authentication, HttpSession session) {
         try {
             String cartId = getCartIdentifier(authentication, session);
@@ -54,10 +66,16 @@ public class CartController {
      * Thêm sản phẩm vào giỏ hàng (hỗ trợ cả guest user)
      */
     @PostMapping("/add")
+    @Operation(summary = "Thêm vào giỏ hàng", description = "Thêm sản phẩm vào giỏ hàng")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Thêm thành công"),
+            @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc hết hàng"),
+            @ApiResponse(responseCode = "500", description = "Lỗi server")
+    })
     public ResponseEntity<CartResponse> addToCart(
             Authentication authentication,
             HttpSession session,
-            @RequestBody AddToCartRequest request) {
+            @Valid @RequestBody AddToCartRequest request) {
         try {
             String cartId = getCartIdentifier(authentication, session);
             CartResponse cart = cartService.addToCartByIdentifier(cartId, request);
@@ -78,7 +96,7 @@ public class CartController {
     public ResponseEntity<CartResponse> updateCartItem(
             Authentication authentication,
             HttpSession session,
-            @RequestBody UpdateCartItemRequest request) {
+            @Valid @RequestBody UpdateCartItemRequest request) {
         try {
             String cartId = getCartIdentifier(authentication, session);
             CartResponse cart = cartService.updateCartItemByIdentifier(cartId, request);
@@ -96,10 +114,11 @@ public class CartController {
      * Xóa item khỏi giỏ hàng
      */
     @DeleteMapping("/remove/{cartItemId}")
+    @Operation(summary = "Xóa item khỏi giỏ", description = "Xóa một sản phẩm khỏi giỏ hàng")
     public ResponseEntity<CartResponse> removeFromCart(
             Authentication authentication,
             HttpSession session,
-            @PathVariable Long cartItemId) {
+            @Parameter(description = "ID của cart item") @PathVariable Long cartItemId) {
         try {
             String cartId = getCartIdentifier(authentication, session);
             CartResponse cart = cartService.removeFromCartByIdentifier(cartId, cartItemId);

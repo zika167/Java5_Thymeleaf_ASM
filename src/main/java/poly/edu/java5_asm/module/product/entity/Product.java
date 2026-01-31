@@ -18,7 +18,13 @@ import java.util.List;
  * Entity Sản phẩm
  */
 @Entity
-@Table(name = "products")
+@Table(name = "products", indexes = {
+    @Index(name = "idx_product_category", columnList = "category_id"),
+    @Index(name = "idx_product_brand", columnList = "brand_id"),
+    @Index(name = "idx_product_slug", columnList = "slug"),
+    @Index(name = "idx_product_is_active", columnList = "is_active"),
+    @Index(name = "idx_product_is_featured", columnList = "is_featured")
+})
 @Getter
 @Setter
 @NoArgsConstructor

@@ -1,5 +1,6 @@
 package poly.edu.java5_asm.module.admin.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class AdminProductController {
      */
     @PostMapping
     @Transactional
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody AdminProductRequest request) {
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody AdminProductRequest request) {
         Category category = null;
         if (request.getCategoryId() != null) {
             category = categoryRepository.findById(request.getCategoryId()).orElse(null);
@@ -77,7 +78,7 @@ public class AdminProductController {
     @Transactional
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Long id,
-            @RequestBody AdminProductRequest request
+            @Valid @RequestBody AdminProductRequest request
     ) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));

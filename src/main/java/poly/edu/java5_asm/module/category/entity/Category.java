@@ -13,7 +13,12 @@ import java.util.List;
  * Hỗ trợ cấu trúc cây (parent-child)
  */
 @Entity
-@Table(name = "categories")
+@Table(name = "categories",
+        indexes = {
+            @Index(name = "idx_category_slug", columnList = "slug"),
+            @Index(name = "idx_category_parent_id", columnList = "parent_id"),
+            @Index(name = "idx_category_is_active", columnList = "is_active")
+        })
 @Getter
 @Setter
 @NoArgsConstructor

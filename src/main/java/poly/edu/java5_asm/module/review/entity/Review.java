@@ -12,7 +12,12 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "reviews",
-        uniqueConstraints = @UniqueConstraint(name = "unique_user_product", columnNames = {"user_id", "product_id"}))
+        uniqueConstraints = @UniqueConstraint(name = "unique_user_product", columnNames = {"user_id", "product_id"}),
+        indexes = {
+            @Index(name = "idx_review_product_id", columnList = "product_id"),
+            @Index(name = "idx_review_user_id", columnList = "user_id"),
+            @Index(name = "idx_review_created_at", columnList = "created_at")
+        })
 @Getter
 @Setter
 @NoArgsConstructor

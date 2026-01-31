@@ -14,7 +14,7 @@ import poly.edu.java5_asm.module.user.dto.request.ProfileUpdateRequest;
 import poly.edu.java5_asm.module.user.entity.User;
 import poly.edu.java5_asm.common.security.CustomUserDetails;
 import poly.edu.java5_asm.module.user.service.UserService;
-import poly.edu.java5_asm.module.address.service.AddressServiceImpl;
+import poly.edu.java5_asm.module.address.service.AddressService;
 import poly.edu.java5_asm.module.address.dto.response.AddressResponse;
 import poly.edu.java5_asm.module.order.service.OrderService;
 import poly.edu.java5_asm.module.order.dto.response.OrderResponse;
@@ -31,7 +31,7 @@ import java.util.List;
 public class ProfileController {
 
     private final UserService userService;
-    private final AddressServiceImpl addressService;
+    private final AddressService addressService;
     private final OrderService orderService;
     private final WishlistService wishlistService;
 

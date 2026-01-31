@@ -11,7 +11,10 @@ import java.time.LocalDateTime;
  * Entity Chi tiết đơn hàng
  */
 @Entity
-@Table(name = "order_items")
+@Table(name = "order_items", indexes = {
+    @Index(name = "idx_order_item_order", columnList = "order_id"),
+    @Index(name = "idx_order_item_product", columnList = "product_id")
+})
 @Getter
 @Setter
 @NoArgsConstructor
