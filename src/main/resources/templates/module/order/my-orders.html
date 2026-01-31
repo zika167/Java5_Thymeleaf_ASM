@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{shared/fragments/head :: head('Đơn Hàng Của Tôi | grocerystore')}">
 </head>
 <body>
@@ -8,7 +8,6 @@
 
 <main class="profile">
     <div class="container">
-        <!-- Breadcrumbs -->
         <div class="profile-container">
             <div class="row gy-md-3">
                 <!-- Sidebar -->
@@ -16,12 +15,12 @@
                     <aside class="profile__sidebar">
                         <div class="profile-user">
                             <img
-                                    th:src="@{/assets/img/avatar.jpg}"
+                                    th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar.jpg'}"
                                     alt=""
                                     class="profile-user__avatar"
                             />
-                            <h1 class="profile-user__name" th:text="${session.user != null ? session.user.fullName : 'Guest'}">John Smith</h1>
-                            <p class="profile-user__desc" th:text="${session.user != null ? '@' + session.user.username : ''}">@johnsmith</p>
+                            <h1 class="profile-user__name" th:text="${user.fullName != null ? user.fullName : user.username}">Tên người dùng</h1>
+                            <p class="profile-user__desc" th:text="'@' + ${user.username}">@username</p>
                         </div>
 
                         <div class="profile-menu">
@@ -29,49 +28,33 @@
                             <ul class="profile-menu__list">
                                 <li>
                                     <a th:href="@{/profile}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/profile.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
+                                        <span class="profile-menu__icon">
+                                            <img th:src="@{/assets/icon/profile.svg}" alt="" class="icon"/>
+                                        </span>
                                         Thông tin cá nhân
                                     </a>
                                 </li>
                                 <li>
                                     <a th:href="@{/my-orders}" class="profile-menu__link profile-menu__link--active">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/bag.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
+                                        <span class="profile-menu__icon">
+                                            <img th:src="@{/assets/icon/bag.svg}" alt="" class="icon"/>
+                                        </span>
                                         Đơn hàng của tôi
                                     </a>
                                 </li>
                                 <li>
                                     <a th:href="@{/favourite}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/heart.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
+                                        <span class="profile-menu__icon">
+                                            <img th:src="@{/assets/icon/heart.svg}" alt="" class="icon"/>
+                                        </span>
                                         Danh sách yêu thích
                                     </a>
                                 </li>
                                 <li>
                                     <a th:href="@{/addresses}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/location.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
+                                        <span class="profile-menu__icon">
+                                            <img th:src="@{/assets/icon/location.svg}" alt="" class="icon"/>
+                                        </span>
                                         Địa chỉ giao hàng
                                     </a>
                                 </li>
@@ -92,27 +75,13 @@
 
                         <!-- Filter tabs -->
                         <div class="order-tabs">
-                            <button class="order-tab order-tab--active" data-status="all">
-                                Tất cả
-                            </button>
-                            <button class="order-tab" data-status="PENDING">
-                                Chờ xác nhận
-                            </button>
-                            <button class="order-tab" data-status="CONFIRMED">
-                                Đã xác nhận
-                            </button>
-                            <button class="order-tab" data-status="PROCESSING">
-                                Đang xử lý
-                            </button>
-                            <button class="order-tab" data-status="SHIPPED">
-                                Đang giao
-                            </button>
-                            <button class="order-tab" data-status="DELIVERED">
-                                Đã giao
-                            </button>
-                            <button class="order-tab" data-status="CANCELLED">
-                                Đã hủy
-                            </button>
+                            <button class="order-tab active" data-status="all">Tất cả</button>
+                            <button class="order-tab" data-status="PENDING">Chờ xác nhận</button>
+                            <button class="order-tab" data-status="CONFIRMED">Đã xác nhận</button>
+                            <button class="order-tab" data-status="PROCESSING">Đang xử lý</button>
+                            <button class="order-tab" data-status="SHIPPED">Đang giao</button>
+                            <button class="order-tab" data-status="DELIVERED">Đã giao</button>
+                            <button class="order-tab" data-status="CANCELLED">Đã hủy</button>
                         </div>
 
                         <!-- Orders List -->
@@ -126,21 +95,13 @@
                             <div class="empty-state" id="emptyState" style="display: none;">
                                 <img th:src="@{/assets/icon/bag.svg}" alt="" class="empty-state__icon"/>
                                 <h2 class="empty-state__title">Chưa có đơn hàng nào</h2>
-                                <p class="empty-state__desc">
-                                    Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!
-                                </p>
-                                <a th:href="@{/}" class="btn btn--primary">
-                                    Tiếp tục mua sắm
-                                </a>
+                                <p class="empty-state__desc">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+                                <a th:href="@{/products}" class="btn btn--primary">Tiếp tục mua sắm</a>
                             </div>
-
-                            <!-- Orders will be loaded here by JavaScript -->
                         </div>
 
                         <!-- Pagination -->
-                        <div class="pagination" id="pagination" style="display: none;">
-                            <!-- Pagination will be generated by JavaScript -->
-                        </div>
+                        <div class="pagination" id="pagination" style="display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -151,27 +112,22 @@
 <!-- Footer -->
 <th:block th:replace="~{shared/fragments/footer :: footer}"></th:block>
 
-<!-- Scripts -->
 <script th:src="@{/assets/js/scripts.js}"></script>
 <script>
-    // Load orders on page load
     let currentStatus = 'all';
     let currentPage = 0;
+    let allOrders = [];
 
     document.addEventListener('DOMContentLoaded', function () {
         loadOrders();
 
-        // Tab click handlers
         document.querySelectorAll('.order-tab').forEach(tab => {
             tab.addEventListener('click', function () {
-                // Update active tab
-                document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('order-tab--active'));
-                this.classList.add('order-tab--active');
-
-                // Load orders with new status
+                document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
                 currentStatus = this.dataset.status;
                 currentPage = 0;
-                loadOrders();
+                filterAndRenderOrders();
             });
         });
     });
@@ -179,44 +135,19 @@
     function loadOrders() {
         const loadingState = document.getElementById('loadingState');
         const emptyState = document.getElementById('emptyState');
-        const ordersList = document.getElementById('ordersList');
-        const pagination = document.getElementById('pagination');
 
-        // Show loading
         loadingState.style.display = 'block';
         emptyState.style.display = 'none';
-        pagination.style.display = 'none';
 
-        // Remove existing orders
-        document.querySelectorAll('.order-card').forEach(card => card.remove());
-
-        // Build API URL
-        let apiUrl = `/api/orders/paginated?page=${currentPage}&size=10`;
-        if (currentStatus !== 'all') {
-            apiUrl += `&status=${currentStatus}`;
-        }
-
-        // Fetch orders
-        fetch(apiUrl)
-            .then(response => response.json())
+        fetch('/api/orders')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load orders');
+                return response.json();
+            })
             .then(data => {
                 loadingState.style.display = 'none';
-
-                if (data.content && data.content.length > 0) {
-                    // Render orders
-                    data.content.forEach(order => {
-                        renderOrder(order);
-                    });
-
-                    // Show pagination if needed
-                    if (data.totalPages > 1) {
-                        renderPagination(data);
-                        pagination.style.display = 'flex';
-                    }
-                } else {
-                    // Show empty state
-                    emptyState.style.display = 'block';
-                }
+                allOrders = data || [];
+                filterAndRenderOrders();
             })
             .catch(error => {
                 console.error('Error loading orders:', error);
@@ -225,17 +156,35 @@
             });
     }
 
+    function filterAndRenderOrders() {
+        const ordersList = document.getElementById('ordersList');
+        const emptyState = document.getElementById('emptyState');
+
+        // Remove existing order cards
+        document.querySelectorAll('.order-card').forEach(card => card.remove());
+
+        // Filter orders by status
+        let filteredOrders = allOrders;
+        if (currentStatus !== 'all') {
+            filteredOrders = allOrders.filter(order => order.status === currentStatus);
+        }
+
+        if (filteredOrders.length > 0) {
+            emptyState.style.display = 'none';
+            filteredOrders.forEach(order => renderOrder(order));
+        } else {
+            emptyState.style.display = 'block';
+        }
+    }
+
     function renderOrder(order) {
         const ordersList = document.getElementById('ordersList');
 
         // Format date
-        const orderDate = new Date(order.createdAt).toLocaleDateString('vi-VN');
+        const orderDate = order.orderedAt ? new Date(order.orderedAt).toLocaleDateString('vi-VN') : 'N/A';
 
         // Format price
-        const totalPrice = new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND'
-        }).format(order.totalAmount);
+        const totalPrice = new Intl.NumberFormat('vi-VN').format(order.totalAmount) + ' ₫';
 
         // Status badge
         const statusBadges = {
@@ -247,103 +196,58 @@
             'CANCELLED': '<span class="badge badge--danger">Đã hủy</span>'
         };
 
+        const items = order.orderItems || [];
+        const itemCount = items.length;
+
         const orderCard = document.createElement('div');
         orderCard.className = 'order-card';
         orderCard.innerHTML = `
-          <div class="order-card__header">
-            <div class="order-card__info">
-              <h3 class="order-card__number">Đơn hàng #${order.orderNumber}</h3>
-              <p class="order-card__date">Ngày đặt: ${orderDate}</p>
+            <div class="order-card__header">
+                <div class="order-card__info">
+                    <h3 class="order-card__number">Đơn hàng #${order.orderNumber}</h3>
+                    <p class="order-card__date">Ngày đặt: ${orderDate}</p>
+                </div>
+                <div class="order-card__status">
+                    ${statusBadges[order.status] || '<span class="badge">Không xác định</span>'}
+                </div>
             </div>
-            <div class="order-card__status">
-              ${statusBadges[order.status] || '<span class="badge">Unknown</span>'}
+            <div class="order-card__body">
+                <div class="order-card__items">
+                    <p class="order-card__items-count">${itemCount} sản phẩm</p>
+                    <div class="order-card__items-list">
+                        ${items.slice(0, 2).map(item => `
+                            <span class="order-card__item-name">${item.productName}</span>
+                        `).join(', ')}
+                        ${itemCount > 2 ? `<span class="order-card__more">và ${itemCount - 2} sản phẩm khác</span>` : ''}
+                    </div>
+                </div>
+                <div class="order-card__total">
+                    <p class="order-card__total-label">Tổng tiền:</p>
+                    <p class="order-card__total-amount">${totalPrice}</p>
+                </div>
             </div>
-          </div>
-          <div class="order-card__body">
-            <div class="order-card__items">
-              <p class="order-card__items-count">${order.items.length} sản phẩm</p>
-              <div class="order-card__items-preview">
-                ${order.items.slice(0, 3).map(item => `
-                  <img src="/assets/img/product/${item.productImage || 'default.jpg'}" 
-                       alt="${item.productName}" 
-                       class="order-card__item-img" />
-                `).join('')}
-                ${order.items.length > 3 ? `<span class="order-card__more">+${order.items.length - 3}</span>` : ''}
-              </div>
+            <div class="order-card__footer">
+                <a href="/order-detail/${order.id}" class="btn btn--outline btn--small">Xem chi tiết</a>
+                ${order.status === 'PENDING' ? `
+                    <button onclick="cancelOrder(${order.id})" class="btn btn--danger btn--small">Hủy đơn</button>
+                ` : ''}
+                ${order.status === 'DELIVERED' ? `
+                    <a href="/products" class="btn btn--primary btn--small">Mua lại</a>
+                ` : ''}
             </div>
-            <div class="order-card__total">
-              <p class="order-card__total-label">Tổng tiền:</p>
-              <p class="order-card__total-amount">${totalPrice}</p>
-            </div>
-          </div>
-          <div class="order-card__footer">
-            <a href="/order-detail/${order.id}" class="btn btn--outline btn--small">
-              Xem chi tiết
-            </a>
-            ${order.status === 'PENDING' ? `
-              <button onclick="cancelOrder(${order.id})" class="btn btn--danger btn--small">
-                Hủy đơn
-              </button>
-            ` : ''}
-            ${order.status === 'DELIVERED' ? `
-              <button onclick="reorder(${order.id})" class="btn btn--primary btn--small">
-                Mua lại
-              </button>
-            ` : ''}
-          </div>
         `;
 
         ordersList.appendChild(orderCard);
     }
 
-    function renderPagination(data) {
-        const pagination = document.getElementById('pagination');
-        pagination.innerHTML = '';
-
-        // Previous button
-        if (data.number > 0) {
-            const prevBtn = document.createElement('button');
-            prevBtn.className = 'pagination__btn';
-            prevBtn.textContent = '‹';
-            prevBtn.onclick = () => {
-                currentPage = data.number - 1;
-                loadOrders();
-            };
-            pagination.appendChild(prevBtn);
-        }
-
-        // Page numbers
-        for (let i = 0; i < data.totalPages; i++) {
-            const pageBtn = document.createElement('button');
-            pageBtn.className = 'pagination__btn' + (i === data.number ? ' pagination__btn--active' : '');
-            pageBtn.textContent = i + 1;
-            pageBtn.onclick = () => {
-                currentPage = i;
-                loadOrders();
-            };
-            pagination.appendChild(pageBtn);
-        }
-
-        // Next button
-        if (data.number < data.totalPages - 1) {
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'pagination__btn';
-            nextBtn.textContent = '›';
-            nextBtn.onclick = () => {
-                currentPage = data.number + 1;
-                loadOrders();
-            };
-            pagination.appendChild(nextBtn);
-        }
-    }
-
     function cancelOrder(orderId) {
         if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
-            fetch(`/api/orders/${orderId}/cancel`, {
-                method: 'PUT'
-            })
-                .then(response => response.json())
-                .then(data => {
+            fetch(`/api/orders/${orderId}/cancel`, { method: 'PUT' })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to cancel order');
+                    return response.json();
+                })
+                .then(() => {
                     alert('Đã hủy đơn hàng thành công');
                     loadOrders();
                 })
@@ -352,11 +256,6 @@
                     alert('Có lỗi xảy ra khi hủy đơn hàng');
                 });
         }
-    }
-
-    function reorder(orderId) {
-        // TODO: Implement reorder functionality
-        alert('Tính năng đang được phát triển');
     }
 </script>
 
@@ -367,221 +266,150 @@
         margin-bottom: 24px;
         flex-wrap: wrap;
     }
-
     .order-tab {
         padding: 8px 16px;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--order-tab-border, #e0e0e0);
         border-radius: 20px;
-        background: white;
+        background: var(--order-tab-bg, white);
+        color: var(--text-color);
         cursor: pointer;
         transition: all 0.3s;
         font-size: 14px;
     }
-
     .order-tab:hover {
         border-color: #77dae6;
         color: #77dae6;
     }
-
-    .order-tab--active {
-        background: #77dae6;
-        color: white;
-        border-color: #77dae6;
+    .order-tab.active {
+        background: #77dae6 !important;
+        color: #fff !important;
+        border-color: #77dae6 !important;
     }
-
     .orders-list {
         display: flex;
         flex-direction: column;
         gap: 16px;
     }
-
     .order-card {
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--order-card-border, #e0e0e0);
         border-radius: 12px;
         padding: 20px;
-        background: white;
+        background: var(--order-card-bg, white);
         transition: box-shadow 0.3s;
     }
-
     .order-card:hover {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-
     .order-card__header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 16px;
         padding-bottom: 16px;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--order-card-border, #f0f0f0);
     }
-
     .order-card__number {
         font-size: 18px;
         font-weight: 600;
         margin-bottom: 4px;
+        color: var(--text-color);
     }
-
     .order-card__date {
         font-size: 14px;
-        color: #666;
+        color: var(--text-color-light, #666);
     }
-
     .badge {
         padding: 4px 12px;
         border-radius: 12px;
         font-size: 12px;
         font-weight: 500;
     }
-
-    .badge--warning {
-        background: #fff3cd;
-        color: #856404;
-    }
-
-    .badge--info {
-        background: #d1ecf1;
-        color: #0c5460;
-    }
-
-    .badge--primary {
-        background: #cce5ff;
-        color: #004085;
-    }
-
-    .badge--success {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .badge--danger {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
+    .badge--warning { background: #fff3cd; color: #856404; }
+    .badge--info { background: #d1ecf1; color: #0c5460; }
+    .badge--primary { background: #cce5ff; color: #004085; }
+    .badge--success { background: #d4edda; color: #155724; }
+    .badge--danger { background: #f8d7da; color: #721c24; }
     .order-card__body {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 16px;
     }
-
     .order-card__items-count {
         font-size: 14px;
-        color: #666;
-        margin-bottom: 8px;
-    }
-
-    .order-card__items-preview {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .order-card__item-img {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-    }
-
-    .order-card__more {
-        font-size: 14px;
-        color: #666;
-    }
-
-    .order-card__total-label {
-        font-size: 14px;
-        color: #666;
+        color: var(--text-color-light, #666);
         margin-bottom: 4px;
     }
-
+    .order-card__items-list {
+        font-size: 14px;
+        color: var(--text-color);
+    }
+    .order-card__more {
+        color: var(--text-color-light, #666);
+        font-style: italic;
+    }
+    .order-card__total-label {
+        font-size: 14px;
+        color: var(--text-color-light, #666);
+        margin-bottom: 4px;
+    }
     .order-card__total-amount {
         font-size: 20px;
         font-weight: 600;
-        color: #77dae6;
+        color: var(--primary-color);
     }
-
     .order-card__footer {
         display: flex;
         gap: 12px;
         justify-content: flex-end;
     }
-
     .btn--small {
         padding: 8px 16px;
         font-size: 14px;
     }
-
     .btn--outline {
-        background: white;
-        border: 1px solid #77dae6;
-        color: #77dae6;
+        background: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
     }
-
     .btn--outline:hover {
-        background: #77dae6;
+        background: var(--primary-color);
         color: white;
     }
-
     .btn--danger {
         background: #dc3545;
         color: white;
         border: none;
     }
-
     .btn--danger:hover {
         background: #c82333;
     }
-
     .loading-state, .empty-state {
         text-align: center;
         padding: 60px 20px;
     }
-
     .empty-state__icon {
         width: 80px;
         height: 80px;
         opacity: 0.3;
         margin-bottom: 20px;
     }
-
     .empty-state__title {
         font-size: 24px;
         margin-bottom: 12px;
+        color: var(--text-color);
     }
-
     .empty-state__desc {
-        color: #666;
+        color: var(--text-color-light, #666);
         margin-bottom: 24px;
     }
-
     .pagination {
         display: flex;
         justify-content: center;
         gap: 8px;
         margin-top: 24px;
-    }
-
-    .pagination__btn {
-        padding: 8px 12px;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        background: white;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .pagination__btn:hover {
-        border-color: #77dae6;
-        color: #77dae6;
-    }
-
-    .pagination__btn--active {
-        background: #77dae6;
-        color: white;
-        border-color: #77dae6;
     }
 </style>
 </body>

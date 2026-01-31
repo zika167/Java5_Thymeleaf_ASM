@@ -1,346 +1,111 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/fragments/head :: head('Payment - Grocery Store')}"></head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Thanh toán - Grocery Store')}"></head>
 <body>
-<!-- Header -->
 <header th:replace="~{shared/fragments/header :: header}"></header>
 
-
-<!-- MAIN -->
 <main class="checkout-page">
     <div class="container">
-        <!-- Search bar -->
-        <div class="checkout-container">
-            <div class="search-bar d-none d-md-flex">
-                <input
-                        type="text"
-                        name=""
-                        id=""
-                        placeholder="Search for item"
-                        class="search-bar__input"
-                />
-                <button class="search-bar__submit">
-                    <img
-                            th:src="@{/assets/icon/search.svg}"
-                            alt=""
-                            class="search-bar__icon icon"
-                    />
-                </button>
-            </div>
-        </div>
-
-        <!-- Breadcrumbs -->
         <div class="checkout-container">
             <ul class="breadcrumbs checkout-page__breadcrumbs">
                 <li>
-                    <a th:href="@{/index-logined}" class="breadcrumbs__link">
-                        Home
+                    <a th:href="@{/}" class="breadcrumbs__link">
+                        Trang chủ
                         <img th:src="@{/assets/icon/arrow-right.svg}" alt=""/>
                     </a>
                 </li>
                 <li>
                     <a th:href="@{/checkout}" class="breadcrumbs__link">
-                        Checkout
+                        Giỏ hàng
                         <img th:src="@{/assets/icon/arrow-right.svg}" alt=""/>
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/shipping}" class="breadcrumbs__link">
-                        Shipping
-                        <img th:src="@{/assets/icon/arrow-right.svg}" alt=""/>
-                    </a>
-                </li>
-                <li>
-                    <a href="#!" class="breadcrumbs__link breadcrumbs__link--current"
-                    >Payment method</a
-                    >
+                    <a href="#!" class="breadcrumbs__link breadcrumbs__link--current">Xác nhận thanh toán</a>
                 </li>
             </ul>
         </div>
 
-        <!-- Checkout content -->
         <div class="checkout-container">
             <div class="row gy-xl-3">
-                <div class="col-8 col-xl-8 col-lg-12">
+                <div class="col-8 col-xl-12">
                     <div class="cart-info">
-                        <div class="cart-info__top">
-                            <h2 class="cart-info__heading cart-info__heading--lv2">
-                                1. Shipping, arrives between Mon, May 16—Tue, May 24
-                            </h2>
-                            <a class="cart-info__edit-btn" th:href="@{/shipping}">
-                                <img class="icon" th:src="@{/assets/icon/edit.svg}" alt=""/>
-                                Edit
-                            </a>
+                        <h2 class="cart-info__heading cart-info__heading--lv2">Thông tin giao hàng</h2>
+                        <div class="cart-info__separate"></div>
+                        <div id="shipping-info" style="padding: 15px 0;">
+                            <p style="color: #666;">Đang tải thông tin...</p>
                         </div>
-
-                        <!-- Payment item 1 -->
-                        <article class="payment-item">
-                            <div class="payment-item__info">
-                                <h3 class="payment-item__title">Imran Khan</h3>
-                                <p class="payment-item__desc">
-                                    Museum of Rajas, Sylhet Sadar, Sylhet 3100.
-                                </p>
-                            </div>
-                        </article>
-
-                        <!-- Payment item 2 -->
-                        <article class="payment-item">
-                            <div class="payment-item__info">
-                                <h3 class="payment-item__title">Items details</h3>
-                                <p class="payment-item__desc">2 items</p>
-                            </div>
-                            <a th:href="@{/shipping}" class="payment-item__detail"
-                            >View details</a
-                            >
-                        </article>
                     </div>
 
                     <div class="cart-info">
-                        <h2 class="cart-info__heading cart-info__heading--lv2">
-                            2. Shipping method
-                        </h2>
+                        <h2 class="cart-info__heading cart-info__heading--lv2">Sản phẩm đặt mua</h2>
                         <div class="cart-info__separate"></div>
+                        <div id="order-items" class="cart-info__list"></div>
+                    </div>
 
-                        <h3 class="cart-info__sub-heading">
-                            Availeble Shipping method
-                        </h3>
-
-                        <!-- Payment item 3 -->
-                        <label>
-                            <article class="payment-item payment-item--pointer">
-                                <img
-                                        th:src="@{/assets/img/payment/delivery-1.png}"
-                                        alt=""
-                                        class="payment-item__thumb"
-                                />
-                                <div class="payment-item__content">
-                                    <div class="payment-item__info">
-                                        <h3 class="payment-item__title">Fedex Delivery</h3>
-                                        <p class="payment-item__desc payment-item__desc--low">
-                                            Delivery: 2-3 days work
-                                        </p>
-                                    </div>
-
-                                    <span class="cart-info__checkbox payment-item__checkbox">
-                        <input
-                                type="radio"
-                                name="delivery-method"
-                                checked
-                                class="cart-info__checkbox-input payment-item__checkbox-input"
-                        />
-                        <span class="payment-item__cost">Free</span>
-                      </span>
-                                </div>
-                            </article>
-                        </label>
-
-                        <!-- Payment item 4 -->
-                        <label>
-                            <article class="payment-item payment-item--pointer">
-                                <img
-                                        th:src="@{/assets/img/payment/delivery-2.png}"
-                                        alt=""
-                                        class="payment-item__thumb"
-                                />
-                                <div class="payment-item__content">
-                                    <div class="payment-item__info">
-                                        <h3 class="payment-item__title">DHL Delivery</h3>
-                                        <p class="payment-item__desc payment-item__desc--low">
-                                            Delivery: 2-3 days work
-                                        </p>
-                                    </div>
-
-                                    <span class="cart-info__checkbox payment-item__checkbox">
-                        <input
-                                type="radio"
-                                name="delivery-method"
-                                class="cart-info__checkbox-input payment-item__checkbox-input"
-                        />
-                        <span class="payment-item__cost">$12.00</span>
-                      </span>
-                                </div>
-                            </article>
-                        </label>
+                    <div class="cart-info">
+                        <h2 class="cart-info__heading cart-info__heading--lv2">Phương thức thanh toán</h2>
+                        <div class="cart-info__separate"></div>
+                        <div id="payment-method-info" style="padding: 15px 0;">
+                            <p style="color: #666;">Đang tải...</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-4 col-xl-4 col-lg-12">
+
+                <div class="col-4 col-xl-12">
                     <div class="cart-info">
-                        <h2 class="info__heading cart-info__heading--lv2">
-                            Payment Details
-                        </h2>
-
-                        <p class="cart-info__desc">
-                            Complete your purchase by providing your payment details below.
-                        </p>
-                        <form action="" class="form cart-info__form">
-                            <div class="form__group">
-                                <label for="email" class="form__label form__label--medium"
-                                >Email Address</label
-                                >
-                                <div class="form__text-input">
-                                    <input
-                                            type="email"
-                                            name="email"
-                                            id="email"
-                                            placeholder="Email"
-                                            class="form__input"
-                                            required
-                                    />
-                                    <img
-                                            th:src="@{/assets/icon/error.svg}"
-                                            alt=""
-                                            class="form__input-icon-error"
-                                    />
-                                </div>
-                                <p class="form__error">
-                                    Email must be a valid email address
-                                </p>
-                            </div>
-                            <div class="form__group">
-                                <label
-                                        for="card-holder"
-                                        class="form__label form__label--medium"
-                                >
-                                    Card Holder
-                                </label>
-                                <div class="form__text-input">
-                                    <input
-                                            type="text"
-                                            name="card-holder"
-                                            id="card-holder"
-                                            placeholder="Card Holder"
-                                            class="form__input"
-                                            required
-                                    />
-                                    <img
-                                            th:src="@{/assets/icon/error.svg}"
-                                            alt=""
-                                            class="form__input-icon-error"
-                                    />
-                                </div>
-                                <p class="form__error">
-                                    Password must be at least 6 characters
-                                </p>
-                            </div>
-                            <div class="form__group">
-                                <label
-                                        for="card-details"
-                                        class="form__label form__label--medium"
-                                >
-                                    Card Details
-                                </label>
-                                <div class="form__text-input">
-                                    <input
-                                            type="text"
-                                            name="card-details"
-                                            id="card-details"
-                                            placeholder="Card Details"
-                                            class="form__input"
-                                            required
-                                    />
-                                    <img
-                                            th:src="@{/assets/icon/error.svg}"
-                                            alt=""
-                                            class="form__input-icon-error"
-                                    />
-                                </div>
-                                <p class="form__error">
-                                    Password must be at least 6 characters
-                                </p>
-                            </div>
-                            <div class="form__row cart-info__form-row">
-                                <div class="form__group">
-                                    <div class="form__text-input">
-                                        <input
-                                                type="text"
-                                                name="card-expire"
-                                                id="card-expire"
-                                                placeholder="MM/YY"
-                                                class="form__input"
-                                                required
-                                        />
-                                        <img
-                                                th:src="@{/assets/icon/error.svg}"
-                                                alt=""
-                                                class="form__input-icon-error"
-                                        />
-                                    </div>
-                                    <p class="form__error">
-                                        Password must be at least 6 characters
-                                    </p>
-                                </div>
-                                <div class="form__group">
-                                    <div class="form__text-input">
-                                        <input
-                                                type="text"
-                                                name="card-cvc"
-                                                id="card-cvc"
-                                                placeholder="CVC"
-                                                class="form__input"
-                                                required
-                                        />
-                                        <img
-                                                th:src="@{/assets/icon/error.svg}"
-                                                alt=""
-                                                class="form__input-icon-error"
-                                        />
-                                    </div>
-                                    <p class="form__error">
-                                        Password must be at least 6 characters
-                                    </p>
-                                </div>
-                            </div>
-                        </form>
-
-                        <div class="cart-info__row">
-                  <span
-                  >Subtotal
-                    <span class="cart-info__sub-label">(items)</span></span
-                  >
-                            <span>3</span>
-                        </div>
-                        <div class="cart-info__row">
-                  <span
-                  >Price
-                    <span class="cart-info__sub-label">(Total)</span></span
-                  >
-                            <span>$191.65</span>
-                        </div>
-                        <div class="cart-info__row">
-                            <span>Shipping</span>
-                            <span>$10.00</span>
-                        </div>
+                        <h2 class="cart-info__heading cart-info__heading--lv2">Tóm tắt đơn hàng</h2>
                         <div class="cart-info__separate"></div>
                         <div class="cart-info__row">
-                            <span>Estimated Total</span>
-                            <span>$201.65</span>
+                            <span>Số lượng sản phẩm</span>
+                            <span id="summary-items">0</span>
                         </div>
-                        <a
-                                th:href="@{/index-logined}"
-                                class="cart-info__next-btn btn btn--primary btn--rounded"
-                        >
-                            Pay $201.65
-                        </a>
-                    </div>
-                    <div class="cart-info">
-                        <a href="#!">
-                            <article class="gift-item">
-                                <div class="gift-item__icon-wrap">
-                                    <img
-                                            th:src="@{/assets/icon/gift.svg}"
-                                            alt=""
-                                            class="gift-item__icon"
-                                    />
+                        <div class="cart-info__row">
+                            <span>Tạm tính</span>
+                            <span id="summary-subtotal">0đ</span>
+                        </div>
+                        <div class="cart-info__row">
+                            <span>Thuế (10%)</span>
+                            <span id="summary-tax">0đ</span>
+                        </div>
+                        <div class="cart-info__row">
+                            <span>Phí vận chuyển</span>
+                            <span>Miễn phí</span>
+                        </div>
+                        <div class="cart-info__separate"></div>
+                        <div class="cart-info__row" style="font-weight: bold; font-size: 18px;">
+                            <span>Tổng cộng</span>
+                            <span id="summary-total">0đ</span>
+                        </div>
+                        
+                        <!-- QR Code Section (hidden by default) -->
+                        <div id="qr-section" style="display: none; margin-top: 20px;">
+                            <div class="cart-info__separate"></div>
+                            <div style="text-align: center; padding: 20px;">
+                                <h3 id="qr-title" style="margin-bottom: 15px; color: #333;">Quét mã QR để thanh toán</h3>
+                                <div id="qr-code" style="display: inline-block; padding: 10px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <!-- QR will be generated here -->
                                 </div>
-                                <div class="gift-item__content">
-                                    <h3 class="gift-item__title">
-                                        Send this order as a gift.
-                                    </h3>
-                                    <p class="gift-item__desc">
-                                        Available items will be shipped to your gift recipient.
-                                    </p>
+                                <div id="bank-info" style="margin-top: 15px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                    <!-- Bank info will be shown here -->
                                 </div>
-                            </article>
+                                <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                                    Quét mã bằng <span id="qr-app-name" style="font-weight: bold;">App Ngân hàng / MoMo / ZaloPay</span>
+                                </p>
+                                <p style="color: #E53935; font-weight: bold; font-size: 20px; margin-top: 10px;">
+                                    Số tiền: <span id="qr-amount">0đ</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="cart-info__next-btn btn btn--primary btn--rounded" id="place-order-btn" style="width: 100%; margin-top: 20px;">
+                            Đặt hàng
+                        </button>
+                        <button type="button" class="btn btn--primary btn--rounded" id="confirm-payment-btn" style="width: 100%; margin-top: 20px; display: none; background: #4CAF50;">
+                            Xác nhận đã thanh toán
+                        </button>
+                        <a th:href="@{/checkout}" class="btn btn--outline" style="width: 100%; text-align: center; margin-top: 10px; display: block;">
+                            Quay lại giỏ hàng
                         </a>
                     </div>
                 </div>
@@ -349,222 +114,254 @@
     </div>
 </main>
 
-<!-- Footer -->
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
 
-<!-- Modal: confirm remove shopping cart item -->
-<div id="delete-confirm" class="modal modal--small hide">
-    <div class="modal__content">
-        <p class="modal__text">
-            Do you want to remove this item from shopping cart?
-        </p>
-        <div class="modal__bottom">
-            <button
-                    class="btn btn--small btn--outline modal__btn js-toggle"
-                    toggle-target="#delete-confirm"
-            >
-                Cancel
-            </button>
-            <button
-                    class="btn btn--small btn--danger btn--primary modal__btn btn--no-margin js-toggle"
-                    toggle-target="#delete-confirm"
-            >
-                Delete
-            </button>
-        </div>
-    </div>
-    <div
-            class="modal__overlay js-toggle"
-            toggle-target="#delete-confirm"
-    ></div>
-</div>
+<script th:src="@{/assets/js/cart-api.js}"></script>
+<script th:src="@{/assets/js/address-api.js}"></script>
+<script>
+    var orderTotal = 0;
+    
+    function formatVND(value) {
+        var price = parseFloat(value) || 0;
+        if (price > 0 && price < 10000) {
+            price = price * 25000;
+        }
+        return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+    }
+    
+    function formatVNDNumber(value) {
+        var price = parseFloat(value) || 0;
+        if (price > 0 && price < 10000) {
+            price = price * 25000;
+        }
+        return Math.round(price);
+    }
 
-<!-- Modal: address new shipping address -->
-<div id="add-new-address" class="modal hide" style="--content-width: 650px">
-    <div class="modal__content">
-        <form action="" class="form">
-            <h2 class="modal__heading">Add new shipping address</h2>
-            <div class="modal__body">
-                <div class="form__row">
-                    <div class="form__group">
-                        <label for="name" class="form__label form__label--small"
-                        >Name</label
-                        >
-                        <div class="form__text-input form__text-input--small">
-                            <input
-                                    type="text"
-                                    name="name"
-                                    id="name"
-                                    placeholder="Name"
-                                    class="form__input"
-                                    required
-                                    minlength="2"
-                            />
-                            <img
-                                    th:src="@{/assets/icon/error.svg}"
-                                    alt=""
-                                    class="form__input-icon-error"
-                            />
-                        </div>
-                        <p class="form__error">Name must be at least 2 characters</p>
-                    </div>
-                    <div class="form__group">
-                        <label for="phone" class="form__label form__label--small"
-                        >Phone</label
-                        >
-                        <div class="form__text-input form__text-input--small">
-                            <input
-                                    type="tel"
-                                    name="phone"
-                                    id="phone"
-                                    placeholder="Phone"
-                                    class="form__input"
-                                    required
-                                    minlength="10"
-                            />
-                            <img
-                                    th:src="@{/assets/icon/error.svg}"
-                                    alt=""
-                                    class="form__input-icon-error"
-                            />
-                        </div>
-                        <p class="form__error">Phone must be at least 10 characters</p>
-                    </div>
-                </div>
-                <div class="form__group">
-                    <label for="address" class="form__label form__label--small"
-                    >Address</label
-                    >
-                    <div class="form__text-area">
-                <textarea
-                        name="address"
-                        id="address"
-                        placeholder="Address (Area and street)"
-                        class="form__text-area-input"
-                        required
-                ></textarea>
-                        <img
-                                th:src="@{/assets/icon/error.svg}"
-                                alt=""
-                                class="form__input-icon-error"
-                        />
-                    </div>
-                    <p class="form__error">Address cannot be empty</p>
-                </div>
-                <div class="form__group">
-                    <label for="city" class="form__label form__label--small"
-                    >City/District/Town</label
-                    >
-                    <div class="form__text-input form__text-input--small">
-                        <input
-                                type="text"
-                                name=""
-                                placeholder="City/District/Town"
-                                id="city"
-                                class="form__input js-toggle"
-                                toggle-target="#city-dialog"
-                        />
-                        <img
-                                th:src="@{/assets/icon/error.svg}"
-                                alt=""
-                                class="form__input-icon-error"
-                        />
+    function generateQRCode(paymentMethod, amount) {
+        var qrContainer = document.getElementById('qr-code');
+        var bankInfoContainer = document.getElementById('bank-info');
+        qrContainer.innerHTML = '<p style="color: #666;">Đang tạo mã QR...</p>';
+        
+        var orderId = 'DH' + Date.now().toString().slice(-8);
+        var description = 'Thanh toan don hang ' + orderId;
+        var amountRounded = Math.round(amount);
+        
+        if (paymentMethod === 'MOMO') {
+            // MoMo: Sử dụng hình QR tĩnh đã upload
+            qrContainer.innerHTML = '<img src="/assets/img/qr_momo.jpg" alt="QR MoMo" style="width: 320px; height: auto; border-radius: 8px;" />';
+            
+            bankInfoContainer.innerHTML = 
+                '<p style="margin: 0 0 8px 0; font-weight: bold; color: #A50064; font-size: 16px;">📱 Thanh toán qua MoMo:</p>' +
+                '<p style="margin: 4px 0;"><strong>Số điện thoại:</strong> 0359955950</p>' +
+                '<p style="margin: 4px 0;"><strong>Tên:</strong> PHAN HOANG ANH KHOA</p>' +
+                '<div style="margin: 12px 0; padding: 12px; background: #A50064; color: white; border-radius: 8px; text-align: center;">' +
+                    '<p style="margin: 0; font-size: 14px;">💰 VUI LÒNG NHẬP SỐ TIỀN:</p>' +
+                    '<p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold;">' + new Intl.NumberFormat('vi-VN').format(amountRounded) + 'đ</p>' +
+                '</div>' +
+                '<p style="margin: 4px 0;"><strong>Nội dung:</strong> <span style="color: #A50064; font-weight: bold;">' + description + '</span></p>' +
+                '<p style="margin: 8px 0 0 0; font-size: 13px; color: #666; background: #fff3cd; padding: 10px; border-radius: 6px;">⚠️ Sau khi quét mã, vui lòng <strong>nhập đúng số tiền</strong> ở trên và ghi nội dung chuyển khoản</p>';
+            
+            document.getElementById('qr-title').textContent = 'Quét mã MoMo để thanh toán';
+            document.getElementById('qr-app-name').textContent = 'Ví MoMo';
+            document.getElementById('confirm-payment-btn').style.background = '#A50064';
+            
+        } else {
+            // VNPay: Sử dụng VietQR API
+            var bankId = 'MB';
+            var accountNo = '2468523993743';
+            var accountName = 'PHAN HOANG ANH KHOA';
+            
+            var vietQRUrl = 'https://img.vietqr.io/image/' + 
+                bankId + '-' + accountNo + '-compact2.png' +
+                '?amount=' + amountRounded +
+                '&addInfo=' + encodeURIComponent(description) +
+                '&accountName=' + encodeURIComponent(accountName);
+            
+            qrContainer.innerHTML = '<img src="' + vietQRUrl + '" alt="QR VietQR" style="width: 250px; height: 250px; border-radius: 8px;" />';
+            
+            bankInfoContainer.innerHTML = 
+                '<p style="margin: 0 0 8px 0; font-weight: bold; color: #0066CC;">🏦 Thông tin chuyển khoản:</p>' +
+                '<p style="margin: 4px 0;"><strong>Ngân hàng:</strong> MB Bank</p>' +
+                '<p style="margin: 4px 0;"><strong>Số tài khoản:</strong> ' + accountNo + '</p>' +
+                '<p style="margin: 4px 0;"><strong>Chủ tài khoản:</strong> ' + accountName + '</p>' +
+                '<p style="margin: 4px 0;"><strong>Nội dung CK:</strong> <span style="color: #0066CC; font-weight: bold;">' + description + '</span></p>' +
+                '<p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">💡 Quét bằng app Ngân hàng / VNPay / ZaloPay</p>';
+            
+            document.getElementById('qr-title').textContent = 'Quét mã VietQR để thanh toán';
+            document.getElementById('qr-app-name').textContent = 'App Ngân hàng / VNPay';
+            document.getElementById('confirm-payment-btn').style.background = '#0066CC';
+        }
+        
+        document.getElementById('qr-amount').textContent = formatVND(amount);
+        
+        // Show QR section, hide place order button, show confirm button
+        document.getElementById('qr-section').style.display = 'block';
+        document.getElementById('place-order-btn').style.display = 'none';
+        document.getElementById('confirm-payment-btn').style.display = 'block';
+    }
 
-                        <!-- Select dialog -->
-                        <div id="city-dialog" class="form__select-dialog hide">
-                            <h2 class="form__dialog-heading d-none d-sm-block">
-                                City/District/Town
-                            </h2>
-                            <button
-                                    class="form__close-dialog d-none d-sm-block js-toggle"
-                                    toggle-target="#city-dialog"
-                            >
-                                &times
-                            </button>
-                            <div class="form__search">
-                                <input
-                                        type="text"
-                                        placeholder="Search"
-                                        class="form__search-input"
-                                />
-                                <img
-                                        th:src="@{/assets/icon/search.svg}"
-                                        alt=""
-                                        class="form__search-icon icon"
-                                />
-                            </div>
-                            <ul class="form__options-list">
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option form__option--current">
-                                    Ho Chi Minh
-                                </li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                                <li class="form__option">Ha Noi</li>
-                                <li class="form__option">Ho Chi Minh</li>
-                                <li class="form__option">Da Nang</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <p class="form__error">Phone must be at least 11 characters</p>
-                </div>
-                <div class="form__group form__group--inline">
-                    <label class="form__checkbox">
-                        <input
-                                type="checkbox"
-                                name=""
-                                id=""
-                                class="form__checkbox-input d-none"
-                        />
-                        <span class="form__checkbox-label">Set as default address</span>
-                    </label>
-                </div>
-            </div>
-            <div class="modal__bottom">
-                <button
-                        class="btn btn--small btn--text modal__btn js-toggle"
-                        toggle-target="#add-new-address"
-                >
-                    Cancel
-                </button>
-                <button
-                        class="btn btn--small btn--primary modal__btn btn--no-margin"
-                >
-                    Create
-                </button>
-            </div>
-        </form>
-    </div>
-    <div class="modal__overlay"></div>
-</div>
+    async function loadPaymentPage() {
+        // Load cart data
+        var cartData = await window.CartAPI.getCart();
+        if (!cartData || !cartData.items || cartData.items.length === 0) {
+            alert('Giỏ hàng trống!');
+            window.location.href = '/';
+            return;
+        }
+
+        // Render order items
+        var itemsHtml = '';
+        cartData.items.forEach(function(item) {
+            itemsHtml += '<div style="display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee;">' +
+                '<img src="' + (item.productImage || '/assets/img/product/item-1.png') + '" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />' +
+                '<div style="flex: 1;">' +
+                    '<h4 style="margin: 0 0 8px 0;">' + item.productName + '</h4>' +
+                    '<p style="margin: 0; color: #666;">Số lượng: ' + item.quantity + '</p>' +
+                    '<p style="margin: 5px 0 0 0; font-weight: bold; color: #4CAF50;">' + formatVND(item.subtotal) + '</p>' +
+                '</div>' +
+            '</div>';
+        });
+        document.getElementById('order-items').innerHTML = itemsHtml;
+
+        // Calculate totals
+        var subtotal = parseFloat(cartData.totalPrice) || 0;
+        if (subtotal > 0 && subtotal < 10000) {
+            subtotal = subtotal * 25000;
+        }
+        var tax = subtotal * 0.1;
+        var total = subtotal + tax;
+        orderTotal = total;
+
+        document.getElementById('summary-items').textContent = cartData.totalItems;
+        document.getElementById('summary-subtotal').textContent = formatVND(subtotal);
+        document.getElementById('summary-tax').textContent = formatVND(tax);
+        document.getElementById('summary-total').textContent = formatVND(total);
+
+        // Load shipping address
+        var addressId = localStorage.getItem('checkoutAddressId');
+        if (addressId) {
+            var addresses = await AddressAPI.getUserAddresses();
+            var selectedAddr = addresses.find(function(a) { return a.id == addressId; });
+            if (selectedAddr) {
+                document.getElementById('shipping-info').innerHTML = 
+                    '<div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">' +
+                        '<p style="margin: 0 0 5px 0; font-weight: bold;">' + selectedAddr.recipientName + '</p>' +
+                        '<p style="margin: 0 0 5px 0;">' + selectedAddr.phone + '</p>' +
+                        '<p style="margin: 0;">' + selectedAddr.addressLine1 + ', ' + selectedAddr.city + '</p>' +
+                    '</div>';
+            } else {
+                document.getElementById('shipping-info').innerHTML = '<p style="color: #dc3545;">Chưa chọn địa chỉ giao hàng. <a href="/checkout">Quay lại chọn địa chỉ</a></p>';
+            }
+        } else {
+            document.getElementById('shipping-info').innerHTML = '<p style="color: #dc3545;">Chưa chọn địa chỉ giao hàng. <a href="/checkout">Quay lại chọn địa chỉ</a></p>';
+        }
+
+        // Load payment method
+        var paymentMethod = localStorage.getItem('selectedPaymentMethod') || 'COD';
+        var paymentLabels = {
+            'COD': 'Thanh toán khi nhận hàng (COD)',
+            'VNPAY': 'Thanh toán qua VNPay',
+            'MOMO': 'Thanh toán qua ví MoMo'
+        };
+        
+        var paymentColors = {
+            'COD': '#4CAF50',
+            'VNPAY': '#0066CC',
+            'MOMO': '#A50064'
+        };
+        
+        document.getElementById('payment-method-info').innerHTML = 
+            '<div style="background: #E8F5E9; padding: 15px; border-radius: 8px; border-left: 4px solid ' + (paymentColors[paymentMethod] || '#4CAF50') + ';">' +
+                '<p style="margin: 0; font-weight: bold;">' + (paymentLabels[paymentMethod] || paymentMethod) + '</p>' +
+            '</div>';
+        
+        // If VNPay or MoMo, show QR code immediately
+        if (paymentMethod === 'VNPAY' || paymentMethod === 'MOMO') {
+            generateQRCode(paymentMethod, total);
+        }
+    }
+
+    async function completeOrder() {
+        var addressId = localStorage.getItem('checkoutAddressId');
+        var paymentMethod = localStorage.getItem('selectedPaymentMethod') || 'COD';
+
+        if (!addressId) {
+            alert('Vui lòng chọn địa chỉ giao hàng!');
+            window.location.href = '/checkout';
+            return;
+        }
+
+        // Disable buttons to prevent double click
+        var placeOrderBtn = document.getElementById('place-order-btn');
+        var confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+        placeOrderBtn.disabled = true;
+        confirmPaymentBtn.disabled = true;
+        placeOrderBtn.textContent = 'Đang xử lý...';
+        confirmPaymentBtn.textContent = 'Đang xử lý...';
+
+        try {
+            // Call API to create order
+            var response = await fetch('/api/orders/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    shippingAddressId: parseInt(addressId),
+                    shippingMethod: 'free',
+                    paymentMethod: paymentMethod,
+                    customerNote: ''
+                })
+            });
+
+            if (response.ok) {
+                var orderData = await response.json();
+                
+                // Clear checkout data
+                localStorage.removeItem('checkoutAddressId');
+                localStorage.removeItem('selectedPaymentMethod');
+                
+                // Show success message with order number
+                alert('🎉 Đặt hàng thành công!\n\nMã đơn hàng: ' + orderData.orderNumber + '\n\nChúng tôi đã gửi email xác nhận đơn hàng đến địa chỉ email của bạn.\n\nCảm ơn bạn đã mua hàng tại Grocery Store!');
+                
+                // Redirect to home or order history
+                window.location.href = '/';
+            } else if (response.status === 401) {
+                alert('Vui lòng đăng nhập để đặt hàng!');
+                window.location.href = '/auth/sign-in';
+            } else {
+                var errorText = await response.text();
+                alert('Đặt hàng thất bại! ' + (errorText || 'Vui lòng thử lại.'));
+                // Re-enable buttons
+                placeOrderBtn.disabled = false;
+                confirmPaymentBtn.disabled = false;
+                placeOrderBtn.textContent = 'Đặt hàng';
+                confirmPaymentBtn.textContent = 'Xác nhận đã thanh toán';
+            }
+        } catch (error) {
+            console.error('Error creating order:', error);
+            alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!');
+            // Re-enable buttons
+            placeOrderBtn.disabled = false;
+            confirmPaymentBtn.disabled = false;
+            placeOrderBtn.textContent = 'Đặt hàng';
+            confirmPaymentBtn.textContent = 'Xác nhận đã thanh toán';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPaymentPage();
+
+        // Place order button (for COD)
+        document.getElementById('place-order-btn').addEventListener('click', async function() {
+            await completeOrder();
+        });
+        
+        // Confirm payment button (for VNPay/MoMo after scanning QR)
+        document.getElementById('confirm-payment-btn').addEventListener('click', async function() {
+            await completeOrder();
+        });
+    });
+</script>
 </body>
 </html>

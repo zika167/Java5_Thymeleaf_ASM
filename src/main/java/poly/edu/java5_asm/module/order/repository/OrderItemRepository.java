@@ -14,6 +14,9 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
     // Tìm tất cả items của đơn hàng
     List<OrderItem> findByOrder(Order order);
+    
+    // Tìm tất cả items theo order ID
+    List<OrderItem> findByOrderId(Long orderId);
 
     /**
      * Kiểm tra user đã mua sản phẩm này chưa (đơn hàng đã DELIVERED)

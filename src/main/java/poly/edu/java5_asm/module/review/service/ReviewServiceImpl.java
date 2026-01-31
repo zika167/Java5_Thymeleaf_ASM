@@ -176,6 +176,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .userId(review.getUser().getId())
                 .userName(review.getUser().getFullName() != null ?
                         review.getUser().getFullName() : review.getUser().getUsername())
+                .userAvatar(review.getUser().getAvatarUrlOrGravatar())
                 .rating(review.getRating())
                 .title(review.getTitle())
                 .comment(review.getComment())

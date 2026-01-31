@@ -1,8 +1,5 @@
 package poly.edu.java5_asm.module.email.service;
 
-import poly.edu.java5_asm.module.order.entity.Order;
-import poly.edu.java5_asm.module.user.entity.User;
-
 /**
  * Service interface for email operations
  */
@@ -11,24 +8,24 @@ public interface EmailService {
     /**
      * Send order confirmation email to customer
      *
-     * @param order The order to send confirmation for
-     * @param user  The user who placed the order
+     * @param orderId The order ID to send confirmation for
+     * @param userId  The user ID who placed the order
      */
-    void sendOrderConfirmation(Order order, User user);
+    void sendOrderConfirmation(Long orderId, Long userId);
 
     /**
      * Send order status update email to customer
      *
-     * @param order The order with updated status
-     * @param user  The user who placed the order
+     * @param orderId The order ID with updated status
+     * @param userId  The user ID who placed the order
      */
-    void sendOrderStatusUpdate(Order order, User user);
+    void sendOrderStatusUpdate(Long orderId, Long userId);
 
     /**
      * Send payment status update email to customer
      *
-     * @param order The order with updated payment status
-     * @param user  The user who placed the order
+     * @param orderId The order ID with updated payment status
+     * @param userId  The user ID who placed the order
      */
-    void sendPaymentStatusUpdate(Order order, User user);
+    void sendPaymentStatusUpdate(Long orderId, Long userId);
 }

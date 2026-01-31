@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/fragments/head :: head('Profile - Grocery Store')}"></head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Tài khoản - Grocery Store')}"></head>
 <body>
 <!-- Header -->
 <header th:replace="~{shared/fragments/header :: header}"></header>
-
 
 <!-- MAIN -->
 <main class="profile">
@@ -23,7 +22,7 @@
                         type="text"
                         name=""
                         id=""
-                        placeholder="Search for item"
+                        placeholder="Tìm kiếm sản phẩm"
                         class="search-bar__input"
                 />
                 <button class="search-bar__submit">
@@ -43,21 +42,28 @@
                     <aside class="profile__sidebar">
                         <!-- User -->
                         <div class="profile-user">
-                            <img
-                                    th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar.jpg'}"
-                                    alt=""
-                                    class="profile-user__avatar"
-                            />
+                            <div class="profile-user__avatar-wrapper">
+                                <img
+                                        th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar.jpg'}"
+                                        alt=""
+                                        class="profile-user__avatar"
+                                        id="avatarPreview"
+                                />
+                                <label for="avatarInput" class="profile-user__avatar-edit">
+                                    <img th:src="@{/assets/icon/edit.svg}" alt="Đổi avatar" class="icon" />
+                                </label>
+                                <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadAvatar(this)" />
+                            </div>
                             <h1 class="profile-user__name"
-                                th:text="${user.fullName != null ? user.fullName : user.username}">User Name</h1>
+                                th:text="${user.fullName != null ? user.fullName : user.username}">Tên người dùng</h1>
                             <p class="profile-user__desc"
-                               th:text="'Registered: ' + ${#temporals.format(user.registeredDate, 'dd MMM yyyy')}">
-                                Registered: 17th May 2022</p>
+                               th:text="'Ngày tham gia: ' + ${#temporals.format(user.registeredDate, 'dd/MM/yyyy')}">
+                                Ngày tham gia: 17/05/2022</p>
                         </div>
 
                         <!-- Menu 1 -->
                         <div class="profile-menu">
-                            <h3 class="profile-menu__title">Manage Account</h3>
+                            <h3 class="profile-menu__title">Quản lý tài khoản</h3>
                             <ul class="profile-menu__list">
                                 <li>
                                     <a
@@ -71,7 +77,7 @@
                                   class="icon"
                           />
                         </span>
-                                        Personal info
+                                        Thông tin cá nhân
                                     </a>
                                 </li>
                                 <li>
@@ -83,19 +89,7 @@
                                   class="icon"
                           />
                         </span>
-                                        Addresses
-                                    </a>
-                                </li>
-                                <li>
-                                    <a th:href="@{/edit-personal-info}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/message-2.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Communications & privacy
+                                        Địa chỉ
                                     </a>
                                 </li>
                             </ul>
@@ -103,18 +97,18 @@
 
                         <!-- Menu 2 -->
                         <div class="profile-menu">
-                            <h3 class="profile-menu__title">My items</h3>
+                            <h3 class="profile-menu__title">Đơn hàng của tôi</h3>
                             <ul class="profile-menu__list">
                                 <li>
                                     <a th:href="@{/my-orders}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
-                                  th:src="@{/assets/icon/download.svg}"
+                                  th:src="@{/assets/icon/document.svg}"
                                   alt=""
                                   class="icon"
                           />
                         </span>
-                                        Reorder
+                                        Lịch sử đơn hàng
                                     </a>
                                 </li>
                                 <li>
@@ -126,19 +120,19 @@
                                   class="icon"
                           />
                         </span>
-                                        Lists
+                                        Sản phẩm yêu thích
                                     </a>
                                 </li>
                                 <li>
                                     <a th:href="@{/cart}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
-                                  th:src="@{/assets/icon/gift-2.svg}"
+                                  th:src="@{/assets/icon/buy.svg}"
                                   alt=""
                                   class="icon"
                           />
                         </span>
-                                        Registries
+                                        Giỏ hàng
                                     </a>
                                 </li>
                             </ul>
@@ -146,26 +140,7 @@
 
                         <!-- Menu 3 -->
                         <div class="profile-menu">
-                            <h3 class="profile-menu__title">Subscriptions & plans</h3>
-                            <ul class="profile-menu__list">
-                                <li>
-                                    <a th:href="@{/my-orders}" class="profile-menu__link">
-                        <span class="profile-menu__icon">
-                          <img
-                                  th:src="@{/assets/icon/shield.svg}"
-                                  alt=""
-                                  class="icon"
-                          />
-                        </span>
-                                        Protection plans
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Menu 4 -->
-                        <div class="profile-menu">
-                            <h3 class="profile-menu__title">Customer Service</h3>
+                            <h3 class="profile-menu__title">Hỗ trợ</h3>
                             <ul class="profile-menu__list">
                                 <li>
                                     <a th:href="@{/}" class="profile-menu__link">
@@ -176,19 +151,19 @@
                                   class="icon"
                           />
                         </span>
-                                        Help
+                                        Trợ giúp
                                     </a>
                                 </li>
                                 <li>
                                     <a th:href="@{/}" class="profile-menu__link">
                         <span class="profile-menu__icon">
                           <img
-                                  th:src="@{/assets/icon/danger.svg}"
+                                  th:src="@{/assets/icon/calling.svg}"
                                   alt=""
                                   class="icon"
                           />
                         </span>
-                                        Terms of Use
+                                        Liên hệ
                                     </a>
                                 </li>
                             </ul>
@@ -198,96 +173,11 @@
                 <div class="col-9 col-xl-8 col-lg-7 col-md-12">
                     <div class="cart-info">
                         <div class="row gy-3">
-                            <!-- My Wallet -->
-                            <div class="col-12">
-                                <h2 class="cart-info__heading">My Wallet</h2>
-                                <p class="cart-info__desc profile__desc">Payment methods</p>
-                                <div
-                                        class="row gy-md-2 row-cols-3 row-cols-xl-2 row-cols-lg-1"
-                                >
-                                    <!-- Payment card 1 -->
-                                    <div class="col">
-                                        <article
-                                                class="payment-card"
-                                                style="--bg-color: #1e2e69"
-                                        >
-                                            <img
-                                                    th:src="@{/assets/img/card/plane-bg.svg}"
-                                                    alt=""
-                                                    class="payment-card__img"
-                                            />
-                                            <div class="payment-card__top">
-                                                <img th:src="@{/assets/img/card/plane.svg}" alt=""/>
-                                                <span class="payment-card__type">FeatherCard</span>
-                                            </div>
-                                            <div class="payment-card__number">
-                                                1234 4567 8901 2221
-                                            </div>
-                                            <div class="payment-card__bottom">
-                                                <div>
-                                                    <p class="payment-card__label">Card Holder</p>
-                                                    <p class="payment-card__value">Imran Khan</p>
-                                                </div>
-                                                <div class="payment-card__expired">
-                                                    <p class="payment-card__label">Expired</p>
-                                                    <p class="payment-card__value">10/22</p>
-                                                </div>
-                                                <div class="payment-card__circle"></div>
-                                            </div>
-                                        </article>
-                                    </div>
-
-                                    <!-- Payment card 2 -->
-                                    <div class="col">
-                                        <article
-                                                class="payment-card"
-                                                style="--bg-color: #354151"
-                                        >
-                                            <img
-                                                    th:src="@{/assets/img/card/leaf-bg.svg}"
-                                                    alt=""
-                                                    class="payment-card__img"
-                                            />
-                                            <div class="payment-card__top">
-                                                <img th:src="@{/assets/img/card/leaf.svg}" alt=""/>
-                                                <span class="payment-card__type">FeatherCard</span>
-                                            </div>
-                                            <div class="payment-card__number">
-                                                1234 4567 2221 8901
-                                            </div>
-                                            <div class="payment-card__bottom">
-                                                <div>
-                                                    <p class="payment-card__label">Card Holder</p>
-                                                    <p class="payment-card__value">Imran Khan</p>
-                                                </div>
-                                                <div class="payment-card__expired">
-                                                    <p class="payment-card__label">Expired</p>
-                                                    <p class="payment-card__value">11/22</p>
-                                                </div>
-                                                <div class="payment-card__circle"></div>
-                                            </div>
-                                        </article>
-                                    </div>
-
-                                    <!-- Add new payment card -->
-                                    <div class="col">
-                                        <a class="new-card" th:href="@{/add-new-card}">
-                                            <img
-                                                    th:src="@{/assets/icon/plus.svg}"
-                                                    alt=""
-                                                    class="new-card__icon icon"
-                                            />
-                                            <p class="new-card__text">Add New Card</p>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Account info -->
                             <div class="col-12">
-                                <h2 class="cart-info__heading">Account info</h2>
+                                <h2 class="cart-info__heading">Thông tin tài khoản</h2>
                                 <p class="cart-info__desc profile__desc">
-                                    Addresses, contact information and password
+                                    Địa chỉ, thông tin liên hệ
                                 </p>
                                 <div class="row gy-md-2 row-cols-2 row-cols-lg-1">
                                     <!-- Account info 1 -->
@@ -302,7 +192,7 @@
                                                     />
                                                 </div>
                                                 <div>
-                                                    <h3 class="account-info__title">Email Address</h3>
+                                                    <h3 class="account-info__title">Email</h3>
                                                     <p class="account-info__desc" th:text="${user.email}">
                                                         email@example.com
                                                     </p>
@@ -323,10 +213,10 @@
                                                     />
                                                 </div>
                                                 <div>
-                                                    <h3 class="account-info__title">Phone number</h3>
+                                                    <h3 class="account-info__title">Số điện thoại</h3>
                                                     <p class="account-info__desc"
                                                        th:text="${user.phone != null ? user.phone : 'Chưa cập nhật'}">
-                                                        +000 11122 2345 657
+                                                        Chưa cập nhật
                                                     </p>
                                                 </div>
                                             </article>
@@ -346,7 +236,7 @@
                                                 </div>
                                                 <div>
                                                     <h3 class="account-info__title" th:text="${defaultAddress != null ? 'Địa chỉ mặc định' : 'Thêm địa chỉ'}">
-                                                        Add an address
+                                                        Thêm địa chỉ
                                                     </h3>
                                                     <p class="account-info__desc" 
                                                        th:text="${defaultAddress != null ? defaultAddress.addressLine1 + ', ' + defaultAddress.city : 'Chưa có địa chỉ'}">
@@ -356,56 +246,101 @@
                                             </article>
                                         </a>
                                     </div>
+
+                                    <!-- Account info 4 - Username -->
+                                    <div class="col">
+                                        <a th:href="@{/edit-personal-info}">
+                                            <article class="account-info">
+                                                <div class="account-info__icon">
+                                                    <img
+                                                            th:src="@{/assets/icon/profile.svg}"
+                                                            alt=""
+                                                            class="icon"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <h3 class="account-info__title">Tên đăng nhập</h3>
+                                                    <p class="account-info__desc" th:text="${user.username}">
+                                                        username
+                                                    </p>
+                                                </div>
+                                            </article>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Recent Orders -->
                             <div class="col-12">
-                                <h2 class="cart-info__heading">Lists</h2>
+                                <h2 class="cart-info__heading">Đơn hàng gần đây</h2>
                                 <p class="cart-info__desc profile__desc">
-                                    2 items - Primary
+                                    <a th:href="@{/my-orders}" style="color: var(--primary-color);">Xem tất cả đơn hàng →</a>
                                 </p>
 
-                                <!-- Favourite item 1 -->
-                                <article class="favourite-item">
-                                    <img
-                                            th:src="@{/assets/img/product/item-1.png}"
-                                            alt=""
-                                            class="favourite-item__thumb"
-                                    />
-                                    <div>
-                                        <h3 class="favourite-item__title">
-                                            Coffee Beans - Espresso Arabica and Robusta Beans
-                                        </h3>
-                                        <div class="favourite-item__content">
-                                            <span class="favourite-item__price">$47.00</span>
-                                            <button class="btn btn--primary btn--rounded">
-                                                Add to cart
-                                            </button>
+                                <div th:if="${recentOrders != null and !recentOrders.empty}">
+                                    <div th:each="order : ${recentOrders}" class="favourite-item" style="margin-bottom: 16px;">
+                                        <div style="width: 60px; height: 60px; background: var(--profile-menu-icon-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                            <img th:src="@{/assets/icon/document.svg}" alt="" class="icon" />
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <h3 class="favourite-item__title" th:text="'Đơn hàng #' + ${order.id}">
+                                                Đơn hàng #123
+                                            </h3>
+                                            <div class="favourite-item__content">
+                                                <span class="favourite-item__price" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">100,000 ₫</span>
+                                                <span th:text="${order.status}" 
+                                                      th:class="${order.status == 'DELIVERED' ? 'badge badge--success' : (order.status == 'CANCELLED' ? 'badge badge--danger' : 'badge badge--warning')}"
+                                                      style="padding: 4px 12px; border-radius: 20px; font-size: 12px;">
+                                                    Trạng thái
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </article>
+                                </div>
 
-                                <div class="separate" style="--margin: 20px"></div>
+                                <div th:if="${recentOrders == null or recentOrders.empty}" style="text-align: center; padding: 40px 20px; background: var(--profile-menu-icon-bg); border-radius: 12px;">
+                                    <img th:src="@{/assets/icon/document.svg}" alt="" class="icon" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 16px;" />
+                                    <p style="color: var(--text-color); opacity: 0.7;">Bạn chưa có đơn hàng nào</p>
+                                    <a th:href="@{/products}" class="btn btn--primary btn--rounded" style="margin-top: 16px;">Mua sắm ngay</a>
+                                </div>
+                            </div>
 
-                                <!-- Favourite item 2 -->
-                                <article class="favourite-item">
-                                    <img
-                                            th:src="@{/assets/img/product/item-2.png}"
-                                            alt=""
-                                            class="favourite-item__thumb"
-                                    />
-                                    <div>
-                                        <h3 class="favourite-item__title">
-                                            Lavazza Coffee Blends - Try the Italian Espresso
-                                        </h3>
-                                        <div class="favourite-item__content">
-                                            <span class="favourite-item__price">$53.00</span>
-                                            <button class="btn btn--primary btn--rounded">
-                                                Add to cart
-                                            </button>
-                                        </div>
+                            <!-- Wishlist Preview -->
+                            <div class="col-12">
+                                <h2 class="cart-info__heading">Sản phẩm yêu thích</h2>
+                                <p class="cart-info__desc profile__desc">
+                                    <a th:href="@{/favourite}" style="color: var(--primary-color);">Xem tất cả →</a>
+                                </p>
+
+                                <div th:if="${wishlistItems != null and !wishlistItems.empty}">
+                                    <div th:each="item, iterStat : ${wishlistItems}" th:if="${iterStat.index < 3}">
+                                        <article class="favourite-item">
+                                            <img
+                                                    th:src="${item.productImageUrl != null ? item.productImageUrl : '/assets/img/product/item-1.png'}"
+                                                    alt=""
+                                                    class="favourite-item__thumb"
+                                            />
+                                            <div>
+                                                <h3 class="favourite-item__title" th:text="${item.productName}">
+                                                    Tên sản phẩm
+                                                </h3>
+                                                <div class="favourite-item__content">
+                                                    <span class="favourite-item__price" th:text="${#numbers.formatDecimal(item.productPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">100,000 ₫</span>
+                                                    <a th:href="@{/product/{id}(id=${item.productId})}" class="btn btn--primary btn--rounded">
+                                                        Xem chi tiết
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </article>
+                                        <div th:if="${!iterStat.last and iterStat.index < 2}" class="separate" style="--margin: 20px"></div>
                                     </div>
-                                </article>
+                                </div>
+
+                                <div th:if="${wishlistItems == null or wishlistItems.empty}" style="text-align: center; padding: 40px 20px; background: var(--profile-menu-icon-bg); border-radius: 12px;">
+                                    <img th:src="@{/assets/icon/heart.svg}" alt="" class="icon" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 16px;" />
+                                    <p style="color: var(--text-color); opacity: 0.7;">Chưa có sản phẩm yêu thích</p>
+                                    <a th:href="@{/products}" class="btn btn--primary btn--rounded" style="margin-top: 16px;">Khám phá sản phẩm</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -418,31 +353,85 @@
 <!-- Footer -->
 <footer th:replace="~{shared/fragments/footer :: footer}"></footer>
 
-<!-- Modal: confirm remove shopping cart item -->
-<div id="delete-confirm" class="modal modal--small hide">
-    <div class="modal__content">
-        <p class="modal__text">
-            Do you want to remove this item from shopping cart?
-        </p>
-        <div class="modal__bottom">
-            <button
-                    class="btn btn--small btn--outline modal__btn js-toggle"
-                    toggle-target="#delete-confirm"
-            >
-                Cancel
-            </button>
-            <button
-                    class="btn btn--small btn--danger btn--primary modal__btn btn--no-margin js-toggle"
-                    toggle-target="#delete-confirm"
-            >
-                Delete
-            </button>
-        </div>
-    </div>
-    <div
-            class="modal__overlay js-toggle"
-            toggle-target="#delete-confirm"
-    ></div>
-</div>
+<style>
+    .profile-user__avatar-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    .profile-user__avatar-edit {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 32px;
+        height: 32px;
+        background: #77dae6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .profile-user__avatar-edit:hover {
+        background: #5bc7d4;
+        transform: scale(1.1);
+    }
+    .profile-user__avatar-edit .icon {
+        width: 16px;
+        height: 16px;
+        filter: brightness(0) invert(1);
+    }
+</style>
+
+<script>
+    function uploadAvatar(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Kích thước ảnh tối đa là 5MB');
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Vui lòng chọn file ảnh');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            // Show preview immediately
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatarPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Upload to server
+            fetch('/api/user/avatar', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Upload failed');
+                return response.json();
+            })
+            .then(data => {
+                alert('Cập nhật avatar thành công!');
+                if (data.avatarUrl) {
+                    document.getElementById('avatarPreview').src = data.avatarUrl;
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading avatar:', error);
+                alert('Có lỗi xảy ra khi cập nhật avatar');
+            });
+        }
+    }
+</script>
 </body>
 </html>

@@ -30,4 +30,9 @@ public class OrderResponse {
     private LocalDateTime deliveredAt;
     private String customerNote;
     private List<OrderItemResponse> orderItems;
+    
+    // Shipping info
+    private String shippingName;
+    private String shippingPhone;
+    private String shippingAddress;
 }

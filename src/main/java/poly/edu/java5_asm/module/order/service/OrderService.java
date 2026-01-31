@@ -21,6 +21,8 @@ import poly.edu.java5_asm.module.product.entity.Product;
 import poly.edu.java5_asm.module.product.repository.ProductRepository;
 import poly.edu.java5_asm.module.user.entity.User;
 import poly.edu.java5_asm.module.email.service.EmailService;
+import poly.edu.java5_asm.module.address.entity.Address;
+import poly.edu.java5_asm.module.address.repository.AddressRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,6 +40,7 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final EmailService emailService;
+    private final AddressRepository addressRepository;
 
     /**
      * Tạo đơn hàng từ giỏ hàng
@@ -70,11 +73,24 @@ public class OrderService {
         BigDecimal tax = subtotal.multiply(new BigDecimal("0.1")); // 10% thuế
         BigDecimal totalAmount = subtotal.add(shippingFee).add(tax);
 
+        // Lấy địa chỉ giao hàng
+        Address shippingAddress = null;
+        if (request.getShippingAddressId() != null) {
+            shippingAddress = addressRepository.findById(request.getShippingAddressId())
+                    .orElse(null);
+        }
+        // Nếu không có địa chỉ được chọn, lấy địa chỉ mặc định
+        if (shippingAddress == null) {
+            shippingAddress = addressRepository.findByUserAndIsDefaultTrue(user)
+                    .orElse(null);
+        }
+
         // Tạo đơn hàng
         String orderNumber = generateOrderNumber();
         Order order = Order.builder()
                 .orderNumber(orderNumber)
                 .user(user)
+                .shippingAddress(shippingAddress)
                 .subtotal(subtotal)
                 .shippingFee(shippingFee)
                 .tax(tax)
@@ -116,7 +132,7 @@ public class OrderService {
 
         // Gửi email xác nhận đơn hàng
         try {
-            emailService.sendOrderConfirmation(order, user);
+            emailService.sendOrderConfirmation(order.getId(), user.getId());
         } catch (Exception e) {
             log.error("Failed to send order confirmation email: {}", e.getMessage());
             // Don't fail the order creation if email fails
@@ -144,7 +160,7 @@ public class OrderService {
 
         // Gửi email cập nhật trạng thái
         try {
-            emailService.sendOrderStatusUpdate(order, order.getUser());
+            emailService.sendOrderStatusUpdate(order.getId(), order.getUser().getId());
         } catch (Exception e) {
             log.error("Failed to send order status update email: {}", e.getMessage());
         }
@@ -178,7 +194,7 @@ public class OrderService {
         // Gửi email thông báo khi trạng thái thanh toán thay đổi
         if (!oldStatus.equals(paymentStatus)) {
             try {
-                emailService.sendPaymentStatusUpdate(order, order.getUser());
+                emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
             } catch (Exception e) {
                 log.error("Failed to send payment status update email: {}", e.getMessage());
             }
@@ -248,7 +264,7 @@ public class OrderService {
 
         // Gửi email thông báo
         try {
-            emailService.sendPaymentStatusUpdate(order, order.getUser());
+            emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
         } catch (Exception e) {
             log.error("Failed to send payment notification email for order {}: {}",
                     orderNumber, e.getMessage());
@@ -288,7 +304,7 @@ public class OrderService {
 
         // Gửi email cập nhật trạng thái
         try {
-            emailService.sendOrderStatusUpdate(order, order.getUser());
+            emailService.sendOrderStatusUpdate(order.getId(), order.getUser().getId());
         } catch (Exception e) {
             log.error("Failed to send order status update email: {}", e.getMessage());
         }
@@ -383,11 +399,33 @@ public class OrderService {
                         .id(item.getId())
                         .productId(item.getProduct().getId())
                         .productName(item.getProductName())
+                        .productImage(item.getProduct().getImageUrl())
                         .quantity(item.getQuantity())
                         .unitPrice(item.getUnitPrice())
                         .subtotal(item.getSubtotal())
                         .build())
                 .collect(Collectors.toList());
+
+        // Get shipping address info
+        String shippingName = null;
+        String shippingPhone = null;
+        String shippingAddress = null;
+        if (order.getShippingAddress() != null) {
+            var addr = order.getShippingAddress();
+            shippingName = addr.getRecipientName();
+            shippingPhone = addr.getPhone();
+            // Build full address
+            StringBuilder sb = new StringBuilder();
+            sb.append(addr.getAddressLine1());
+            if (addr.getAddressLine2() != null && !addr.getAddressLine2().isEmpty()) {
+                sb.append(", ").append(addr.getAddressLine2());
+            }
+            if (addr.getState() != null && !addr.getState().isEmpty()) {
+                sb.append(", ").append(addr.getState());
+            }
+            sb.append(", ").append(addr.getCity());
+            shippingAddress = sb.toString();
+        }
 
         return OrderResponse.builder()
                 .id(order.getId())
@@ -406,6 +444,9 @@ public class OrderService {
                 .deliveredAt(order.getDeliveredAt())
                 .customerNote(order.getCustomerNote())
                 .orderItems(itemResponses)
+                .shippingName(shippingName)
+                .shippingPhone(shippingPhone)
+                .shippingAddress(shippingAddress)
                 .build();
     }
 
