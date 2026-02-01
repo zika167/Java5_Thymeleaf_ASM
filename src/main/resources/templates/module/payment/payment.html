@@ -475,6 +475,12 @@
                         <span class="summary-row__label">Thuế VAT (10%)</span>
                         <span class="summary-row__value" id="summary-tax">0đ</span>
                     </div>
+                    <div class="summary-row" id="discount-row" style="display: none;">
+                        <span class="summary-row__label" style="color: var(--success-color);">
+                            🎉 Giảm giá (<span id="promo-code-display"></span>)
+                        </span>
+                        <span class="summary-row__value" id="summary-discount" style="color: var(--success-color); font-weight: 600;">-0đ</span>
+                    </div>
                     <div class="summary-row">
                         <span class="summary-row__label">Phí vận chuyển</span>
                         <span class="summary-row__value" style="color: var(--success-color);">Miễn phí</span>
@@ -602,14 +608,31 @@ async function loadPaymentPage() {
     // Calculate totals
     var subtotal = parseFloat(cartData.totalPrice) || 0;
     if (subtotal > 0 && subtotal < 10000) subtotal = subtotal * 25000;
+    
+    var discount = parseFloat(cartData.discountAmount) || 0;
+    if (discount > 0 && discount < 10000) discount = discount * 25000;
+    
+    var finalPrice = parseFloat(cartData.finalPrice) || (subtotal * 1.1);
+    if (finalPrice > 0 && finalPrice < 10000) finalPrice = finalPrice * 25000;
+    
     var tax = subtotal * 0.1;
-    var total = subtotal + tax;
-    orderTotal = total;
+    orderTotal = finalPrice;
 
     document.getElementById('summary-items').textContent = cartData.totalItems;
     document.getElementById('summary-subtotal').textContent = formatVND(subtotal);
     document.getElementById('summary-tax').textContent = formatVND(tax);
-    document.getElementById('summary-total').textContent = formatVND(total);
+    
+    // Hiển thị giảm giá nếu có
+    var discountRow = document.getElementById('discount-row');
+    if (cartData.promoCode && discount > 0) {
+        discountRow.style.display = 'flex';
+        document.getElementById('promo-code-display').textContent = cartData.promoCode;
+        document.getElementById('summary-discount').textContent = '-' + formatVND(discount);
+    } else {
+        discountRow.style.display = 'none';
+    }
+    
+    document.getElementById('summary-total').textContent = formatVND(finalPrice);
 
     // Load shipping address
     var addressId = localStorage.getItem('checkoutAddressId');
@@ -644,7 +667,7 @@ async function loadPaymentPage() {
     
     // If VNPay or MoMo, show QR code
     if (paymentMethod === 'VNPAY' || paymentMethod === 'MOMO') {
-        generateQRCode(paymentMethod, total);
+        generateQRCode(paymentMethod, finalPrice);
     }
 }
 
@@ -684,7 +707,9 @@ async function completeOrder() {
             localStorage.removeItem('selectedPaymentMethod');
             
             NotificationModal.success('🎉 Đặt hàng thành công! Mã đơn hàng: ' + orderData.orderNumber);
-            setTimeout(function() { window.location.href = '/'; }, 2000);
+            setTimeout(function() { 
+                window.location.href = '/order-detail/' + orderData.id; 
+            }, 1500);
         } else if (response.status === 401) {
             NotificationModal.warning('Vui lòng đăng nhập để đặt hàng!');
             setTimeout(function() { window.location.href = '/auth/sign-in'; }, 1500);

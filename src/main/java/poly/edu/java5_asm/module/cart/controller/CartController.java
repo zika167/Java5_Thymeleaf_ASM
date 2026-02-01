@@ -30,32 +30,34 @@ public class CartController {
     private final CartService cartService;
 
     /**
-     * Lấy user từ Authentication hoặc session ID cho guest
+     * Lấy user từ Authentication - YÊU CẦU ĐĂNG NHẬP
      */
-    private String getCartIdentifier(Authentication authentication, HttpSession session) {
-        if (authentication != null && authentication.isAuthenticated() 
-                && authentication.getPrincipal() instanceof CustomUserDetails) {
-            User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
-            return "user_" + user.getId();
+    private User getAuthenticatedUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() 
+                || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+            throw new RuntimeException("Vui lòng đăng nhập để sử dụng giỏ hàng");
         }
-        // Cho guest user, dùng session ID
-        return "guest_" + session.getId();
+        return ((CustomUserDetails) authentication.getPrincipal()).getUser();
     }
 
     /**
-     * Lấy giỏ hàng hiện tại
+     * Lấy giỏ hàng hiện tại - YÊU CẦU ĐĂNG NHẬP
      */
     @GetMapping
-    @Operation(summary = "Lấy giỏ hàng", description = "Lấy thông tin giỏ hàng hiện tại của user hoặc guest")
+    @Operation(summary = "Lấy giỏ hàng", description = "Lấy thông tin giỏ hàng hiện tại của user")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Thành công"),
+            @ApiResponse(responseCode = "401", description = "Chưa đăng nhập"),
             @ApiResponse(responseCode = "500", description = "Lỗi server")
     })
-    public ResponseEntity<CartResponse> getCart(Authentication authentication, HttpSession session) {
+    public ResponseEntity<?> getCart(Authentication authentication) {
         try {
-            String cartId = getCartIdentifier(authentication, session);
-            CartResponse cart = cartService.getCartByIdentifier(cartId);
+            User user = getAuthenticatedUser(authentication);
+            CartResponse cart = cartService.getCart(user);
             return ResponseEntity.ok(cart);
+        } catch (RuntimeException e) {
+            log.error("Lỗi xác thực: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.error("Lỗi khi lấy giỏ hàng: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -63,26 +65,29 @@ public class CartController {
     }
 
     /**
-     * Thêm sản phẩm vào giỏ hàng (hỗ trợ cả guest user)
+     * Thêm sản phẩm vào giỏ hàng - YÊU CẦU ĐĂNG NHẬP
      */
     @PostMapping("/add")
     @Operation(summary = "Thêm vào giỏ hàng", description = "Thêm sản phẩm vào giỏ hàng")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Thêm thành công"),
             @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc hết hàng"),
+            @ApiResponse(responseCode = "401", description = "Chưa đăng nhập"),
             @ApiResponse(responseCode = "500", description = "Lỗi server")
     })
-    public ResponseEntity<CartResponse> addToCart(
+    public ResponseEntity<?> addToCart(
             Authentication authentication,
-            HttpSession session,
             @Valid @RequestBody AddToCartRequest request) {
         try {
-            String cartId = getCartIdentifier(authentication, session);
-            CartResponse cart = cartService.addToCartByIdentifier(cartId, request);
+            User user = getAuthenticatedUser(authentication);
+            CartResponse cart = cartService.addToCart(user, request);
             return ResponseEntity.ok(cart);
         } catch (RuntimeException e) {
             log.error("Lỗi khi thêm vào giỏ hàng: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            if (e.getMessage().contains("đăng nhập")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("Lỗi khi thêm vào giỏ hàng: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -90,20 +95,22 @@ public class CartController {
     }
 
     /**
-     * Cập nhật số lượng item trong giỏ
+     * Cập nhật số lượng item trong giỏ - YÊU CẦU ĐĂNG NHẬP
      */
     @PutMapping("/update")
-    public ResponseEntity<CartResponse> updateCartItem(
+    public ResponseEntity<?> updateCartItem(
             Authentication authentication,
-            HttpSession session,
             @Valid @RequestBody UpdateCartItemRequest request) {
         try {
-            String cartId = getCartIdentifier(authentication, session);
-            CartResponse cart = cartService.updateCartItemByIdentifier(cartId, request);
+            User user = getAuthenticatedUser(authentication);
+            CartResponse cart = cartService.updateCartItem(user, request);
             return ResponseEntity.ok(cart);
         } catch (RuntimeException e) {
             log.error("Lỗi khi cập nhật giỏ hàng: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            if (e.getMessage().contains("đăng nhập")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("Lỗi khi cập nhật giỏ hàng: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -111,21 +118,23 @@ public class CartController {
     }
 
     /**
-     * Xóa item khỏi giỏ hàng
+     * Xóa item khỏi giỏ hàng - YÊU CẦU ĐĂNG NHẬP
      */
     @DeleteMapping("/remove/{cartItemId}")
     @Operation(summary = "Xóa item khỏi giỏ", description = "Xóa một sản phẩm khỏi giỏ hàng")
-    public ResponseEntity<CartResponse> removeFromCart(
+    public ResponseEntity<?> removeFromCart(
             Authentication authentication,
-            HttpSession session,
             @Parameter(description = "ID của cart item") @PathVariable Long cartItemId) {
         try {
-            String cartId = getCartIdentifier(authentication, session);
-            CartResponse cart = cartService.removeFromCartByIdentifier(cartId, cartItemId);
+            User user = getAuthenticatedUser(authentication);
+            CartResponse cart = cartService.removeFromCart(user, cartItemId);
             return ResponseEntity.ok(cart);
         } catch (RuntimeException e) {
             log.error("Lỗi khi xóa khỏi giỏ hàng: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            if (e.getMessage().contains("đăng nhập")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("Lỗi khi xóa khỏi giỏ hàng: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -133,14 +142,17 @@ public class CartController {
     }
 
     /**
-     * Xóa toàn bộ giỏ hàng
+     * Xóa toàn bộ giỏ hàng - YÊU CẦU ĐĂNG NHẬP
      */
     @DeleteMapping("/clear")
-    public ResponseEntity<Void> clearCart(Authentication authentication, HttpSession session) {
+    public ResponseEntity<?> clearCart(Authentication authentication) {
         try {
-            String cartId = getCartIdentifier(authentication, session);
-            cartService.clearCartByIdentifier(cartId);
+            User user = getAuthenticatedUser(authentication);
+            cartService.clearCart(user);
             return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            log.error("Lỗi xác thực: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.error("Lỗi khi xóa giỏ hàng: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -148,16 +160,68 @@ public class CartController {
     }
 
     /**
-     * Lấy số lượng items trong giỏ
+     * Lấy số lượng items trong giỏ - YÊU CẦU ĐĂNG NHẬP
      */
     @GetMapping("/count")
-    public ResponseEntity<Integer> getCartItemCount(Authentication authentication, HttpSession session) {
+    public ResponseEntity<?> getCartItemCount(Authentication authentication) {
         try {
-            String cartId = getCartIdentifier(authentication, session);
-            Integer count = cartService.getCartItemCountByIdentifier(cartId);
+            User user = getAuthenticatedUser(authentication);
+            Integer count = cartService.getCartItemCount(user);
             return ResponseEntity.ok(count);
+        } catch (RuntimeException e) {
+            // Nếu chưa đăng nhập, trả về 0 thay vì lỗi
+            return ResponseEntity.ok(0);
         } catch (Exception e) {
             log.error("Lỗi khi lấy số lượng giỏ hàng: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Áp dụng mã giảm giá - YÊU CẦU ĐĂNG NHẬP
+     */
+    @PostMapping("/apply-promo")
+    @Operation(summary = "Áp dụng mã giảm giá", description = "Áp dụng mã giảm giá cho giỏ hàng")
+    public ResponseEntity<?> applyPromoCode(
+            Authentication authentication,
+            @RequestParam String promoCode) {
+        try {
+            User user = getAuthenticatedUser(authentication);
+            String cartId = "user_" + user.getId();
+            CartResponse cart = cartService.applyPromoCode(cartId, promoCode);
+            return ResponseEntity.ok(cart);
+        } catch (IllegalArgumentException e) {
+            log.error("Mã giảm giá không hợp lệ: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("đăng nhập")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            }
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Lỗi khi áp dụng mã giảm giá: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Xóa mã giảm giá - YÊU CẦU ĐĂNG NHẬP
+     */
+    @DeleteMapping("/remove-promo")
+    @Operation(summary = "Xóa mã giảm giá", description = "Xóa mã giảm giá đã áp dụng")
+    public ResponseEntity<?> removePromoCode(Authentication authentication) {
+        try {
+            User user = getAuthenticatedUser(authentication);
+            String cartId = "user_" + user.getId();
+            CartResponse cart = cartService.removePromoCode(cartId);
+            return ResponseEntity.ok(cart);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("đăng nhập")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            }
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Lỗi khi xóa mã giảm giá: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

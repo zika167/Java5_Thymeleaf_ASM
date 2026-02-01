@@ -587,6 +587,13 @@
                     <span>Thuế VAT (10%)</span>
                     <span id="tax">0đ</span>
                 </div>
+                <div class="cart-summary__row" id="discount-row" style="display: none;">
+                    <span style="color: var(--success-color);">
+                        🎉 Giảm giá (<span id="promo-code-display"></span>)
+                        <button onclick="removePromo()" style="border: none; background: none; color: var(--danger-color); cursor: pointer; margin-left: 8px;" title="Xóa mã">✕</button>
+                    </span>
+                    <span id="discount" style="color: var(--success-color); font-weight: 600;">-0đ</span>
+                </div>
                 <div class="cart-summary__row">
                     <span>Phí vận chuyển</span>
                     <span id="shipping" style="color: var(--success-color);">Miễn phí</span>
@@ -600,8 +607,11 @@
                 <div class="promo-code">
                     <div class="promo-code__title">🎁 Mã giảm giá</div>
                     <div class="promo-code__form">
-                        <input type="text" class="promo-code__input" placeholder="Nhập mã giảm giá">
+                        <input type="text" id="promo-input" class="promo-code__input" placeholder="Nhập mã: GIAM10K">
                         <button class="promo-code__btn" onclick="applyPromo()">Áp dụng</button>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 1.2rem; color: var(--text-muted);">
+                        💡 Mã <strong>GIAM10K</strong>: Giảm giá để tổng đơn còn 10.000đ
                     </div>
                 </div>
 
@@ -705,12 +715,31 @@ function updateCartSummary(data) {
     let subtotal = parseFloat(data.totalPrice) || 0;
     if (subtotal > 0 && subtotal < 10000) subtotal = subtotal * 25000;
     
+    let discount = parseFloat(data.discountAmount) || 0;
+    if (discount > 0 && discount < 10000) discount = discount * 25000;
+    
+    let finalPrice = parseFloat(data.finalPrice) || (subtotal * 1.1);
+    if (finalPrice > 0 && finalPrice < 10000) finalPrice = finalPrice * 25000;
+    
+    // Thuế VAT 10% đã được tính trong subtotal
     const tax = subtotal * 0.1;
-    const total = subtotal + tax;
     
     document.getElementById('subtotal').textContent = formatPrice(subtotal);
     document.getElementById('tax').textContent = formatPrice(tax);
-    document.getElementById('total').textContent = formatPrice(total);
+    
+    // Hiển thị giảm giá nếu có
+    const discountRow = document.getElementById('discount-row');
+    if (data.promoCode && discount > 0) {
+        discountRow.style.display = 'flex';
+        document.getElementById('promo-code-display').textContent = data.promoCode;
+        document.getElementById('discount').textContent = '-' + formatPrice(discount);
+        document.getElementById('promo-input').value = data.promoCode;
+    } else {
+        discountRow.style.display = 'none';
+    }
+    
+    // Tổng cộng = finalPrice (đã bao gồm thuế và giảm giá)
+    document.getElementById('total').textContent = formatPrice(finalPrice);
 }
 
 async function updateQuantity(itemId, newQuantity) {
@@ -768,15 +797,52 @@ async function clearCart() {
     }
 }
 
-function applyPromo() {
-    const input = document.querySelector('.promo-code__input');
+async function applyPromo() {
+    const input = document.getElementById('promo-input');
     const code = input.value.trim();
     if (!code) {
         NotificationModal.warning('Vui lòng nhập mã giảm giá');
         return;
     }
-    // TODO: Implement promo code API
-    NotificationModal.info('Tính năng đang phát triển');
+    
+    try {
+        const response = await fetch(`/api/cart/apply-promo?promoCode=${encodeURIComponent(code)}`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            NotificationModal.success('Áp dụng mã giảm giá thành công! 🎉');
+            renderCartItems(data.items);
+            updateCartSummary(data);
+        } else {
+            const errorMsg = await response.text();
+            NotificationModal.error(errorMsg || 'Mã giảm giá không hợp lệ');
+            input.value = '';
+        }
+    } catch (error) {
+        console.error('Error applying promo:', error);
+        NotificationModal.error('Đã xảy ra lỗi khi áp dụng mã giảm giá');
+    }
+}
+
+async function removePromo() {
+    try {
+        const response = await fetch('/api/cart/remove-promo', {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            NotificationModal.success('Đã xóa mã giảm giá');
+            document.getElementById('promo-input').value = '';
+            loadCart();
+        } else {
+            NotificationModal.error('Không thể xóa mã giảm giá');
+        }
+    } catch (error) {
+        console.error('Error removing promo:', error);
+        NotificationModal.error('Đã xảy ra lỗi');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadCart);

@@ -17,4 +17,7 @@ public class CartResponse {
     private List<CartItemResponse> items;
     private Integer totalItems;
     private BigDecimal totalPrice;
+    private String promoCode;
+    private BigDecimal discountAmount;
+    private BigDecimal finalPrice;
 }
