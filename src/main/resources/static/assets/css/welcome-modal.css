@@ -1,0 +1,308 @@
+/**
+ * Welcome Modal Styles
+ */
+
+:root {
+    --primary-color: #22d3ee;
+    --primary-dark: #06b6d4;
+    --primary-light: #67e8f9;
+    --primary-bg: #ecfeff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+}
+
+/* Overlay */
+.welcome-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(0px);
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.welcome-modal-overlay.show {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Container */
+.welcome-modal-container {
+    position: relative;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid var(--border-color);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Close Button */
+.welcome-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.welcome-modal-close:hover {
+    background: var(--primary-bg);
+    color: var(--primary-dark);
+    transform: rotate(90deg);
+}
+
+/* Header */
+.welcome-modal-header {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px 20px;
+    background: linear-gradient(135deg, var(--primary-bg) 0%, rgba(34, 211, 238, 0.05) 100%);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.welcome-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(34, 211, 238, 0.3);
+    animation: bounce 2s infinite;
+}
+
+.welcome-modal-icon svg {
+    color: #fff;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Content */
+.welcome-modal-content {
+    padding: 40px 30px;
+}
+
+.welcome-modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 20px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.welcome-modal-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin: 0 0 16px;
+    text-align: center;
+}
+
+.welcome-modal-text strong {
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+
+.welcome-modal-text--highlight {
+    font-size: 18px;
+    color: var(--primary-dark);
+    font-weight: 600;
+    margin-top: 24px;
+    padding: 16px;
+    background: var(--primary-bg);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Features List */
+.welcome-modal-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 32px 0;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--primary-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.feature-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(34, 211, 238, 0.1);
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, var(--primary-bg) 0%, rgba(34, 211, 238, 0.1) 100%);
+}
+
+.feature-icon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.feature-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* Footer */
+.welcome-modal-footer {
+    padding: 20px 30px 40px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.welcome-modal-btn {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.welcome-modal-btn--primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);
+    min-width: 200px;
+}
+
+.welcome-modal-btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 211, 238, 0.5);
+}
+
+.welcome-modal-btn--primary:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .welcome-modal-container {
+        width: 95%;
+        border-radius: 20px;
+    }
+
+    .welcome-modal-content {
+        padding: 30px 20px;
+    }
+
+    .welcome-modal-title {
+        font-size: 24px;
+    }
+
+    .welcome-modal-text {
+        font-size: 15px;
+    }
+
+    .welcome-modal-features {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-modal-footer {
+        padding: 16px 20px 30px;
+    }
+
+    .welcome-modal-btn--primary {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .welcome-modal-icon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .welcome-modal-icon svg {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Scrollbar Styling */
+.welcome-modal-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.welcome-modal-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.welcome-modal-container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.welcome-modal-container::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
