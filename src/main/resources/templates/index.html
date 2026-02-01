@@ -50,8 +50,8 @@
                     </a>
                 </div>
             </div>
-            <!-- Slideshow Controls -->
-            <div class="slideshow__controls">
+            <!-- Slideshow Controls - Hidden -->
+            <div class="slideshow__controls" style="display: none;">
                 <button class="slideshow__control slideshow__control--prev" aria-label="Slide trước">
                     <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="icon"/>
                 </button>
@@ -197,11 +197,9 @@
             <nav class="pagination">
                 <button class="pagination__btn pagination__btn--prev" id="prev-page" disabled>
                     <img th:src="@{/assets/icon/arrow-left.svg}" alt="Trang trước" class="pagination__icon icon"/>
-                    <span class="pagination__btn-text">Trước</span>
                 </button>
                 <div class="pagination__pages" id="pagination-pages"></div>
                 <button class="pagination__btn pagination__btn--next" id="next-page">
-                    <span class="pagination__btn-text">Sau</span>
                     <img th:src="@{/assets/icon/arrow-right.svg}" alt="Trang sau" class="pagination__icon icon"/>
                 </button>
             </nav>
@@ -497,8 +495,9 @@
 .pagination__btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 10px 16px;
+    padding: 10px;
     background: var(--pagination-btn-bg, #fff);
     border: 1px solid var(--pagination-btn-border, #d2d1d6);
     border-radius: 8px;
@@ -518,16 +517,6 @@
 .pagination__btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-.pagination__btn-text {
-    display: none;
-}
-
-@media (min-width: 768px) {
-    .pagination__btn-text {
-        display: inline;
-    }
 }
 
 .pagination__icon {
