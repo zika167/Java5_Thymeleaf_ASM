@@ -29,6 +29,26 @@ public class UserApiController {
     private static final String UPLOAD_DIR = "src/main/resources/static/assets/img/avatar/";
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
+    /**
+     * Get current logged-in user information
+     */
+    @GetMapping("/current")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        }
+
+        User user = userDetails.getUser();
+        return ResponseEntity.ok(Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail(),
+                "fullName", user.getFullName(),
+                "role", user.getRole(),
+                "avatarUrl", user.getAvatarUrl()
+        ));
+    }
+
     @PostMapping("/avatar")
     public ResponseEntity<?> uploadAvatar(
             @AuthenticationPrincipal CustomUserDetails userDetails,
