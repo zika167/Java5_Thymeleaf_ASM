@@ -28,4 +28,12 @@ public interface EmailService {
      * @param userId  The user ID who placed the order
      */
     void sendPaymentStatusUpdate(Long orderId, Long userId);
+
+    /**
+     * Send order cancellation apology email to customer
+     *
+     * @param orderId The order ID that was cancelled
+     * @param userId  The user ID who placed the order
+     */
+    void sendOrderCancellationApology(Long orderId, Long userId);
 }

@@ -60,6 +60,29 @@ public class OrderStatusScheduler {
 
     private void updateOrderStatus(Order order, OrderStatus newStatus) {
         OrderStatus oldStatus = order.getStatus();
+        
+        // Nếu đơn hàng đang ở CONFIRMED và chuẩn bị chuyển sang SHIPPED
+        // thì tự động HỦY đơn hàng và gửi email xin lỗi
+        if (oldStatus == OrderStatus.CONFIRMED && newStatus == OrderStatus.SHIPPED) {
+            log.warn("Đơn hàng #{} đang ở CONFIRMED, tự động hủy thay vì chuyển sang SHIPPED", order.getOrderNumber());
+            
+            order.setStatus(OrderStatus.CANCELLED);
+            order.setCancelledAt(LocalDateTime.now());
+            orderRepository.save(order);
+            
+            log.info("Đã tự động hủy đơn hàng #{}", order.getOrderNumber());
+            
+            // Gửi email xin lỗi khách hàng
+            try {
+                emailService.sendOrderCancellationApology(order.getId(), order.getUser().getId());
+                log.info("Đã gửi email xin lỗi cho đơn hàng #{}", order.getOrderNumber());
+            } catch (Exception e) {
+                log.error("Lỗi gửi email xin lỗi cho đơn hàng #{}: {}", order.getOrderNumber(), e.getMessage());
+            }
+            
+            return;
+        }
+        
         order.setStatus(newStatus);
 
         // Cập nhật timestamp tương ứng
@@ -82,22 +105,6 @@ public class OrderStatusScheduler {
         orderRepository.save(order);
         log.info("Đơn hàng #{}: {} -> {}", order.getOrderNumber(), oldStatus, newStatus);
 
-        // Gửi email thông báo thay đổi trạng thái
-        try {
-            emailService.sendOrderStatusUpdate(order.getId(), order.getUser().getId());
-            log.info("Đã gửi email thông báo trạng thái đơn hàng #{}", order.getOrderNumber());
-        } catch (Exception e) {
-            log.error("Lỗi gửi email thông báo trạng thái đơn hàng #{}: {}", order.getOrderNumber(), e.getMessage());
-        }
-
-        // Với COD, gửi thêm email thông báo thanh toán khi giao hàng thành công
-        if (newStatus == OrderStatus.DELIVERED && "COD".equalsIgnoreCase(order.getPaymentMethod())) {
-            try {
-                emailService.sendPaymentStatusUpdate(order.getId(), order.getUser().getId());
-                log.info("Đã gửi email thông báo thanh toán COD cho đơn hàng #{}", order.getOrderNumber());
-            } catch (Exception e) {
-                log.error("Lỗi gửi email thông báo thanh toán COD cho đơn hàng #{}: {}", order.getOrderNumber(), e.getMessage());
-            }
-        }
+        // Không gửi email tự động khi thay đổi status nữa
     }
 }

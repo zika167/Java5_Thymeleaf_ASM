@@ -67,6 +67,13 @@ public class Order {
     @Column(precision = 10, scale = 2)
     private BigDecimal tax = BigDecimal.ZERO; // Thuế
 
+    @Column(name = "promo_code", length = 50)
+    private String promoCode; // Mã giảm giá đã áp dụng
+
+    @Builder.Default
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    private BigDecimal discountAmount = BigDecimal.ZERO; // Số tiền giảm giá
+
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount; // Tổng cộng
 

@@ -524,6 +524,12 @@
                         <span>Thuế VAT (10%)</span>
                         <span id="summary-tax">0đ</span>
                     </div>
+                    <div class="order-summary__row" id="discount-row" style="display: none;">
+                        <span style="color: var(--success-color);">
+                            🎉 Giảm giá (<span id="promo-code-display"></span>)
+                        </span>
+                        <span id="summary-discount" style="color: var(--success-color); font-weight: 600;">-0đ</span>
+                    </div>
                     <div class="order-summary__row">
                         <span>Phí vận chuyển</span>
                         <span id="summary-shipping" style="color: var(--success-color);">Miễn phí</span>
@@ -620,12 +626,28 @@ function updateSummary() {
     let subtotal = parseFloat(cartData.totalPrice) || 0;
     if (subtotal > 0 && subtotal < 10000) subtotal = subtotal * 25000;
     
+    let discount = parseFloat(cartData.discountAmount) || 0;
+    if (discount > 0 && discount < 10000) discount = discount * 25000;
+    
+    let finalPrice = parseFloat(cartData.finalPrice) || (subtotal * 1.1);
+    if (finalPrice > 0 && finalPrice < 10000) finalPrice = finalPrice * 25000;
+    
     const tax = subtotal * 0.1;
-    const total = subtotal + tax;
     
     document.getElementById('summary-subtotal').textContent = formatPrice(subtotal);
     document.getElementById('summary-tax').textContent = formatPrice(tax);
-    document.getElementById('summary-total').textContent = formatPrice(total);
+    
+    // Hiển thị giảm giá nếu có
+    const discountRow = document.getElementById('discount-row');
+    if (cartData.promoCode && discount > 0) {
+        discountRow.style.display = 'flex';
+        document.getElementById('promo-code-display').textContent = cartData.promoCode;
+        document.getElementById('summary-discount').textContent = '-' + formatPrice(discount);
+    } else {
+        discountRow.style.display = 'none';
+    }
+    
+    document.getElementById('summary-total').textContent = formatPrice(finalPrice);
 }
 
 // Load addresses

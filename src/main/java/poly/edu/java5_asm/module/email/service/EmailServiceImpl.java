@@ -180,6 +180,38 @@ public class EmailServiceImpl implements EmailService {
         };
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public void sendOrderCancellationApology(Long orderId, Long userId) {
+        log.info("=== START sendOrderCancellationApology === orderId={}, userId={}", orderId, userId);
+
+        try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+            log.info("Sending cancellation apology email for order {} to user {}", 
+                    order.getOrderNumber(), user.getEmail());
+
+            String subject = "Xin lỗi về việc hủy đơn hàng #" + order.getOrderNumber() + " - Grocery Store";
+            String htmlContent = buildOrderCancellationApologyEmail(order, user);
+
+            sendEmailWithRetry(user.getEmail(), subject, htmlContent);
+            log.info("=== END sendOrderCancellationApology === email sent successfully for order {}", order.getOrderNumber());
+        } catch (Exception e) {
+            log.error("=== ERROR sendOrderCancellationApology === orderId {}: {}", orderId, e.getMessage(), e);
+        }
+    }
+
+    private String buildOrderCancellationApologyEmail(Order order, User user) {
+        Context context = new Context();
+        context.setVariable("user", user);
+        context.setVariable("order", order);
+
+        return templateEngine.process("shared/email/order-cancellation-apology-email", context);
+    }
+
     private void sendEmailWithRetry(String to, String subject, String htmlContent) throws MessagingException {
         int attempts = 0;
         MessagingException lastException = null;

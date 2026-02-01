@@ -214,7 +214,7 @@
         // Previous button
         html += `<button class="pagination__btn pagination__btn--prev ${currentPage === 1 ? 'disabled' : ''}" 
                          onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                    ‹ Trước
+                    <img src="/assets/icon/arrow-left.svg" alt="" class="icon"/>
                  </button>`;
         
         // Page numbers
@@ -246,7 +246,7 @@
         // Next button
         html += `<button class="pagination__btn pagination__btn--next ${currentPage === totalPages ? 'disabled' : ''}" 
                          onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                    Sau ›
+                    <img src="/assets/icon/arrow-right.svg" alt="" class="icon"/>
                  </button>`;
         
         // Page info

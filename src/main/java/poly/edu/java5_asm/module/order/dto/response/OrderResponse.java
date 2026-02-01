@@ -23,6 +23,8 @@ public class OrderResponse {
     private BigDecimal subtotal;
     private BigDecimal shippingFee;
     private BigDecimal tax;
+    private String promoCode;
+    private BigDecimal discountAmount;
     private BigDecimal totalAmount;
     private LocalDateTime orderedAt;
     private LocalDateTime confirmedAt;

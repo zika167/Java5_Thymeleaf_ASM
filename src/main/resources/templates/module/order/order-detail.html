@@ -237,12 +237,18 @@
                     <span>${formatCurrency(order.subtotal)}</span>
                 </div>
                 <div class="summary-row">
+                    <span>Thuế VAT (10%)</span>
+                    <span>${formatCurrency(order.tax)}</span>
+                </div>
+                ${order.promoCode && order.discountAmount > 0 ? `
+                <div class="summary-row summary-row--discount">
+                    <span style="color: #10b981;">🎉 Giảm giá (${order.promoCode})</span>
+                    <span style="color: #10b981; font-weight: 600;">-${formatCurrency(order.discountAmount)}</span>
+                </div>
+                ` : ''}
+                <div class="summary-row">
                     <span>Phí vận chuyển</span>
                     <span>${order.shippingFee > 0 ? formatCurrency(order.shippingFee) : 'Miễn phí'}</span>
-                </div>
-                <div class="summary-row">
-                    <span>Thuế (10%)</span>
-                    <span>${formatCurrency(order.tax)}</span>
                 </div>
                 <div class="summary-row summary-row--total">
                     <span>Tổng cộng</span>
@@ -574,6 +580,12 @@
     border-bottom: 1px solid var(--border-color, #f0f0f0);
 }
 .summary-row:last-child { border-bottom: none; }
+.summary-row--discount {
+    background: linear-gradient(90deg, #ecfdf5 0%, #d1fae5 100%);
+    margin: 0 -20px;
+    padding: 12px 20px !important;
+    border-radius: 8px;
+}
 .summary-row--total {
     font-size: 18px;
     font-weight: 700;

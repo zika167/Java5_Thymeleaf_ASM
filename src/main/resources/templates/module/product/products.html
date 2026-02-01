@@ -318,7 +318,6 @@
                          onclick="goToPage(${currentPageNum - 1})" 
                          ${currentPageNum === 0 ? 'disabled' : ''}>
                     <img src="/assets/icon/arrow-left.svg" alt="" class="icon"/>
-                    <span>Trước</span>
                  </button>`;
         
         // Pages
@@ -337,7 +336,6 @@
         html += `<button class="pagination__btn pagination__btn--next" 
                          onclick="goToPage(${currentPageNum + 1})" 
                          ${currentPageNum === totalPages - 1 ? 'disabled' : ''}>
-                    <span>Sau</span>
                     <img src="/assets/icon/arrow-right.svg" alt="" class="icon"/>
                  </button>`;
         
