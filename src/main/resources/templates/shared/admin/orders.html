@@ -169,8 +169,15 @@
                     <option value="DELIVERED">✅ Đã giao</option>
                     <option value="CANCELLED">❌ Đã hủy</option>
                 </select>
+                <select id="paymentMethodFilter" class="filter-select">
+                    <option value="">💳 Tất cả PT thanh toán</option>
+                    <option value="COD">💵 COD</option>
+                    <option value="VNPAY">💳 VNPay</option>
+                    <option value="MOMO">📱 MoMo</option>
+                    <option value="BANK_TRANSFER">🏦 Chuyển khoản</option>
+                </select>
                 <select id="paymentFilter" class="filter-select">
-                    <option value="">💳 Tất cả thanh toán</option>
+                    <option value="">⏳ Tất cả TT thanh toán</option>
                     <option value="PENDING">⏳ Chưa thanh toán</option>
                     <option value="PAID">✅ Đã thanh toán</option>
                     <option value="REFUNDED">↩️ Đã hoàn tiền</option>
@@ -179,8 +186,8 @@
             </div>
             <div class="table-responsive">
                 <table class="admin-table">
-                    <thead><tr><th>Mã ĐH</th><th>Khách Hàng</th><th>Ngày Đặt</th><th>Sản Phẩm</th><th>Tổng Tiền</th><th>Thanh Toán</th><th>Trạng Thái</th><th>Hành Động</th></tr></thead>
-                    <tbody id="ordersTable"><tr><td colspan="8" class="text-center" style="padding:40px;">Đang tải...</td></tr></tbody>
+                    <thead><tr><th>Mã ĐH</th><th>Khách Hàng</th><th>Ngày Đặt</th><th>Sản Phẩm</th><th>Tổng Tiền</th><th>PT Thanh Toán</th><th>TT Thanh Toán</th><th>Trạng Thái</th><th>Hành Động</th></tr></thead>
+                    <tbody id="ordersTable"><tr><td colspan="9" class="text-center" style="padding:40px;">Đang tải...</td></tr></tbody>
                 </table>
             </div>
             <div class="pagination" id="pagination"></div>
@@ -202,7 +209,7 @@
 <script>
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content || '';
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
-    let currentPage = 0, totalPages = 0, currentStatus = '', currentPayment = '', searchQuery = '', searchTimeout;
+    let currentPage = 0, totalPages = 0, currentStatus = '', currentPayment = '', currentPaymentMethod = '', searchQuery = '', searchTimeout;
     const pageSize = 10;
 
     const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
@@ -212,6 +219,7 @@
         loadOrderStats();
         document.getElementById('searchInput').addEventListener('input', e => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { searchQuery = e.target.value; currentPage = 0; loadOrders(); }, 300); });
         document.getElementById('statusFilter').addEventListener('change', e => { currentStatus = e.target.value; currentPage = 0; loadOrders(); });
+        document.getElementById('paymentMethodFilter').addEventListener('change', e => { currentPaymentMethod = e.target.value; currentPage = 0; loadOrders(); });
         document.getElementById('paymentFilter').addEventListener('change', e => { currentPayment = e.target.value; currentPage = 0; loadOrders(); });
     });
 
@@ -239,6 +247,7 @@
             .then(data => {
                 totalPages = data.totalPages || 1;
                 let orders = data.content || [];
+                if (currentPaymentMethod) orders = orders.filter(o => o.paymentMethod === currentPaymentMethod);
                 if (currentPayment) orders = orders.filter(o => o.paymentStatus === currentPayment);
                 if (searchQuery) orders = orders.filter(o => o.orderNumber?.toLowerCase().includes(searchQuery.toLowerCase()));
                 document.getElementById('orderCount').textContent = `📊 ${data.totalElements || 0} đơn | Trang ${currentPage + 1}/${totalPages}`;
@@ -252,6 +261,7 @@
                         <td><div class="customer-info"><strong>${formatDate(o.createdAt)}</strong></div></td>
                         <td><strong>${itemCount}</strong> sản phẩm</td>
                         <td class="price">${formatPrice(o.totalAmount)}</td>
+                        <td><span class="badge badge--${getPaymentMethodClass(o.paymentMethod)}">${getPaymentMethodIcon(o.paymentMethod)} ${getPaymentMethodText(o.paymentMethod)}</span></td>
                         <td><span class="badge badge--${getPaymentClass(o.paymentStatus)}" onclick="showPaymentModal(${o.id}, '${o.paymentStatus}')">${getPaymentIcon(o.paymentStatus)} ${getPaymentText(o.paymentStatus)}</span></td>
                         <td><span class="badge badge--${o.status.toLowerCase()}">${getStatusIcon(o.status)} ${getStatusText(o.status)}</span></td>
                         <td><div class="action-buttons">
@@ -259,10 +269,10 @@
                             <button onclick="showStatusModal(${o.id}, '${o.status}')" class="btn--icon btn--status" title="Cập nhật trạng thái">📝</button>
                         </div></td>
                     </tr>`}).join('');
-                } else { tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:40px;color:#64748b;">Không có đơn hàng nào</td></tr>'; }
+                } else { tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="padding:40px;color:#64748b;">Không có đơn hàng nào</td></tr>'; }
                 renderPagination();
             })
-            .catch(e => { console.error(e); document.getElementById('ordersTable').innerHTML = '<tr><td colspan="8" class="text-center" style="padding:40px;color:#ef4444;">❌ Lỗi tải dữ liệu</td></tr>'; });
+            .catch(e => { console.error(e); document.getElementById('ordersTable').innerHTML = '<tr><td colspan="9" class="text-center" style="padding:40px;color:#ef4444;">❌ Lỗi tải dữ liệu</td></tr>'; });
     }
     function renderPagination() {
         const pg = document.getElementById('pagination');
@@ -284,6 +294,9 @@
     function getPaymentText(s) { return { 'PENDING': 'Chưa TT', 'PAID': 'Đã TT', 'REFUNDED': 'Hoàn tiền' }[s] || s; }
     function getPaymentIcon(s) { return { 'PENDING': '⏳', 'PAID': '✅', 'REFUNDED': '↩️' }[s] || ''; }
     function getPaymentClass(s) { return { 'PENDING': 'unpaid', 'PAID': 'paid', 'REFUNDED': 'refunded' }[s] || 'unpaid'; }
+    function getPaymentMethodText(m) { return { 'COD': 'COD', 'VNPAY': 'VNPay', 'MOMO': 'MoMo', 'BANK_TRANSFER': 'Chuyển khoản' }[m] || m || 'COD'; }
+    function getPaymentMethodIcon(m) { return { 'COD': '💵', 'VNPAY': '💳', 'MOMO': '📱', 'BANK_TRANSFER': '🏦' }[m] || '💳'; }
+    function getPaymentMethodClass(m) { return { 'COD': 'confirmed', 'VNPAY': 'processing', 'MOMO': 'shipped', 'BANK_TRANSFER': 'delivered' }[m] || 'confirmed'; }
 
     function viewOrder(id) {
         fetch(`/api/orders/${id}`, { headers: { [csrfHeader]: csrfToken } })
@@ -302,6 +315,11 @@
                         <p><strong>Tên:</strong> ${o.userName || 'N/A'}</p>
                         <p><strong>Địa chỉ:</strong> ${o.shippingAddress || 'N/A'}</p>
                         <p><strong>Ghi chú:</strong> ${o.customerNote || 'Không có'}</p>
+                    </div>
+                    <div class="order-detail__section">
+                        <h4>💳 Thông tin thanh toán</h4>
+                        <p><strong>Phương thức:</strong> ${getPaymentMethodIcon(o.paymentMethod)} ${getPaymentMethodText(o.paymentMethod)}</p>
+                        <p><strong>Trạng thái:</strong> ${getPaymentIcon(o.paymentStatus)} ${getPaymentText(o.paymentStatus)}</p>
                     </div>
                     <div class="order-detail__section">
                         <h4>🛒 Sản phẩm</h4>

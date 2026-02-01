@@ -426,7 +426,7 @@ input[type="radio"] + span {
 }
 
 /* Ensure all clickable elements have pointer */
-a, 
+a,
 .clickable,
 [onclick] {
     cursor: pointer !important;
@@ -714,12 +714,12 @@ a,
     .top-menu__main {
         gap: 30px !important;
     }
-    
+
     .menu-column {
         min-width: 140px !important;
         max-width: 180px !important;
     }
-    
+
     .sub-menu {
         min-width: 400px !important;
     }
@@ -737,25 +737,25 @@ a,
         padding: 15px !important;
         display: none !important;
     }
-    
+
     .navbar__item--active > .dropdown {
         display: block !important;
     }
-    
+
     .dropdown__inner {
         padding: 0 !important;
     }
-    
+
     .top-menu__main {
         flex-direction: column !important;
         gap: 20px !important;
     }
-    
+
     .menu-column {
         min-width: 100% !important;
         max-width: 100% !important;
     }
-    
+
     .sub-menu {
         position: relative !important;
         left: 0 !important;
@@ -766,7 +766,7 @@ a,
         margin-top: 10px !important;
         border-radius: 8px !important;
     }
-    
+
     .sub-menu__column {
         flex-direction: column !important;
         gap: 20px !important;
@@ -1924,3 +1924,110 @@ html.dark .products-page .page-link {
 html.dark .products-page .page-link:hover {
     color: #77dae6 !important;
 }
+
+
+/* ========================================
+   HOME PAGE - VIEW ALL LINK
+   ======================================== */
+
+.home__view-all {
+    color: #000 !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+.home__view-all:hover {
+    color: #333 !important;
+    transform: translateX(4px) !important;
+}
+
+.home__view-all .icon {
+    width: 20px !important;
+    height: 20px !important;
+    filter: brightness(0) !important;
+}
+
+/* Dark mode support */
+html.dark .home__view-all {
+    color: #fff !important;
+}
+
+html.dark .home__view-all:hover {
+    color: #e0e0e0 !important;
+}
+
+html.dark .home__view-all .icon {
+    filter: brightness(0) invert(1) !important;
+}
+
+
+/* ========================================
+   FOOTER - PUSH COLUMNS DOWN
+   ======================================== */
+
+.footer__row,
+.footer .row {
+    margin-top: 20px !important;
+}
+
+.footer__heading {
+    margin-top: 20px !important;
+}
+
+/* Alternative: Add padding to footer top */
+.footer {
+    padding-top: 30px !important;
+}
+
+
+/* ========================================
+   FOOTER - PAYMENT METHODS ALIGNMENT
+   ======================================== */
+
+/* Only move the heading up, keep icons in place */
+.footer__payment-methods .footer__heading {
+    margin-top: 15px !important;
+    margin-bottom: 20px !important;
+}
+
+/* Fine-tune: Adjust more if needed */
+/* .footer__payment-methods .footer__heading {
+    margin-top: -20px !important;
+} */
+
+
+
+/* ========================================
+   ADMIN DASHBOARD LINK - CUSTOM HOVER COLOR
+   ======================================== */
+
+/* Admin Dashboard link - distinct hover color */
+.user-menu__link--admin:hover {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%) !important;
+    color: #0369a1 !important;
+    font-weight: 600 !important;
+}
+
+/* Alternative colors - uncomment to use */
+/* Orange theme */
+/* .user-menu__link--admin:hover {
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%) !important;
+    color: #9a3412 !important;
+} */
+
+/* Purple theme */
+/* .user-menu__link--admin:hover {
+    background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%) !important;
+    color: #6b21a8 !important;
+} */
+
+/* Green theme */
+/* .user-menu__link--admin:hover {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+    color: #065f46 !important;
+} */

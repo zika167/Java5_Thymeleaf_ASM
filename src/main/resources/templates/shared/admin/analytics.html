@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Quản Lý Truy Cập | Admin</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        :root {
+            --cyan-50: #ecfeff; --cyan-100: #cffafe; --cyan-200: #a5f3fc;
+            --cyan-300: #67e8f9; --cyan-400: #22d3ee; --cyan-500: #06b6d4;
+            --cyan-600: #0891b2; --cyan-700: #0e7490;
+        }
+        
+        .admin-body { background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%); }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--cyan-500) 0%, var(--cyan-600) 100%);
+            color: white; border-bottom: none; box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+        }
+        
+        .admin-header h1 { 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            font-weight: 700;
+        }
+        .admin-header h1::before { content: '📊'; font-size: 28px; }
+        
+        .chart-controls {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 20px; 
+            padding: 16px 20px; 
+            background: white;
+            border-radius: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        /* Toggle Button Group */
+        .chart-type-selector {
+            display: flex;
+            gap: 0;
+            background: var(--cyan-50);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--cyan-200);
+        }
+        
+        .chart-type-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--cyan-700);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .chart-type-btn:hover {
+            background: var(--cyan-100);
+            transform: translateY(-2px);
+        }
+        
+        .chart-type-btn.active {
+            background: linear-gradient(135deg, var(--cyan-400), var(--cyan-500));
+            color: white;
+            box-shadow: 0 4px 16px rgba(34, 211, 238, 0.4);
+        }
+        
+        /* Online Users - Circular with Ping Animation */
+        .online-users-container {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .online-users-circle {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+        }
+        
+        .online-users-circle::before,
+        .online-users-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #10b981;
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        
+        .online-users-circle::after {
+            animation-delay: 1s;
+        }
+        
+        @keyframes ping {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            75%, 100% {
+                transform: translate(-50%, -50%) scale(1.8);
+                opacity: 0;
+            }
+        }
+        
+        .online-users-count {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .online-users-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .update-info {
+            font-size: 13px; 
+            color: #64748b;
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        
+        .update-info .pulse {
+            width: 8px; 
+            height: 8px; 
+            background: #10b981;
+            border-radius: 50%; 
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .charts-grid {
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px; 
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white; 
+            border-radius: 16px; 
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            position: relative; 
+            overflow: hidden;
+        }
+        
+        .chart-card::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyan-400), var(--cyan-500));
+        }
+        
+        .chart-card__header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-card__title {
+            font-size: 18px; 
+            font-weight: 600; 
+            color: var(--cyan-700);
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        
+        .chart-card__controls {
+            display: flex; 
+            gap: 6px;
+        }
+        
+        .chart-card__btn {
+            padding: 6px 12px; 
+            border: 1px solid var(--cyan-200);
+            background: white; 
+            color: var(--cyan-600); 
+            border-radius: 6px;
+            cursor: pointer; 
+            font-size: 12px; 
+            transition: all 0.2s;
+        }
+        
+        .chart-card__btn:hover { 
+            background: var(--cyan-50); 
+        }
+        
+        .chart-card__btn.active {
+            background: var(--cyan-500); 
+            color: white; 
+            border-color: var(--cyan-500);
+        }
+        
+        .chart-container {
+            position: relative; 
+            height: 300px;
+        }
+        
+        @media (max-width: 1200px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="admin-body">
+<th:block th:replace="~{shared/fragments/admin-sidebar :: admin-sidebar}"></th:block>
+<main class="admin-main">
+    <div class="admin-header">
+        <h1>Quản Lý Truy Cập</h1>
+        <div class="admin-user">
+            <img th:src="${session.user != null ? session.user.avatarUrlOrGravatar : '/assets/img/avatar.jpg'}" alt="" class="admin-user__avatar"/>
+            <span th:text="${session.user != null ? session.user.fullName : 'Admin'}">Admin</span>
+        </div>
+    </div>
+    <div class="admin-content">
+        <!-- Global Controls -->
+        <div class="chart-controls">
+            <div>
+                <h3 style="margin: 0 0 12px; font-size: 13px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Chuyển đổi tất cả biểu đồ</h3>
+                <div class="chart-type-selector">
+                    <button class="chart-type-btn active" onclick="changeAllCharts('line')">📈 Line</button>
+                    <button class="chart-type-btn" onclick="changeAllCharts('bar')">📊 Bar</button>
+                    <button class="chart-type-btn" onclick="changeAllCharts('pie')">🥧 Pie</button>
+                </div>
+            </div>
+            <div class="online-users-container">
+                <div class="online-users-circle">
+                    <div class="online-users-count" id="onlineUsersCount">--</div>
+                    <div class="online-users-label">👥 Online</div>
+                </div>
+                <div class="update-info">
+                    <span class="pulse"></span>
+                    <span>Cập nhật: <strong id="lastUpdate">--:--</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Daily Chart -->
+            <div class="chart-card">
+                <div class="chart-card__header">
+                    <div class="chart-card__title">
+                        <span>📅</span>
+                        <span>Theo Ngày (7 ngày gần nhất)</span>
+                    </div>
+                    <div class="chart-card__controls">
+                        <button class="chart-card__btn active" onclick="changeChart('daily', 'line')">Line</button>
+                        <button class="chart-card__btn" onclick="changeChart('daily', 'bar')">Bar</button>
+                        <button class="chart-card__btn" onclick="changeChart('daily', 'pie')">Pie</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Monthly Chart -->
+            <div class="chart-card">
+                <div class="chart-card__header">
+                    <div class="chart-card__title">
+                        <span>📆</span>
+                        <span>Theo Tháng (12 tháng gần nhất)</span>
+                    </div>
+                    <div class="chart-card__controls">
+                        <button class="chart-card__btn active" onclick="changeChart('monthly', 'line')">Line</button>
+                        <button class="chart-card__btn" onclick="changeChart('monthly', 'bar')">Bar</button>
+                        <button class="chart-card__btn" onclick="changeChart('monthly', 'pie')">Pie</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Quarterly Chart -->
+            <div class="chart-card">
+                <div class="chart-card__header">
+                    <div class="chart-card__title">
+                        <span>📊</span>
+                        <span>Theo Quý (4 quý gần nhất)</span>
+                    </div>
+                    <div class="chart-card__controls">
+                        <button class="chart-card__btn active" onclick="changeChart('quarterly', 'line')">Line</button>
+                        <button class="chart-card__btn" onclick="changeChart('quarterly', 'bar')">Bar</button>
+                        <button class="chart-card__btn" onclick="changeChart('quarterly', 'pie')">Pie</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="quarterlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Yearly Chart -->
+            <div class="chart-card">
+                <div class="chart-card__header">
+                    <div class="chart-card__title">
+                        <span>📈</span>
+                        <span>Theo Năm (3 năm gần nhất)</span>
+                    </div>
+                    <div class="chart-card__controls">
+                        <button class="chart-card__btn active" onclick="changeChart('yearly', 'line')">Line</button>
+                        <button class="chart-card__btn" onclick="changeChart('yearly', 'bar')">Bar</button>
+                        <button class="chart-card__btn" onclick="changeChart('yearly', 'pie')">Pie</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="yearlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+const csrfToken = document.querySelector('meta[name="_csrf"]')?.content || '';
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
+
+// Chart instances
+let charts = {
+    daily: null,
+    monthly: null,
+    quarterly: null,
+    yearly: null
+};
+
+// Chart configurations
+const chartColors = {
+    line: {
+        borderColor: '#06b6d4',
+        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+        pointBackgroundColor: '#06b6d4',
+        pointBorderColor: '#fff',
+    },
+    bar: {
+        backgroundColor: [
+            'rgba(6, 182, 212, 0.8)',
+            'rgba(34, 211, 238, 0.8)',
+            'rgba(103, 232, 249, 0.8)',
+            'rgba(165, 243, 252, 0.8)',
+            'rgba(8, 145, 178, 0.8)',
+            'rgba(14, 116, 144, 0.8)',
+            'rgba(6, 182, 212, 0.6)',
+        ],
+        borderColor: '#06b6d4',
+        borderWidth: 2,
+    },
+    pie: {
+        backgroundColor: [
+            '#06b6d4', '#22d3ee', '#67e8f9', '#a5f3fc',
+            '#0891b2', '#0e7490', '#155e75'
+        ],
+        borderColor: '#fff',
+        borderWidth: 2,
+    }
+};
+
+// Initialize charts
+function initCharts() {
+    initChart('daily', 'line');
+    initChart('monthly', 'line');
+    initChart('quarterly', 'line');
+    initChart('yearly', 'line');
+    updateLastUpdateTime();
+}
+
+function initChart(period, type) {
+    const ctx = document.getElementById(`${period}Chart`).getContext('2d');
+    
+    // Destroy existing chart
+    if (charts[period]) {
+        charts[period].destroy();
+    }
+    
+    // Fetch data and create chart
+    getChartData(period).then(data => {
+        const config = getChartConfig(type, data, period);
+        charts[period] = new Chart(ctx, config);
+    });
+}
+
+function getChartData(period) {
+    // Fetch real data from API
+    return fetch(`/api/admin/analytics/${period}`, {
+        headers: { [csrfHeader]: csrfToken }
+    })
+    .then(r => r.json())
+    .then(data => ({
+        labels: data.labels,
+        data: data.data
+    }))
+    .catch(err => {
+        console.error('Error fetching data:', err);
+        // Fallback to mock data
+        return getMockData(period);
+    });
+}
+
+function getMockData(period) {
+    const mockData = {
+        daily: {
+            labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+            data: [120, 150, 180, 140, 200, 170, 160]
+        },
+        monthly: {
+            labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+            data: [1200, 1500, 1800, 1400, 2000, 1700, 1600, 1900, 2100, 1800, 2200, 2400]
+        },
+        quarterly: {
+            labels: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'],
+            data: [4500, 5200, 5800, 6100]
+        },
+        yearly: {
+            labels: ['2023', '2024', '2025'],
+            data: [18000, 21500, 24800]
+        }
+    };
+    return mockData[period];
+}
+
+function getChartConfig(type, data, period) {
+    const baseConfig = {
+        type: type,
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Số lượng truy cập',
+                data: data.data,
+                ...chartColors[type]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: type === 'pie',
+                    position: 'bottom'
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 13 }
+                }
+            }
+        }
+    };
+    
+    if (type !== 'pie') {
+        baseConfig.options.scales = {
+            y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+            },
+            x: {
+                grid: { display: false }
+            }
+        };
+    }
+    
+    if (type === 'line') {
+        baseConfig.data.datasets[0].tension = 0.4;
+        baseConfig.data.datasets[0].fill = true;
+        baseConfig.data.datasets[0].pointRadius = 4;
+        baseConfig.data.datasets[0].pointHoverRadius = 6;
+    }
+    
+    return baseConfig;
+}
+
+function changeChart(period, type) {
+    // Update button states
+    const card = document.querySelector(`#${period}Chart`).closest('.chart-card');
+    card.querySelectorAll('.chart-card__btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().includes(type)) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Reinitialize chart
+    initChart(period, type);
+}
+
+function changeAllCharts(type) {
+    // Update global button states
+    document.querySelectorAll('.chart-type-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().includes(type)) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Update all charts
+    Object.keys(charts).forEach(period => {
+        changeChart(period, type);
+    });
+}
+
+function updateLastUpdateTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('lastUpdate').textContent = timeStr;
+}
+
+function updateOnlineUsers() {
+    fetch('/api/admin/analytics/online-users', {
+        headers: { [csrfHeader]: csrfToken }
+    })
+    .then(r => r.json())
+    .then(count => {
+        document.getElementById('onlineUsersCount').textContent = count;
+    })
+    .catch(err => {
+        console.error('Error fetching online users:', err);
+        document.getElementById('onlineUsersCount').textContent = '--';
+    });
+}
+
+function refreshData() {
+    console.log('Refreshing data...');
+    // Reload all charts with new data
+    Object.keys(charts).forEach(period => {
+        const currentType = charts[period].config.type;
+        initChart(period, currentType);
+    });
+    updateOnlineUsers();
+    updateLastUpdateTime();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initCharts();
+    updateOnlineUsers();
+    
+    // Auto refresh online users every 10 seconds (10000ms)
+    setInterval(updateOnlineUsers, 10000);
+    
+    // Auto refresh charts every 5 minutes (300000ms)
+    setInterval(() => {
+        Object.keys(charts).forEach(period => {
+            const currentType = charts[period].config.type;
+            initChart(period, currentType);
+        });
+        updateLastUpdateTime();
+    }, 300000);
+});
+</script>
+</body>
+</html>

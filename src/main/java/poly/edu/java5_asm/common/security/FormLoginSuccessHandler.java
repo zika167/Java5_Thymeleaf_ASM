@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import poly.edu.java5_asm.module.auth.service.AuthService;
 
 import java.io.IOException;
 
@@ -26,6 +27,7 @@ import java.io.IOException;
 public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtils jwtUtils;
+    private final AuthService authService;
 
     @Value("${jwt.cookie-name}")
     private String jwtCookieName;
@@ -39,6 +41,10 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
             Authentication authentication) throws IOException, ServletException {
 
         log.info("Form login success for user: {}", authentication.getName());
+
+        // Update last login time and login count
+        authService.updateLastLogin(authentication.getName());
+        log.info("Updated login count for user: {}", authentication.getName());
 
         // Check if "remember-me" checkbox was checked
         String rememberMe = request.getParameter("remember-me");
