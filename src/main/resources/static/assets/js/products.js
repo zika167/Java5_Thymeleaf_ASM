@@ -172,15 +172,13 @@ class ProductRenderer {
                         <img src="./assets/icon/star.svg" alt="" class="product-card__star" />
                         <span class="product-card__score">${rating}</span>
                     </div>
-                    <div class="product-card__row">
-                        <button class="btn btn--primary js-add-to-cart"
-                                data-product-id="${product.id}"
-                                data-name="${product.name}"
-                                data-price="${product.price}"
-                                data-image="${imageUrl}">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
+                    <button class="product-card__add-btn js-add-to-cart"
+                            data-product-id="${product.id}"
+                            data-name="${product.name}"
+                            data-price="${product.price}"
+                            data-image="${imageUrl}">
+                        Thêm vào giỏ
+                    </button>
                 </article>
             </div>
         `;
