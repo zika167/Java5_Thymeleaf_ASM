@@ -444,8 +444,8 @@
                                 </div>
                             </label>
 
-                            <!-- VNPay -->
-                            <label class="payment-method">
+                            <!-- VNPay - Only for Admin -->
+                            <label class="payment-method" id="vnpay-method" style="display: none;">
                                 <input type="radio" name="payment" value="VNPAY" class="payment-method__input">
                                 <div class="payment-method__content">
                                     <div class="payment-method__logo payment-method__logo--vnpay">
@@ -463,8 +463,8 @@
                                 </div>
                             </label>
 
-                            <!-- MoMo -->
-                            <label class="payment-method">
+                            <!-- MoMo - Only for Admin -->
+                            <label class="payment-method" id="momo-method" style="display: none;">
                                 <input type="radio" name="payment" value="MOMO" class="payment-method__input">
                                 <div class="payment-method__content">
                                     <div class="payment-method__logo payment-method__logo--momo">
@@ -760,7 +760,96 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAddresses();
     restoreSavedSelections();
     handlePaymentChange();
+    checkUserRoleAndShowPaymentMethods();
 });
+
+// Check user role and show/hide payment methods
+async function checkUserRoleAndShowPaymentMethods() {
+    try {
+        // Get user info from session or API
+        const response = await fetch('/api/user/current', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('API Response Status:', response.status);
+        
+        if (!response.ok) {
+            console.log('User not logged in or error:', response.status);
+            // User not logged in or error - show only COD
+            hideAdminPaymentMethods();
+            return;
+        }
+        
+        const user = await response.json();
+        console.log('Current user data:', user);
+        console.log('User role:', user.role);
+        
+        // Check if user is admin (case-insensitive)
+        const userRole = user.role ? user.role.toUpperCase() : '';
+        console.log('Normalized role:', userRole);
+        
+        if (userRole === 'ADMIN') {
+            console.log('✓ Admin detected - showing all payment methods');
+            // Show all payment methods for admin
+            showAllPaymentMethods();
+        } else {
+            console.log('✗ Regular user detected - showing only COD');
+            // Show only COD for regular users
+            hideAdminPaymentMethods();
+        }
+    } catch (error) {
+        console.error('Error checking user role:', error);
+        // Default: show only COD
+        hideAdminPaymentMethods();
+    }
+}
+
+// Show all payment methods (for admin)
+function showAllPaymentMethods() {
+    const vnpayMethod = document.getElementById('vnpay-method');
+    const momomethod = document.getElementById('momo-method');
+    
+    console.log('Showing payment methods...');
+    console.log('vnpay-method element:', vnpayMethod);
+    console.log('momo-method element:', momomethod);
+    
+    if (vnpayMethod) {
+        vnpayMethod.style.display = 'block';
+        console.log('✓ VNPay method shown');
+    }
+    if (momomethod) {
+        momomethod.style.display = 'block';
+        console.log('✓ MoMo method shown');
+    }
+}
+
+// Hide VNPay and MoMo (for regular users)
+function hideAdminPaymentMethods() {
+    const vnpayMethod = document.getElementById('vnpay-method');
+    const momomethod = document.getElementById('momo-method');
+    
+    console.log('Hiding payment methods...');
+    
+    if (vnpayMethod) {
+        vnpayMethod.style.display = 'none';
+        console.log('✓ VNPay method hidden');
+    }
+    if (momomethod) {
+        momomethod.style.display = 'none';
+        console.log('✓ MoMo method hidden');
+    }
+    
+    // Ensure COD is selected
+    const codInput = document.querySelector('input[name="payment"][value="COD"]');
+    if (codInput) {
+        codInput.checked = true;
+        codInput.dispatchEvent(new Event('change'));
+        console.log('✓ COD selected as default');
+    }
+}
 </script>
 </body>
 </html>
