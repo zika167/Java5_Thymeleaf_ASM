@@ -45,9 +45,20 @@
                 })
             });
 
+            // Kiểm tra nếu chưa đăng nhập (401 Unauthorized)
+            if (response.status === 401) {
+                const errorText = await response.text();
+                showCartToast(errorText || 'Vui lòng đăng nhập để thêm vào giỏ hàng', 'error');
+                // Chuyển hướng đến trang đăng nhập sau 1.5 giây
+                setTimeout(() => {
+                    window.location.href = '/auth/sign-in?redirect=' + encodeURIComponent(window.location.pathname);
+                }, 1500);
+                return null;
+            }
+
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+                throw new Error(errorText || `HTTP ${response.status}`);
             }
 
             const cartData = await response.json();
@@ -73,6 +84,11 @@
                 }
             });
 
+            // Nếu chưa đăng nhập, trả về giỏ hàng rỗng
+            if (response.status === 401) {
+                return { items: [], totalItems: 0, totalPrice: 0 };
+            }
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
@@ -81,7 +97,7 @@
             return cartData;
         } catch (error) {
             console.error('❌ Lỗi khi lấy giỏ hàng:', error);
-            return null;
+            return { items: [], totalItems: 0, totalPrice: 0 };
         }
     }
 

@@ -40,4 +40,8 @@ public interface CartService {
     boolean isCartEmpty(User user);
     Integer getCartItemCount(User user);
     Integer getCartItemCountByIdentifier(String identifier);
+
+    // === Promo Code ===
+    CartResponse applyPromoCode(String identifier, String promoCode);
+    CartResponse removePromoCode(String identifier);
 }

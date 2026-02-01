@@ -30,6 +30,9 @@ public class Cart {
     @Column(name = "session_id", length = 255)
     private String sessionId; // Session ID cho guest user
 
+    @Column(name = "promo_code", length = 50)
+    private String promoCode; // Mã giảm giá đã áp dụng
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt; // Ngày tạo
 

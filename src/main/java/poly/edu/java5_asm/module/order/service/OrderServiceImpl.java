@@ -72,7 +72,23 @@ public class OrderServiceImpl implements OrderService {
         }
 
         BigDecimal tax = subtotal.multiply(new BigDecimal("0.1"));
-        BigDecimal totalAmount = subtotal.add(shippingFee).add(tax);
+        
+        // Tính giảm giá từ mã promo code
+        String promoCode = cart.getPromoCode();
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        
+        if (promoCode != null && "GIAM10K".equalsIgnoreCase(promoCode)) {
+            // Tổng trước giảm giá = subtotal + tax + shippingFee
+            BigDecimal totalBeforeDiscount = subtotal.add(tax).add(shippingFee);
+            BigDecimal targetPrice = new BigDecimal("10000");
+            
+            if (totalBeforeDiscount.compareTo(targetPrice) > 0) {
+                discountAmount = totalBeforeDiscount.subtract(targetPrice);
+            }
+        }
+        
+        // Tổng cuối cùng = subtotal + tax + shippingFee - discount
+        BigDecimal totalAmount = subtotal.add(shippingFee).add(tax).subtract(discountAmount);
 
         Address shippingAddress = null;
         if (request.getShippingAddressId() != null) {
@@ -92,6 +108,8 @@ public class OrderServiceImpl implements OrderService {
                 .subtotal(subtotal)
                 .shippingFee(shippingFee)
                 .tax(tax)
+                .promoCode(promoCode)
+                .discountAmount(discountAmount)
                 .totalAmount(totalAmount)
                 .shippingMethod(request.getShippingMethod())
                 .paymentMethod(request.getPaymentMethod())
@@ -101,7 +119,8 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         order = orderRepository.save(order);
-        log.info("Tạo đơn hàng {} cho user {}", orderNumber, user.getId());
+        log.info("Tạo đơn hàng {} cho user {} với mã giảm giá: {}, giảm: {}", 
+                orderNumber, user.getId(), promoCode, discountAmount);
 
         for (CartItem cartItem : cartItems) {
             OrderItem orderItem = OrderItem.builder()
@@ -122,8 +141,11 @@ public class OrderServiceImpl implements OrderService {
             productRepository.save(product);
         }
 
+        // Xóa giỏ hàng và mã giảm giá sau khi tạo đơn hàng
         cartItemRepository.deleteByCart(cart);
-        log.info("Xóa giỏ hàng sau khi tạo đơn hàng");
+        cart.setPromoCode(null);
+        cartRepository.save(cart);
+        log.info("Xóa giỏ hàng và mã giảm giá sau khi tạo đơn hàng");
 
         try {
             emailService.sendOrderConfirmation(order.getId(), user.getId());
@@ -149,11 +171,7 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
         log.info("Xác nhận đơn hàng {}", order.getOrderNumber());
 
-        try {
-            emailService.sendOrderStatusUpdate(order.getId(), order.getUser().getId());
-        } catch (Exception e) {
-            log.error("Failed to send order status update email: {}", e.getMessage());
-        }
+        // Không gửi email khi xác nhận đơn hàng nữa
 
         return getOrderResponse(order);
     }
@@ -250,6 +268,28 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
+        // Nếu đơn hàng đang ở trạng thái CONFIRMED và muốn chuyển sang SHIPPED
+        // thì tự động HỦY đơn hàng và gửi email xin lỗi
+        if (order.getStatus().equals(Order.OrderStatus.CONFIRMED) && status.equals(Order.OrderStatus.SHIPPED)) {
+            log.warn("Đơn hàng {} đang ở trạng thái CONFIRMED, tự động hủy khi cố gắng chuyển sang SHIPPED", order.getOrderNumber());
+            
+            order.setStatus(Order.OrderStatus.CANCELLED);
+            order.setCancelledAt(LocalDateTime.now());
+            restoreStock(order);
+            order = orderRepository.save(order);
+            
+            log.info("Đã tự động hủy đơn hàng {} và gửi email xin lỗi", order.getOrderNumber());
+            
+            // Gửi email xin lỗi khách hàng
+            try {
+                emailService.sendOrderCancellationApology(order.getId(), order.getUser().getId());
+            } catch (Exception e) {
+                log.error("Failed to send cancellation apology email: {}", e.getMessage());
+            }
+            
+            return getOrderResponse(order);
+        }
+
         order.setStatus(status);
 
         switch (status) {
@@ -266,11 +306,7 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
         log.info("Cập nhật trạng thái đơn hàng {} thành {}", order.getOrderNumber(), status);
 
-        try {
-            emailService.sendOrderStatusUpdate(order.getId(), order.getUser().getId());
-        } catch (Exception e) {
-            log.error("Failed to send order status update email: {}", e.getMessage());
-        }
+        // Không gửi email tự động khi thay đổi status nữa
 
         return getOrderResponse(order);
     }
@@ -401,6 +437,8 @@ public class OrderServiceImpl implements OrderService {
                 .subtotal(order.getSubtotal())
                 .shippingFee(order.getShippingFee())
                 .tax(order.getTax())
+                .promoCode(order.getPromoCode())
+                .discountAmount(order.getDiscountAmount())
                 .totalAmount(order.getTotalAmount())
                 .orderedAt(order.getOrderedAt())
                 .confirmedAt(order.getConfirmedAt())

@@ -249,7 +249,38 @@ public class CartServiceImpl implements CartService {
                 .items(itemResponses)
                 .totalItems(items.size())
                 .totalPrice(totalPrice)
+                .promoCode(cart.getPromoCode())
+                .discountAmount(calculateDiscount(totalPrice, cart.getPromoCode()))
+                .finalPrice(calculateFinalPrice(totalPrice, cart.getPromoCode()))
                 .build();
+    }
+
+    private BigDecimal calculateDiscount(BigDecimal totalPrice, String promoCode) {
+        if (promoCode != null && "GIAM10K".equalsIgnoreCase(promoCode)) {
+            // Tính tổng sau thuế VAT 10%
+            BigDecimal totalWithTax = totalPrice.multiply(new BigDecimal("1.1"));
+            BigDecimal targetPrice = new BigDecimal("10000");
+            
+            if (totalWithTax.compareTo(targetPrice) > 0) {
+                // Giảm giá = Tổng sau thuế - 10.000đ
+                return totalWithTax.subtract(targetPrice);
+            }
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private BigDecimal calculateFinalPrice(BigDecimal totalPrice, String promoCode) {
+        if (promoCode != null && "GIAM10K".equalsIgnoreCase(promoCode)) {
+            // Tổng cuối cùng luôn là 10.000đ (đã bao gồm thuế)
+            BigDecimal totalWithTax = totalPrice.multiply(new BigDecimal("1.1"));
+            BigDecimal targetPrice = new BigDecimal("10000");
+            
+            if (totalWithTax.compareTo(targetPrice) > 0) {
+                return targetPrice;
+            }
+        }
+        // Nếu không có mã hoặc tổng < 10k thì trả về tổng + thuế
+        return totalPrice.multiply(new BigDecimal("1.1"));
     }
 
     @Override
@@ -276,5 +307,34 @@ public class CartServiceImpl implements CartService {
         List<CartItem> items = cartItemRepository.findByCart(cart);
         // Trả về số sản phẩm riêng biệt (unique items) để đồng bộ với dropdown
         return items.size();
+    }
+
+    @Override
+    @Transactional
+    public CartResponse applyPromoCode(String identifier, String promoCode) {
+        Cart cart = getOrCreateCartByIdentifier(identifier);
+        
+        // Kiểm tra mã giảm giá (mã cố định: GIAM10K)
+        if (!"GIAM10K".equalsIgnoreCase(promoCode.trim())) {
+            throw new IllegalArgumentException("Mã giảm giá không hợp lệ");
+        }
+        
+        // Lưu mã giảm giá vào cart
+        cart.setPromoCode(promoCode.trim().toUpperCase());
+        cartRepository.save(cart);
+        
+        log.info("Áp dụng mã giảm giá {} cho giỏ hàng {}", promoCode, identifier);
+        return getCartResponse(cart);
+    }
+
+    @Override
+    @Transactional
+    public CartResponse removePromoCode(String identifier) {
+        Cart cart = getOrCreateCartByIdentifier(identifier);
+        cart.setPromoCode(null);
+        cartRepository.save(cart);
+        
+        log.info("Xóa mã giảm giá cho giỏ hàng {}", identifier);
+        return getCartResponse(cart);
     }
 }

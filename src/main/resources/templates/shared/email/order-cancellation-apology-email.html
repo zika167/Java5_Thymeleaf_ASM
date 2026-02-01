@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xin lỗi về việc hủy đơn hàng - Grocery Store</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 40px 20px;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                
+                <!-- Header -->
+                <tr>
+                    <td style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 40px 30px; text-align: center;">
+                        <div style="margin-bottom: 16px;">
+                            <span style="font-size: 48px;">😔</span>
+                        </div>
+                        <h1 style="color: #ffffff; margin: 0 0 8px; font-size: 28px; font-weight: 700;">Grocery Store</h1>
+                        <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px;">Xin lỗi về sự bất tiện này</p>
+                    </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                    <td style="padding: 40px 30px;">
+                        <!-- Greeting -->
+                        <p style="color: #1e293b; font-size: 16px; margin: 0 0 24px;">
+                            Kính gửi <strong th:text="${user.fullName}">Khách hàng</strong>,
+                        </p>
+                        
+                        <!-- Apology Box -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #ef4444;">
+                            <tr>
+                                <td style="padding: 24px; text-align: center;">
+                                    <div style="font-size: 36px; margin-bottom: 12px;">🙏</div>
+                                    <h2 style="color: #dc2626; margin: 0 0 8px; font-size: 20px; font-weight: 700;">Chúng tôi rất xin lỗi!</h2>
+                                    <p style="color: #991b1b; margin: 0; font-size: 14px; line-height: 1.6;">
+                                        Đơn hàng của bạn đã bị hủy do chúng tôi không thể xử lý đơn hàng này. 
+                                        Chúng tôi thành thật xin lỗi vì sự bất tiện này.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Order Info -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border-radius: 12px; margin-bottom: 30px;">
+                            <tr>
+                                <td style="padding: 20px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">📦 Mã đơn hàng:</td>
+                                            <td style="color: #dc2626; font-size: 14px; font-weight: 700; text-align: right; padding: 10px 0; border-bottom: 1px solid #e2e8f0;" th:text="${order.orderNumber}">ORD-123456</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">📅 Ngày đặt:</td>
+                                            <td style="color: #1e293b; font-size: 14px; text-align: right; padding: 10px 0; border-bottom: 1px solid #e2e8f0;" th:text="${#temporals.format(order.orderedAt, 'dd/MM/yyyy HH:mm')}">19/01/2026 10:30</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">📋 Trạng thái:</td>
+                                            <td style="text-align: right; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                                                <span style="background: #fee2e2; padding: 4px 12px; border-radius: 20px; color: #dc2626; font-size: 12px; font-weight: 600;">ĐÃ HỦY</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0;">💰 Tổng tiền:</td>
+                                            <td style="color: #1e293b; font-size: 14px; font-weight: 700; text-align: right; padding: 10px 0;" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}">570,000 đ</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Refund Info -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #eff6ff; border-radius: 10px; margin-bottom: 24px; border-left: 4px solid #3b82f6;">
+                            <tr>
+                                <td style="padding: 16px;">
+                                    <p style="margin: 0 0 6px; font-weight: 600; color: #1e40af;">💳 Về việc hoàn tiền</p>
+                                    <p style="margin: 0; color: #1e40af; font-size: 14px;">
+                                        Nếu bạn đã thanh toán cho đơn hàng này, số tiền sẽ được hoàn lại vào tài khoản của bạn trong vòng <strong>3-5 ngày làm việc</strong>.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Thank You Message -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%); border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #22d3ee;">
+                            <tr>
+                                <td style="padding: 24px; text-align: center;">
+                                    <div style="font-size: 36px; margin-bottom: 12px;">💙</div>
+                                    <h2 style="color: #0891b2; margin: 0 0 8px; font-size: 20px; font-weight: 700;">Cảm ơn bạn đã tin tưởng!</h2>
+                                    <p style="color: #0e7490; margin: 0; font-size: 14px; line-height: 1.6;">
+                                        Chúng tôi rất trân trọng sự tin tưởng của bạn và hy vọng sẽ có cơ hội được phục vụ bạn trong tương lai. 
+                                        Hãy tiếp tục mua sắm cùng chúng tôi nhé!
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- CTA Button -->
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td align="center" style="padding: 20px 0;">
+                                    <a href="http://localhost:8080/" style="display: inline-block; background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 30px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);">
+                                        🛍️ Tiếp tục mua sắm
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Support Box -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff7ed; border-radius: 10px; margin: 24px 0; border-left: 4px solid #f97316;">
+                            <tr>
+                                <td style="padding: 16px;">
+                                    <p style="margin: 0 0 6px; font-weight: 600; color: #c2410c;">📞 Cần hỗ trợ?</p>
+                                    <p style="margin: 0; color: #ea580c; font-size: 14px;">
+                                        Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ hotline: <strong>1900 123 456</strong> 
+                                        hoặc email: <strong>support@grocerystore.com</strong>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <p style="color: #64748b; font-size: 14px; margin: 24px 0 0; line-height: 1.6;">
+                            Một lần nữa, chúng tôi xin lỗi vì sự bất tiện này và hy vọng được phục vụ bạn tốt hơn trong tương lai.
+                        </p>
+                        
+                        <p style="color: #1e293b; margin: 24px 0 0;">
+                            Trân trọng,<br/>
+                            <strong style="color: #06b6d4;">🛒 Grocery Store Team</strong>
+                        </p>
+                    </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                    <td style="background-color: #f1f5f9; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                        <p style="color: #06b6d4; font-size: 18px; font-weight: 700; margin: 0 0 8px;">🛒 Grocery Store</p>
+                        <p style="color: #64748b; font-size: 13px; margin: 0 0 16px;">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+                        <p style="color: #94a3b8; font-size: 12px; margin: 0;">Email này được gửi tự động, vui lòng không trả lời trực tiếp.</p>
+                        <p style="color: #94a3b8; font-size: 12px; margin: 8px 0 0;">© 2026 Grocery Store. All rights reserved.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
