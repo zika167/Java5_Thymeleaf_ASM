@@ -67,4 +67,17 @@ public interface UserActivityLogRepository extends JpaRepository<UserActivityLog
     List<UserActivityLog> findByUserIdAndCreatedAtBetween(Long userId,
                                                           LocalDateTime startDate,
                                                           LocalDateTime endDate);
+
+    // Đếm số người dùng trực tuyến (không bao gồm admin)
+    @Query("SELECT COUNT(DISTINCT l.sessionId) FROM UserActivityLog l " +
+            "WHERE l.createdAt BETWEEN :startDate AND :endDate " +
+            "AND (l.user IS NULL OR l.user.role != 'ADMIN')")
+    Long countOnlineUsersExcludingAdmin(@Param("startDate") LocalDateTime startDate,
+                                        @Param("endDate") LocalDateTime endDate);
+
+    // Đếm tất cả người dùng trực tuyến (bao gồm cả admin)
+    @Query("SELECT COUNT(DISTINCT l.sessionId) FROM UserActivityLog l " +
+            "WHERE l.createdAt BETWEEN :startDate AND :endDate")
+    Long countAllOnlineUsers(@Param("startDate") LocalDateTime startDate,
+                             @Param("endDate") LocalDateTime endDate);
 }

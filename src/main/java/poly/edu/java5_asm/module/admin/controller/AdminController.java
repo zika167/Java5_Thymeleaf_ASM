@@ -65,4 +65,12 @@ public class AdminController {
     public String categories(Model model) {
         return "shared/admin/categories";
     }
+
+    /**
+     * Trang quản lý truy cập (Analytics)
+     */
+    @GetMapping("/analytics")
+    public String analytics(Model model) {
+        return "shared/admin/analytics";
+    }
 }
