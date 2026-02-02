@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Departments Dropdown Fragment -->
+<div th:fragment="dropdownDepartments" class="dropdown js-dropdown">
+    <div class="dropdown__inner">
+        <div class="top-menu">
+            <div class="sub-menu sub-menu--not-main sub-menu--departments">
+                <!-- All Departments -->
+                <div class="menu-column">
+                    <div class="menu-column__icon">
+                        <img th:src="@{/assets/img/category/cate-1.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-1.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading"><a href="#!">All Departments</a></h2>
+                        <ul class="menu-column__list">
+                            <li class="menu-column__item"><a th:href="@{/category}" class="menu-column__link">Shop All</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Weekly Deals</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">New Arrivals</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Savings & Featured -->
+                <div class="menu-column">
+                    <div class="menu-column__icon">
+                        <img th:src="@{/assets/img/category/cate-2.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-2.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading"><a href="#!">Savings</a></h2>
+                        <ul class="menu-column__list">
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Featured Shops</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Clearance</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Rollbacks</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Electronics -->
+                <div class="menu-column">
+                    <div class="menu-column__icon">
+                        <img th:src="@{/assets/img/category/cate-3.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-3.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading"><a href="#!">Electronics</a></h2>
+                        <ul class="menu-column__list">
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">TV & Video</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Computers</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Cell Phones</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Audio</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Clothing -->
+                <div class="menu-column">
+                    <div class="menu-column__icon">
+                        <img th:src="@{/assets/img/category/cate-4.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-4.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading"><a href="#!">Clothing</a></h2>
+                        <ul class="menu-column__list">
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Women's</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Men's</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Kids'</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Shoes</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Home & Furniture -->
+                <div class="menu-column">
+                    <div class="menu-column__icon">
+                        <img th:src="@{/assets/img/category/cate-5.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-5.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading"><a href="#!">Home</a></h2>
+                        <ul class="menu-column__list">
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Furniture</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Appliances</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Kitchen</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Bedding</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Toys & Games -->
+                <div class="menu-column">
+                    <div class="menu-column__icon">
+                        <img th:src="@{/assets/img/category/cate-6.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-6.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading"><a href="#!">Toys & Games</a></h2>
+                        <ul class="menu-column__list">
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Video Games</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Action Figures</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Dolls</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Building Sets</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Baby -->
+                <div class="menu-column">
+                    <div class="menu-column__icon">
+                        <img th:src="@{/assets/img/category/cate-7.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-7.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading"><a href="#!">Baby</a></h2>
+                        <ul class="menu-column__list">
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Diapers</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Formula</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Baby Gear</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Nursery</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sports & Outdoors -->
+                <div class="menu-column">
+                    <div class="menu-column__icon">
+                        <img th:src="@{/assets/img/category/cate-8.1.svg}" alt="" class="menu-column__icon-1" />
+                        <img th:src="@{/assets/img/category/cate-8.2.svg}" alt="" class="menu-column__icon-2" />
+                    </div>
+                    <div class="menu-column__content">
+                        <h2 class="menu-column__heading"><a href="#!">Sports</a></h2>
+                        <ul class="menu-column__list">
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Exercise</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Outdoors</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Bikes</a></li>
+                            <li class="menu-column__item"><a href="#!" class="menu-column__link">Camping</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

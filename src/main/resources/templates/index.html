@@ -1,327 +1,734 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{fragments/head :: head('Grocery Store - Home')}"></head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Cửa hàng Cà phê - Trang chủ')}"></head>
+<body>
+<header th:replace="~{shared/fragments/header :: header}"></header>
 
-    <body>
-        <!-- header -->
-        <header th:replace="~{fragments/header :: header}"></header>
+<div class="container home">
+    <!-- Hero Slideshow -->
+    <section class="home__container home__hero">
+        <div class="slideshow">
+            <div class="slideshow__inner">
+                <div class="slideshow__item">
+                    <a th:href="@{/products}" class="slideshow__link">
+                        <picture>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/item-1-md.png"/>
+                            <img th:src="@{/assets/img/slideshow/item-1.png}" alt="Khuyến mãi đặc biệt" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+                <div class="slideshow__item">
+                    <a th:href="@{/products}" class="slideshow__link">
+                        <picture>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/slider-2.png"/>
+                            <img th:src="@{/assets/img/slideshow/slider-2.png}" alt="Sản phẩm mới" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+                <div class="slideshow__item">
+                    <a th:href="@{/products}" class="slideshow__link"></a>
+                        <picture>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/slider-3.png"/>
+                            <img th:src="@{/assets/img/slideshow/slider-3.png}" alt="Cà phê cao cấp" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+                <div class="slideshow__item">
+                    <a th:href="@{/products}" class="slideshow__link">
+                        <picture>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/slider-4.png"/>
+                            <img th:src="@{/assets/img/slideshow/slider-4.png}" alt="Ưu đãi hôm nay" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+                <div class="slideshow__item">
+                    <a th:href="@{/products}" class="slideshow__link">
+                        <picture>
+                            <source media="(max-width: 767.98px)" srcset="./assets/img/slideshow/slider-5.png"/>
+                            <img th:src="@{/assets/img/slideshow/slider-5.png}" alt="Freeship toàn quốc" class="slideshow__img"/>
+                        </picture>
+                    </a>
+                </div>
+            </div>
+            <!-- Slideshow Controls - Hidden -->
+            <div class="slideshow__controls" style="display: none;">
+                <button class="slideshow__control slideshow__control--prev" aria-label="Slide trước">
+                    <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="icon"/>
+                </button>
+                <button class="slideshow__control slideshow__control--next" aria-label="Slide tiếp">
+                    <img th:src="@{/assets/icon/arrow-right.svg}" alt="" class="icon"/>
+                </button>
+            </div>
+            <!-- Slideshow Dots -->
+            <div class="slideshow__dots"></div>
+        </div>
+    </section>
 
-        <div class="container home">
-            <!-- slideshow -->
-            <div class="home__container">
-                <div class="slideshow">
-                    <div class="slideshow__inner">
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/item-1-md.png" />
-                                    <img th:src="@{/assets/img/slideshow/item-1.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/slider-2.png" />
-                                    <img th:src="@{/assets/img/slideshow/slider-2.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/slider-3.png" />
-                                    <img th:src="@{/assets/img/slideshow/slider-3.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/slider-4.png" />
-                                    <img th:src="@{/assets/img/slideshow/slider-4.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
-                        <div class="slideshow__item">
-                            <a href="#!" class="slideshow__link">
-                                <picture>
-                                    <source
-                                        media="(max-width: 767.98px)"
-                                        srcset="./assets/img/slideshow/slider-5.png" />
-                                    <img th:src="@{/assets/img/slideshow/slider-5.png}" alt="" class="slideshow__img" />
-                                </picture>
-                            </a>
-                        </div>
+    <!-- Quick Categories -->
+    <section class="home__container home__quick-cats">
+        <div class="quick-cats">
+            <a th:href="@{/products}" class="quick-cat">
+                <div class="quick-cat__icon">☕</div>
+                <span class="quick-cat__name">Cà phê hạt</span>
+            </a>
+            <a th:href="@{/products}" class="quick-cat">
+                <div class="quick-cat__icon">🫖</div>
+                <span class="quick-cat__name">Cà phê bột</span>
+            </a>
+            <a th:href="@{/products}" class="quick-cat">
+                <div class="quick-cat__icon">🥤</div>
+                <span class="quick-cat__name">Cà phê hòa tan</span>
+            </a>
+            <a th:href="@{/products}" class="quick-cat">
+                <div class="quick-cat__icon">🎁</div>
+                <span class="quick-cat__name">Quà tặng</span>
+            </a>
+            <a th:href="@{/products}" class="quick-cat">
+                <div class="quick-cat__icon">⚡</div>
+                <span class="quick-cat__name">Flash Sale</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Top Rated Products -->
+    <section class="home__container">
+        <div class="home__row">
+            <h2 class="home__heading">
+                <span class="home__heading-icon">⭐</span>
+                Sản phẩm được đánh giá cao
+            </h2>
+            <a th:href="@{/products}" class="home__view-all">
+                Xem tất cả
+                <img th:src="@{/assets/icon/arrow-right.svg}" alt="" class="icon"/>
+            </a>
+        </div>
+        <div class="home__cate row row-cols-3 row-cols-md-1" id="top-rated-container">
+            <div class="loading-placeholder">
+                <div class="loading-spinner"></div>
+                <p>Đang tải sản phẩm...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="home__container">
+        <div class="home__row">
+            <h2 class="home__heading">
+                <span class="home__heading-icon">🔥</span>
+                Sản phẩm nổi bật
+            </h2>
+            <div class="home__row-actions">
+                <div class="filter-wrap">
+                    <button class="filter-btn js-toggle" toggle-target="#home-filter">
+                        <img th:src="@{/assets/icon/filter.svg}" alt="" class="filter-btn__icon icon"/>
+                        Bộ lọc
+                    </button>
+                    <div id="home-filter" class="filter hide">
+                        <img th:src="@{/assets/icon/filter-triangle.svg}" alt="" class="filter__arrow"/>
+                        <h3 class="filter__heading">Bộ lọc sản phẩm</h3>
+                        <form action="" class="filter__form form">
+                            <div class="filter__row filter__content">
+                                <!-- Yêu thích -->
+                                <div class="filter__col">
+                                    <label class="form__label">Yêu thích</label>
+                                    <div class="filter__form-group">
+                                        <label class="filter__checkbox-label">
+                                            <input type="checkbox" id="filter-wishlist" class="filter__checkbox" />
+                                            <span class="filter__checkbox-text">Chỉ hiện sản phẩm yêu thích</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="filter__separate"></div>
+                                <!-- Giá -->
+                                <div class="filter__col">
+                                    <label class="form__label">Khoảng giá</label>
+                                    <div class="slider-container">
+                                        <div class="range-slider">
+                                            <div class="slider-track"></div>
+                                            <input type="range" id="min-price" min="0" max="5000" step="50" value="0" oninput="updatePrice()"/>
+                                            <input type="range" id="max-price" min="0" max="5000" step="50" value="5000" oninput="updatePrice()"/>
+                                        </div>
+                                    </div>
+                                    <div class="price-values">
+                                        <div class="price-value">
+                                            <span class="price-value__label">Từ:</span>
+                                            <span class="price-value__amount" id="min-price-value">0đ</span>
+                                        </div>
+                                        <div class="price-value">
+                                            <span class="price-value__label">Đến:</span>
+                                            <span class="price-value__amount" id="max-price-value">5.000.000đ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="filter__separate"></div>
+                                <!-- Rating -->
+                                <div class="filter__col">
+                                    <label class="form__label">Đánh giá</label>
+                                    <div class="filter__form-group">
+                                        <div class="form__tags">
+                                            <button type="button" class="form__tag rating-tag active" data-rating="0">Tất cả</button>
+                                            <button type="button" class="form__tag rating-tag" data-rating="3">3+ ⭐</button>
+                                            <button type="button" class="form__tag rating-tag" data-rating="4">4+ ⭐</button>
+                                            <button type="button" class="form__tag rating-tag" data-rating="4.5">4.5+ ⭐</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="filter-rating" value="0" />
+                                </div>
+                            </div>
+                            <div class="filter__row filter__footer">
+                                <button type="button" class="btn btn--text filter__cancel" onclick="resetFilters()">Đặt lại</button>
+                                <button type="button" class="btn btn--primary filter__submit">Áp dụng</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-
-            <!-- browse categories -->
-            <section class="home__container">
-                <div class="home__row">
-                    <h2 class="home__heading">Browse Categories</h2>
-                </div>
-                <div class="home__cate row row-cols-3 row-cols-md-1">
-                    <!-- category item 1 -->
-                    <div class="col">
-                        <a href="#!">
-                            <article class="cate-item">
-                                <img th:src="@{/assets/img/category-item/item-1.png}" alt="" class="cate-item__thumb" />
-                                <div class="cate-item__info">
-                                    <h3 class="cate-item__title">$32 - $160</h3>
-                                    <p class="cate-item__desc">Lavazza top class whole bean coffee blend</p>
-                                </div>
-                            </article>
-                        </a>
-                    </div>
-
-                    <!-- category item 2 -->
-                    <div class="col">
-                        <a href="#!">
-                            <article class="cate-item">
-                                <img th:src="@{/assets/img/category-item/item-2.png}" alt="" class="cate-item__thumb" />
-                                <div class="cate-item__info">
-                                    <h3 class="cate-item__title">$24 - $150</h3>
-                                    <p class="cate-item__desc">New sumatra mandeling coffe blend</p>
-                                </div>
-                            </article>
-                        </a>
-                    </div>
-
-                    <!-- category item 3 -->
-                    <div class="col">
-                        <a href="#!">
-                            <article class="cate-item">
-                                <img th:src="@{/assets/img/category-item/item-3.png}" alt="" class="cate-item__thumb" />
-                                <div class="cate-item__info">
-                                    <h3 class="cate-item__title">$37 - $160</h3>
-                                    <p class="cate-item__desc">Espresso arabica and robusta beans</p>
-                                </div>
-                            </article>
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- browse products -->
-            <section class="home__container">
-                <div class="home__row">
-                    <h2 class="home__heading">Total LavAzza 1320</h2>
-                    <div class="filter-wrap">
-                        <button class="filter-btn js-toggle" toggle-target="#home-filter">
-                            Filter
-                            <img th:src="@{/assets/icon/filter.svg}" alt="" class="filter-btn__icon icon" />
-                        </button>
-
-                        <div id="home-filter" class="filter hide">
-                            <img th:src="@{/assets/icon/filter-triangle.svg}" alt="" class="filter__arrow" />
-                            <h3 class="filter__heading">Filter</h3>
-                            <form action="" class="filter__form form">
-                                <div class="filter__row filter__content">
-                                    <!-- filter column 1 -->
-                                    <div class="filter__col">
-                                        <label class="form__label">Price</label>
-                                        <div class="slider-container">
-                                            <div class="range-slider">
-                                                <div class="slider-track"></div>
-                                                <input
-                                                    type="range"
-                                                    id="min-price"
-                                                    min="0"
-                                                    max="200"
-                                                    step="2"
-                                                    value="30"
-                                                    oninput="updatePrice()" />
-                                                <input
-                                                    type="range"
-                                                    id="max-price"
-                                                    min="0"
-                                                    max="200"
-                                                    step="2"
-                                                    value="100"
-                                                    oninput="updatePrice()" />
-                                            </div>
-                                        </div>
-                                        <div class="price-values">
-                                            <div>
-                                                <span>Minimum: </span>
-                                                <span id="min-price-value">$30.00</span>
-                                            </div>
-                                            <div>
-                                                <span>Maximum: </span>
-                                                <span id="max-price-value">$100.00</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="filter__separate"></div>
-
-                                    <!-- filter column 2 -->
-                                    <div class="filter__col">
-                                        <label for="" class="form__label">Weight/Size</label>
-                                        <div class="filter__form-group">
-                                            <div class="form__select-wrap">
-                                                <div class="form__select">
-                                                    <select class="weight-size">
-                                                        <option value="200g">200g</option>
-                                                        <option value="300g">300g</option>
-                                                        <option value="400g">400g</option>
-                                                        <option value="500g" selected>500g</option>
-                                                        <option value="600g">600g</option>
-                                                        <option value="700g">700g</option>
-                                                        <option value="800g">800g</option>
-                                                        <option value="900g">900g</option>
-                                                        <option value="1000g">1000g</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form__select">
-                                                    <select class="weight-size" style="--width: 118px">
-                                                        <option value="gram">Gram</option>
-                                                        <option value="pao">Pao</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="filter__form-group">
-                                            <div class="form__tags">
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn1"
-                                                    onclick="toggleSelected1(this)">
-                                                    Small
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn1"
-                                                    onclick="toggleSelected1(this)">
-                                                    Medium
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn1"
-                                                    onclick="toggleSelected1(this)">
-                                                    Large
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="filter__separate"></div>
-
-                                    <!-- filter column 3 -->
-                                    <div class="filter__col">
-                                        <label for="" class="form__label">Brand</label>
-                                        <div class="filter__form-group">
-                                            <div class="filter__form-text-input">
-                                                <input
-                                                    type="text"
-                                                    name=""
-                                                    id=""
-                                                    placeholder="Search brand name"
-                                                    class="filter__form-input" />
-                                                <img
-                                                    th:src="@{/assets/icon/filter-search.svg}"
-                                                    alt=""
-                                                    class="filter__form-input-icon icon" />
-                                            </div>
-                                        </div>
-                                        <div class="filter__form-group">
-                                            <div class="form__tags">
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn2"
-                                                    onclick="toggleSelected2(this)">
-                                                    Lavazza
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn2"
-                                                    onclick="toggleSelected2(this)">
-                                                    Nescafe
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="form__tag btn2"
-                                                    onclick="toggleSelected2(this)">
-                                                    Starbucks
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="filter__row filter__footer">
-                                    <button class="btn btn--text filter__cancel js-toggle" toggle-target="#home-filter">
-                                        Cancel
-                                    </button>
-                                    <button
-                                        class="btn btn--primary filter__submit js-toggle"
-                                        toggle-target="#home-filter">
-                                        Show Result
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row row-cols-4 row-cols-lg-2 row-cols-sm-1 g-3" id="products-container">
-                    <!-- Products will be rendered by JavaScript -->
-                </div>
-            </section>
         </div>
+        
+        <div class="row row-cols-4 row-cols-lg-2 row-cols-sm-1 g-3" id="products-container">
+            <div class="loading-placeholder loading-placeholder--grid">
+                <div class="loading-spinner"></div>
+                <p>Đang tải sản phẩm...</p>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination-container" id="pagination-container">
+            <nav class="pagination">
+                <button class="pagination__btn pagination__btn--prev" id="prev-page" disabled>
+                    <img th:src="@{/assets/icon/arrow-left.svg}" alt="Trang trước" class="pagination__icon icon"/>
+                </button>
+                <div class="pagination__pages" id="pagination-pages"></div>
+                <button class="pagination__btn pagination__btn--next" id="next-page">
+                    <img th:src="@{/assets/icon/arrow-right.svg}" alt="Trang sau" class="pagination__icon icon"/>
+                </button>
+            </nav>
+        </div>
+    </section>
+</div>
 
-        <!-- footer -->
-        <footer th:replace="~{fragments/footer :: footer}"></footer>
+<footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
 
-        <!-- Cart API Service -->
-        <script th:src="@{/assets/js/cart-api.js}"></script>
+<script th:src="@{/assets/js/cart-api.js}"></script>
+<script th:src="@{/assets/js/wishlist-api.js}"></script>
+<script th:src="@{/assets/js/reviews-api.js}"></script>
+<script th:src="@{/assets/js/address-api.js}"></script>
 
-        <script>
-            function updatePrice(value) {
-                document.getElementById("price-value").innerText = `$${value}.00`;
-            }
+<script>
+    // Format VND
+    function formatVNDFilter(value) {
+        return new Intl.NumberFormat('vi-VN').format(value * 1000) + 'đ';
+    }
 
-            function toggleSelected1(button) {
-                document.querySelectorAll(".form__tags button.btn1").forEach((btn) => btn.classList.remove("selected"));
-                button.classList.add("selected");
-            }
+    // Update price range slider
+    function updatePrice() {
+        let minPrice = document.getElementById("min-price");
+        let maxPrice = document.getElementById("max-price");
+        if (!minPrice || !maxPrice) return;
+        
+        let minValue = parseInt(minPrice.value);
+        let maxValue = parseInt(maxPrice.value);
 
-            function toggleSelected2(button) {
-                document.querySelectorAll(".form__tags button.btn2").forEach((btn) => btn.classList.remove("selected"));
-                button.classList.add("selected");
-            }
-        </script>
-        <script>
-            function updatePrice() {
-                let minPrice = document.getElementById("min-price");
-                let maxPrice = document.getElementById("max-price");
-                let minValue = parseInt(minPrice.value);
-                let maxValue = parseInt(maxPrice.value);
-                if (minValue > maxValue - 2) {
-                    minPrice.value = maxValue - 2;
+        if (minValue > maxValue - 100) minPrice.value = maxValue - 100;
+        if (maxValue < minValue + 100) maxPrice.value = minValue + 100;
+
+        document.getElementById("min-price-value").innerText = formatVNDFilter(minPrice.value);
+        document.getElementById("max-price-value").innerText = formatVNDFilter(maxPrice.value);
+
+        let track = document.querySelector(".slider-track");
+        if (track) {
+            let minPercent = (minValue / 5000) * 100;
+            let maxPercent = (maxValue / 5000) * 100;
+            track.style.left = minPercent + "%";
+            track.style.width = (maxPercent - minPercent) + "%";
+        }
+    }
+
+    // Reset filters
+    function resetFilters() {
+        document.getElementById("min-price").value = 0;
+        document.getElementById("max-price").value = 5000;
+        document.getElementById("filter-wishlist").checked = false;
+        document.getElementById("filter-rating").value = 0;
+        
+        document.querySelectorAll('.rating-tag').forEach(tag => tag.classList.remove('active'));
+        document.querySelector('.rating-tag[data-rating="0"]').classList.add('active');
+        
+        updatePrice();
+    }
+
+    // Init on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updatePrice();
+        
+        // Setup filter toggle
+        const filterBtn = document.querySelector('.filter-btn');
+        const filterPopup = document.getElementById('home-filter');
+        
+        if (filterBtn && filterPopup) {
+            filterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                filterPopup.classList.toggle('hide');
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!filterPopup.classList.contains('hide')) {
+                    if (!e.target.closest('#home-filter') && !e.target.closest('.filter-btn')) {
+                        filterPopup.classList.add('hide');
+                    }
                 }
-                if (maxValue < minValue + 2) {
-                    maxPrice.value = minValue + 2;
-                }
-                document.getElementById("min-price-value").innerText = `$${minPrice.value}.00`;
-                document.getElementById("max-price-value").innerText = `$${maxPrice.value}.00`;
+            });
+        }
+        
+        // Rating tags
+        document.querySelectorAll('.rating-tag').forEach(tag => {
+            tag.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.rating-tag').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('filter-rating').value = this.dataset.rating;
+            });
+        });
+    });
+</script>
 
-                let track = document.querySelector(".slider-track");
-                let minPercent = (minValue / 200) * 100;
-                let maxPercent = (maxValue / 200) * 100;
-                track.style.left = minPercent + "%";
-                track.style.width = maxPercent - minPercent + "%";
-            }
-            window.onload = updatePrice;
-        </script>
-    </body>
+<style>
+/* Quick Categories */
+.home__quick-cats {
+    margin-top: 20px;
+}
+
+.quick-cats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+}
+
+.quick-cat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 16px;
+    background: var(--home-cate-item-bg, #fff);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-height: 120px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-cat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(119, 218, 230, 0.05) 0%, rgba(91, 199, 212, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.quick-cat:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(119, 218, 230, 0.25);
+}
+
+.quick-cat:hover::before {
+    opacity: 1;
+}
+
+.quick-cat__icon {
+    font-size: 2.8rem;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.quick-cat:hover .quick-cat__icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.quick-cat__name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-color, #1a162e);
+    text-align: center;
+    line-height: 1.4;
+    z-index: 1;
+}
+
+/* Home Heading */
+.home__heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home__heading-icon {
+    font-size: 2rem;
+}
+
+.home__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.home__row-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.home__view-all {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--primary-color, #77dae6);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.home__view-all:hover {
+    color: #5bc7d4;
+    gap: 10px;
+}
+
+.home__view-all .icon {
+    width: 16px;
+    height: 16px;
+    filter: var(--icon-color);
+}
+
+/* Loading Placeholder */
+.loading-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #9e9da8;
+    width: 100%;
+}
+
+.loading-placeholder--grid {
+    grid-column: 1 / -1;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e8e8e8;
+    border-top-color: #77dae6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Filter improvements */
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--filter-btn-bg, #fff);
+    border: 1px solid var(--filter-btn-border, #d2d1d6);
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-color, #1a162e);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: #77dae6;
+    background: rgba(119, 218, 230, 0.05);
+}
+
+.filter-btn__icon {
+    width: 18px;
+    height: 18px;
+}
+
+.price-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.price-value {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.price-value__label {
+    font-size: 1.2rem;
+    color: #9e9da8;
+}
+
+.price-value__amount {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-color, #1a162e);
+}
+
+.rating-tag.active {
+    background: #77dae6;
+    color: #fff;
+    border-color: #77dae6;
+}
+
+/* Pagination improvements - Primary Color #77dae6 */
+.pagination-container {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--separate-color, #ebebeb);
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pagination__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    background: var(--pagination-btn-bg, #fff);
+    border: 1px solid var(--pagination-btn-border, #d2d1d6);
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-color, #1a162e);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination__btn:hover:not(:disabled) {
+    border-color: #77dae6;
+    color: #5bc7d4;
+    background: rgba(119, 218, 230, 0.05);
+}
+
+.pagination__btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination__icon {
+    width: 16px;
+    height: 16px;
+}
+
+.pagination__pages {
+    display: flex;
+    gap: 6px;
+}
+
+.pagination__page {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--pagination-btn-bg, #fff);
+    border: 1px solid var(--pagination-btn-border, #d2d1d6);
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-color, #1a162e);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination__page:hover {
+    border-color: #77dae6;
+    color: #5bc7d4;
+    background: rgba(119, 218, 230, 0.05);
+}
+
+.pagination__page--active {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border-color: #77dae6 !important;
+    color: #1a162e !important;
+    font-weight: 600 !important;
+}
+
+/* Dark mode pagination */
+html.dark .pagination__btn,
+html.dark .pagination__page {
+    background: var(--product-card-bg);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #b9babe;
+}
+
+html.dark .pagination__btn:hover:not(:disabled),
+html.dark .pagination__page:hover {
+    border-color: #77dae6;
+    color: #77dae6;
+    background: rgba(119, 218, 230, 0.1);
+}
+
+html.dark .pagination__page--active {
+    color: #1a162e !important;
+}
+
+/* Slideshow Controls */
+.slideshow {
+    position: relative;
+}
+
+.slideshow__controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.slideshow__control {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.slideshow__control:hover {
+    background: #fff;
+    transform: scale(1.1);
+}
+
+.slideshow__control .icon {
+    width: 20px;
+    height: 20px;
+}
+
+.slideshow__dots {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .quick-cats {
+        flex-wrap: wrap;
+    }
+    
+    .quick-cat {
+        flex: 0 0 calc(33.333% - 8px);
+        min-height: 110px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .quick-cats {
+        gap: 10px;
+    }
+    
+    .quick-cat {
+        flex: 0 0 calc(50% - 5px);
+        padding: 16px 12px;
+        min-height: 100px;
+    }
+    
+    .quick-cat__icon {
+        font-size: 2.2rem;
+        width: 48px;
+        height: 48px;
+    }
+    
+    .quick-cat__name {
+        font-size: 1.3rem;
+    }
+    
+    .home__heading {
+        font-size: 1.8rem;
+    }
+    
+    .slideshow__controls {
+        display: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .quick-cat {
+        flex: 0 0 calc(50% - 5px);
+    }
+    
+    .quick-cat__icon {
+        font-size: 2rem;
+        width: 44px;
+        height: 44px;
+    }
+    
+    .quick-cat__name {
+        font-size: 1.2rem;
+    }
+}
+
+/* Dark mode */
+html.dark .quick-cat {
+    background: var(--home-cate-item-bg);
+}
+
+html.dark .loading-placeholder {
+    color: #b9babe;
+}
+
+html.dark .loading-spinner {
+    border-color: #3a3a3a;
+    border-top-color: #77dae6;
+}
+</style>
+</body>
 </html>

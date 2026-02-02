@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Tài khoản - Grocery Store')}"></head>
+<body>
+<!-- Header -->
+<header th:replace="~{shared/fragments/header :: header}"></header>
+
+<!-- MAIN -->
+<main class="profile">
+    <div class="container">
+        <!-- Success/Error messages sẽ được hiển thị qua modal -->
+        <div th:if="${successMessage}" id="serverSuccessMessage" th:data-message="${successMessage}" style="display:none;"></div>
+        <div th:if="${errorMessage}" id="serverErrorMessage" th:data-message="${errorMessage}" style="display:none;"></div>
+
+        <!-- Search bar -->
+        <div class="profile-container">
+            <div class="search-bar d-none d-md-flex">
+                <input
+                        type="text"
+                        name=""
+                        id=""
+                        placeholder="Tìm kiếm sản phẩm"
+                        class="search-bar__input"
+                />
+                <button class="search-bar__submit">
+                    <img
+                            th:src="@{/assets/icon/search.svg}"
+                            alt=""
+                            class="search-bar__icon icon"
+                    />
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile content -->
+        <div class="profile-container">
+            <div class="row gy-md-3">
+                <div class="col-3 col-xl-4 col-lg-5 col-md-12">
+                    <aside class="profile__sidebar">
+                        <!-- User -->
+                        <div class="profile-user">
+                            <div class="profile-user__avatar-wrapper">
+                                <img
+                                        th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar.jpg'}"
+                                        alt=""
+                                        class="profile-user__avatar"
+                                        id="avatarPreview"
+                                />
+                                <label for="avatarInput" class="profile-user__avatar-edit">
+                                    <img th:src="@{/assets/icon/edit.svg}" alt="Đổi avatar" class="icon" />
+                                </label>
+                                <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadAvatar(this)" />
+                            </div>
+                            <h1 class="profile-user__name"
+                                th:text="${user.fullName != null ? user.fullName : user.username}">Tên người dùng</h1>
+                            <p class="profile-user__desc"
+                               th:text="'Ngày tham gia: ' + ${#temporals.format(user.registeredDate, 'dd/MM/yyyy')}">
+                                Ngày tham gia: 17/05/2022</p>
+                        </div>
+
+                        <!-- Menu 1 -->
+                        <div class="profile-menu">
+                            <h3 class="profile-menu__title">Quản lý tài khoản</h3>
+                            <ul class="profile-menu__list">
+                                <li>
+                                    <a
+                                            th:href="@{/edit-personal-info}"
+                                            class="profile-menu__link"
+                                    >
+                        <span class="profile-menu__icon">
+                          <img
+                                  th:src="@{/assets/icon/profile.svg}"
+                                  alt=""
+                                  class="icon"
+                          />
+                        </span>
+                                        Thông tin cá nhân
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/addresses}" class="profile-menu__link">
+                        <span class="profile-menu__icon">
+                          <img
+                                  th:src="@{/assets/icon/location.svg}"
+                                  alt=""
+                                  class="icon"
+                          />
+                        </span>
+                                        Địa chỉ
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Menu 2 -->
+                        <div class="profile-menu">
+                            <h3 class="profile-menu__title">Đơn hàng của tôi</h3>
+                            <ul class="profile-menu__list">
+                                <li>
+                                    <a th:href="@{/my-orders}" class="profile-menu__link">
+                        <span class="profile-menu__icon">
+                          <img
+                                  th:src="@{/assets/icon/document.svg}"
+                                  alt=""
+                                  class="icon"
+                          />
+                        </span>
+                                        Lịch sử đơn hàng
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/favourite}" class="profile-menu__link">
+                        <span class="profile-menu__icon">
+                          <img
+                                  th:src="@{/assets/icon/heart.svg}"
+                                  alt=""
+                                  class="icon"
+                          />
+                        </span>
+                                        Sản phẩm yêu thích
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/cart}" class="profile-menu__link">
+                        <span class="profile-menu__icon">
+                          <img
+                                  th:src="@{/assets/icon/buy.svg}"
+                                  alt=""
+                                  class="icon"
+                          />
+                        </span>
+                                        Giỏ hàng
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+                <div class="col-9 col-xl-8 col-lg-7 col-md-12">
+                    <div class="cart-info">
+                        <div class="row gy-3">
+                            <!-- Account info -->
+                            <div class="col-12">
+                                <h2 class="cart-info__heading">Thông tin tài khoản</h2>
+                                <p class="cart-info__desc profile__desc">
+                                    Địa chỉ, thông tin liên hệ
+                                </p>
+                                <div class="row gy-md-2 row-cols-2 row-cols-lg-1">
+                                    <!-- Account info 1 -->
+                                    <div class="col">
+                                        <a th:href="@{/edit-personal-info}">
+                                            <article class="account-info">
+                                                <div class="account-info__icon">
+                                                    <img
+                                                            th:src="@{/assets/icon/message-2.svg}"
+                                                            alt=""
+                                                            class="icon"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <h3 class="account-info__title">Email</h3>
+                                                    <p class="account-info__desc" th:text="${user.email}">
+                                                        email@example.com
+                                                    </p>
+                                                </div>
+                                            </article>
+                                        </a>
+                                    </div>
+
+                                    <!-- Account info 2 -->
+                                    <div class="col">
+                                        <a th:href="@{/edit-personal-info}">
+                                            <article class="account-info">
+                                                <div class="account-info__icon">
+                                                    <img
+                                                            th:src="@{/assets/icon/calling.svg}"
+                                                            alt=""
+                                                            class="icon"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <h3 class="account-info__title">Số điện thoại</h3>
+                                                    <p class="account-info__desc"
+                                                       th:text="${user.phone != null ? user.phone : 'Chưa cập nhật'}">
+                                                        Chưa cập nhật
+                                                    </p>
+                                                </div>
+                                            </article>
+                                        </a>
+                                    </div>
+
+                                    <!-- Account info 3 -->
+                                    <div class="col">
+                                        <a th:href="@{/addresses}">
+                                            <article class="account-info">
+                                                <div class="account-info__icon">
+                                                    <img
+                                                            th:src="@{/assets/icon/location.svg}"
+                                                            alt=""
+                                                            class="icon"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <h3 class="account-info__title" th:text="${defaultAddress != null ? 'Địa chỉ mặc định' : 'Thêm địa chỉ'}">
+                                                        Thêm địa chỉ
+                                                    </h3>
+                                                    <p class="account-info__desc" 
+                                                       th:text="${defaultAddress != null ? defaultAddress.addressLine1 + ', ' + defaultAddress.city : 'Chưa có địa chỉ'}">
+                                                        Chưa có địa chỉ
+                                                    </p>
+                                                </div>
+                                            </article>
+                                        </a>
+                                    </div>
+
+                                    <!-- Account info 4 - Username -->
+                                    <div class="col">
+                                        <a th:href="@{/edit-personal-info}">
+                                            <article class="account-info">
+                                                <div class="account-info__icon">
+                                                    <img
+                                                            th:src="@{/assets/icon/profile.svg}"
+                                                            alt=""
+                                                            class="icon"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <h3 class="account-info__title">Tên đăng nhập</h3>
+                                                    <p class="account-info__desc" th:text="${user.username}">
+                                                        username
+                                                    </p>
+                                                </div>
+                                            </article>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Orders -->
+                            <div class="col-12">
+                                <h2 class="cart-info__heading">Đơn hàng gần đây</h2>
+                                <p class="cart-info__desc profile__desc">
+                                    <a th:href="@{/my-orders}" style="color: var(--primary-color);">Xem tất cả đơn hàng →</a>
+                                </p>
+
+                                <div th:if="${recentOrders != null and !recentOrders.empty}">
+                                    <div th:each="order : ${recentOrders}" class="favourite-item" style="margin-bottom: 16px;">
+                                        <div style="width: 60px; height: 60px; background: var(--profile-menu-icon-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                            <img th:src="@{/assets/icon/document.svg}" alt="" class="icon" />
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <h3 class="favourite-item__title" th:text="'Đơn hàng #' + ${order.id}">
+                                                Đơn hàng #123
+                                            </h3>
+                                            <div class="favourite-item__content">
+                                                <span class="favourite-item__price" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">100,000 ₫</span>
+                                                <span th:text="${order.status}" 
+                                                      th:class="${order.status == 'DELIVERED' ? 'badge badge--success' : (order.status == 'CANCELLED' ? 'badge badge--danger' : 'badge badge--warning')}"
+                                                      style="padding: 4px 12px; border-radius: 20px; font-size: 12px;">
+                                                    Trạng thái
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div th:if="${recentOrders == null or recentOrders.empty}" class="empty-state-box">
+                                    <img th:src="@{/assets/icon/document.svg}" alt="" class="icon" />
+                                    <p>Bạn chưa có đơn hàng nào</p>
+                                    <a th:href="@{/}" class="btn btn--primary btn--rounded">Mua sắm ngay</a>
+                                </div>
+                            </div>
+
+                            <!-- Wishlist Preview -->
+                            <div class="col-12">
+                                <h2 class="cart-info__heading">Sản phẩm yêu thích</h2>
+                                <p class="cart-info__desc profile__desc">
+                                    <a th:href="@{/favourite}" style="color: var(--primary-color);">Xem tất cả →</a>
+                                </p>
+
+                                <div th:if="${wishlistItems != null and !wishlistItems.empty}">
+                                    <div th:each="item, iterStat : ${wishlistItems}" th:if="${iterStat.index < 3}">
+                                        <article class="favourite-item">
+                                            <img
+                                                    th:src="${item.productImageUrl != null ? item.productImageUrl : '/assets/img/product/item-1.png'}"
+                                                    alt=""
+                                                    class="favourite-item__thumb"
+                                            />
+                                            <div>
+                                                <h3 class="favourite-item__title" th:text="${item.productName}">
+                                                    Tên sản phẩm
+                                                </h3>
+                                                <div class="favourite-item__content">
+                                                    <span class="favourite-item__price" th:text="${#numbers.formatDecimal(item.productPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">100,000 ₫</span>
+                                                    <a th:href="@{/product/{id}(id=${item.productId})}" class="btn btn--primary btn--rounded">
+                                                        Xem chi tiết
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </article>
+                                        <div th:if="${!iterStat.last and iterStat.index < 2}" class="separate" style="--margin: 20px"></div>
+                                    </div>
+                                </div>
+
+                                <div th:if="${wishlistItems == null or wishlistItems.empty}" class="empty-state-box">
+                                    <img th:src="@{/assets/icon/heart.svg}" alt="" class="icon" />
+                                    <p>Chưa có sản phẩm yêu thích</p>
+                                    <a th:href="@{/}" class="btn btn--primary btn--rounded">Khám phá sản phẩm</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
+<link rel="stylesheet" th:href="@{/assets/css/profile.css}"/>
+
+<script>
+    // Hiển thị modal thông báo từ server
+    document.addEventListener('DOMContentLoaded', function() {
+        var successEl = document.getElementById('serverSuccessMessage');
+        var errorEl = document.getElementById('serverErrorMessage');
+        
+        if (successEl && successEl.dataset.message) {
+            setTimeout(function() {
+                if (typeof NotificationModal !== 'undefined' && NotificationModal.success) {
+                    NotificationModal.success(successEl.dataset.message, 'Thành công');
+                }
+            }, 100);
+        }
+        
+        if (errorEl && errorEl.dataset.message) {
+            setTimeout(function() {
+                if (typeof NotificationModal !== 'undefined' && NotificationModal.error) {
+                    NotificationModal.error(errorEl.dataset.message, 'Lỗi');
+                }
+            }, 100);
+        }
+    });
+
+    function uploadAvatar(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                NotificationModal.warning('Kích thước ảnh tối đa là 5MB');
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                NotificationModal.warning('Vui lòng chọn file ảnh');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            // Show preview immediately
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatarPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Upload to server
+            fetch('/api/user/avatar', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Upload failed');
+                return response.json();
+            })
+            .then(data => {
+                NotificationModal.success('Cập nhật avatar thành công!');
+                if (data.avatarUrl) {
+                    document.getElementById('avatarPreview').src = data.avatarUrl;
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading avatar:', error);
+                NotificationModal.error('Có lỗi xảy ra khi cập nhật avatar');
+            });
+        }
+    }
+</script>
+</body>
+</html>

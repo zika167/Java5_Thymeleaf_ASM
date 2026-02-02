@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật thanh toán - Grocery Store</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 40px 20px;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                
+                <!-- Header - Success -->
+                <tr th:if="${isPaymentSuccess}">
+                    <td style="background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%); padding: 40px 30px; text-align: center;">
+                        <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 40px;">✅</span>
+                        </div>
+                        <h1 style="color: #ffffff; margin: 0 0 8px; font-size: 26px; font-weight: 700;">Thanh toán thành công!</h1>
+                        <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 15px;">Đơn hàng của bạn đã được thanh toán</p>
+                    </td>
+                </tr>
+                
+                <!-- Header - Failed -->
+                <tr th:unless="${isPaymentSuccess}">
+                    <td style="background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); padding: 40px 30px; text-align: center;">
+                        <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 40px;">❌</span>
+                        </div>
+                        <h1 style="color: #ffffff; margin: 0 0 8px; font-size: 26px; font-weight: 700;">Thanh toán thất bại</h1>
+                        <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 15px;">Đã có lỗi xảy ra trong quá trình thanh toán</p>
+                    </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                    <td style="padding: 40px 30px;">
+                        <p style="color: #1e293b; font-size: 16px; margin: 0 0 24px;">
+                            Xin chào <strong th:text="${user.fullName}">Khách hàng</strong>,
+                        </p>
+                        
+                        <p style="color: #64748b; font-size: 15px; line-height: 1.6; margin: 0 0 30px;" th:text="${paymentStatusMessage}">
+                            Trạng thái thanh toán của bạn
+                        </p>
+                        
+                        <!-- Order Info Box - Success -->
+                        <table th:if="${isPaymentSuccess}" width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%); border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #22d3ee;">
+                            <tr>
+                                <td style="padding: 20px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0;">Mã đơn hàng:</td>
+                                            <td style="color: #06b6d4; font-size: 14px; font-weight: 700; text-align: right; padding: 10px 0;" th:text="${order.orderNumber}">ORD-123456</td>
+                                        </tr>
+                                        <tr th:if="${order.paymentTransactionId}">
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0;">Mã giao dịch:</td>
+                                            <td style="color: #1e293b; font-size: 14px; font-weight: 600; text-align: right; padding: 10px 0;" th:text="${order.paymentTransactionId}">TXN-123456</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0;">Phương thức:</td>
+                                            <td style="color: #1e293b; font-size: 14px; text-align: right; padding: 10px 0;" th:text="${order.paymentMethod}">VNPay</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="padding: 12px 0 0;">
+                                                <div style="border-top: 2px dashed #a5f3fc;"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #1e293b; font-size: 16px; font-weight: 600; padding: 12px 0 0;">💰 Tổng tiền:</td>
+                                            <td style="color: #06b6d4; font-size: 22px; font-weight: 700; text-align: right; padding: 12px 0 0;" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}">570,000 đ</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Order Info Box - Failed -->
+                        <table th:unless="${isPaymentSuccess}" width="100%" cellpadding="0" cellspacing="0" style="background: #fef2f2; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #ef4444;">
+                            <tr>
+                                <td style="padding: 20px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0;">Mã đơn hàng:</td>
+                                            <td style="color: #ef4444; font-size: 14px; font-weight: 700; text-align: right; padding: 10px 0;" th:text="${order.orderNumber}">ORD-123456</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0;">Phương thức:</td>
+                                            <td style="color: #1e293b; font-size: 14px; text-align: right; padding: 10px 0;" th:text="${order.paymentMethod}">VNPay</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="padding: 12px 0 0;">
+                                                <div style="border-top: 2px dashed #fecaca;"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #1e293b; font-size: 16px; font-weight: 600; padding: 12px 0 0;">💰 Tổng tiền:</td>
+                                            <td style="color: #ef4444; font-size: 22px; font-weight: 700; text-align: right; padding: 12px 0 0;" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}">570,000 đ</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Order Items -->
+                        <h3 style="color: #1e293b; font-size: 16px; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 2px solid #22d3ee;">🛒 Chi tiết đơn hàng</h3>
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                            <tr th:each="item : ${orderItems}" style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 14px 0;">
+                                    <span style="color: #1e293b; font-size: 14px;" th:text="${item.productName}">Sản phẩm</span>
+                                    <span style="color: #94a3b8; font-size: 13px;"> × <span th:text="${item.quantity}">1</span></span>
+                                </td>
+                                <td style="padding: 14px 0; text-align: right; color: #1e293b; font-weight: 500;" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT') + ' đ'}">100,000 đ</td>
+                            </tr>
+                        </table>
+                        
+                        <!-- CTA Button - Success -->
+                        <table th:if="${isPaymentSuccess}" width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td align="center" style="padding: 20px 0;">
+                                    <a th:href="'http://localhost:8080/order-detail/' + ${order.id}" style="display: inline-block; background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 30px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);">
+                                        📦 Xem đơn hàng
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- CTA Button - Failed -->
+                        <table th:unless="${isPaymentSuccess}" width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td align="center" style="padding: 20px 0;">
+                                    <a th:href="'http://localhost:8080/payment/vnpay/create/' + ${order.orderNumber}" style="display: inline-block; background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 30px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);">
+                                        🔄 Thử thanh toán lại
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Note for failed payment -->
+                        <table th:unless="${isPaymentSuccess}" width="100%" cellpadding="0" cellspacing="0" style="background-color: #fef3c7; border-radius: 10px; margin-top: 20px; border-left: 4px solid #f59e0b;">
+                            <tr>
+                                <td style="padding: 16px;">
+                                    <p style="color: #92400e; font-size: 14px; margin: 0;">
+                                        💡 <strong>Cần hỗ trợ?</strong> Nếu bạn gặp vấn đề khi thanh toán, vui lòng liên hệ hotline: <strong>1900 123 456</strong> để được hỗ trợ.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <p style="color: #1e293b; margin: 30px 0 0;">
+                            Trân trọng,<br/>
+                            <strong style="color: #06b6d4;">🛒 Grocery Store Team</strong>
+                        </p>
+                    </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                    <td style="background-color: #f1f5f9; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                        <p style="color: #06b6d4; font-size: 18px; font-weight: 700; margin: 0 0 8px;">🛒 Grocery Store</p>
+                        <p style="color: #64748b; font-size: 13px; margin: 0 0 12px;">Cảm ơn bạn đã tin tưởng và mua sắm cùng chúng tôi!</p>
+                        <p style="color: #94a3b8; font-size: 12px; margin: 0;">Email này được gửi tự động từ Grocery Store</p>
+                        <p style="color: #94a3b8; font-size: 12px; margin: 8px 0 0;">© 2026 Grocery Store. All rights reserved.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

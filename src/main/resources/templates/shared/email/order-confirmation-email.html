@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận đơn hàng - Grocery Store</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 40px 20px;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                
+                <!-- Header -->
+                <tr>
+                    <td style="background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%); padding: 40px 30px; text-align: center;">
+                        <div style="margin-bottom: 16px;">
+                            <span style="font-size: 48px;">🛒</span>
+                        </div>
+                        <h1 style="color: #ffffff; margin: 0 0 8px; font-size: 28px; font-weight: 700;">Grocery Store</h1>
+                        <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px;">Đơn hàng của bạn đã được xác nhận!</p>
+                    </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                    <td style="padding: 40px 30px;">
+                        <!-- Greeting -->
+                        <p style="color: #1e293b; font-size: 16px; margin: 0 0 24px;">
+                            Xin chào <strong th:text="${user.fullName}">Khách hàng</strong>,
+                        </p>
+                        
+                        <!-- Thank You Box -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%); border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #22d3ee;">
+                            <tr>
+                                <td style="padding: 24px; text-align: center;">
+                                    <div style="font-size: 36px; margin-bottom: 12px;">🎉</div>
+                                    <h2 style="color: #0891b2; margin: 0 0 8px; font-size: 20px; font-weight: 700;">Cảm ơn bạn đã đặt hàng!</h2>
+                                    <p style="color: #0e7490; margin: 0; font-size: 14px; line-height: 1.5;">Chúng tôi rất vui được phục vụ bạn. Đơn hàng đang được xử lý và sẽ sớm được giao đến bạn.</p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Order Info -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border-radius: 12px; margin-bottom: 30px;">
+                            <tr>
+                                <td style="padding: 20px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">📦 Mã đơn hàng:</td>
+                                            <td style="color: #06b6d4; font-size: 14px; font-weight: 700; text-align: right; padding: 10px 0; border-bottom: 1px solid #e2e8f0;" th:text="${order.orderNumber}">ORD-123456</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">📅 Ngày đặt:</td>
+                                            <td style="color: #1e293b; font-size: 14px; text-align: right; padding: 10px 0; border-bottom: 1px solid #e2e8f0;" th:text="${#temporals.format(order.orderedAt, 'dd/MM/yyyy HH:mm')}">19/01/2026 10:30</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">📋 Trạng thái:</td>
+                                            <td style="text-align: right; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                                                <span style="background: #fef3c7; padding: 4px 12px; border-radius: 20px; color: #d97706; font-size: 12px; font-weight: 600;" th:text="${order.status}">PENDING</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">💳 Thanh toán:</td>
+                                            <td style="color: #1e293b; font-size: 14px; text-align: right; padding: 10px 0; border-bottom: 1px solid #e2e8f0;" th:text="${order.paymentMethod}">COD</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 10px 0;">🚚 Vận chuyển:</td>
+                                            <td style="color: #1e293b; font-size: 14px; text-align: right; padding: 10px 0;" th:text="${order.shippingMethod}">Standard</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Order Items -->
+                        <h3 style="color: #1e293b; font-size: 16px; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 2px solid #22d3ee;">📝 Chi tiết đơn hàng</h3>
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                            <tr th:each="item : ${orderItems}" style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 16px 0; vertical-align: top;">
+                                    <span style="color: #1e293b; font-size: 14px; font-weight: 600;" th:text="${item.productName}">Tên sản phẩm</span><br/>
+                                    <span style="color: #64748b; font-size: 13px;">
+                                        Số lượng: <span th:text="${item.quantity}">1</span> × 
+                                        <span th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT') + 'đ'}">50,000đ</span>
+                                    </span>
+                                </td>
+                                <td style="padding: 16px 0; text-align: right; vertical-align: top;">
+                                    <span style="color: #06b6d4; font-weight: 700; font-size: 15px;" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">100,000đ</span>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Summary Box -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border-radius: 12px; margin-bottom: 30px;">
+                            <tr>
+                                <td style="padding: 20px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 8px 0;">Tạm tính:</td>
+                                            <td style="color: #1e293b; font-size: 14px; text-align: right; padding: 8px 0;" th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 0, 'POINT') + ' đ'}">500,000 đ</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 8px 0;">Thuế VAT (10%):</td>
+                                            <td style="color: #1e293b; font-size: 14px; text-align: right; padding: 8px 0;" th:text="${#numbers.formatDecimal(order.tax, 0, 'COMMA', 0, 'POINT') + ' đ'}">50,000 đ</td>
+                                        </tr>
+                                        <tr th:if="${order.promoCode != null and order.discountAmount > 0}">
+                                            <td style="color: #10b981; font-size: 14px; padding: 8px 0;">
+                                                🎉 Giảm giá (<span th:text="${order.promoCode}">GIAM10K</span>):
+                                            </td>
+                                            <td style="color: #10b981; font-size: 14px; font-weight: 600; text-align: right; padding: 8px 0;">
+                                                -<span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}">1,337,500 đ</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #64748b; font-size: 14px; padding: 8px 0;">Phí vận chuyển:</td>
+                                            <td th:if="${order.shippingFee == 0}" style="color: #10b981; font-size: 14px; text-align: right; padding: 8px 0;">Miễn phí</td>
+                                            <td th:unless="${order.shippingFee == 0}" style="color: #10b981; font-size: 14px; text-align: right; padding: 8px 0;" th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT') + ' đ'}">20,000 đ</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="padding: 16px 0 8px;">
+                                                <div style="border-top: 2px dashed #e2e8f0;"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #1e293b; font-size: 16px; font-weight: 700; padding: 8px 0;">💰 Tổng cộng:</td>
+                                            <td style="color: #06b6d4; font-size: 22px; font-weight: 700; text-align: right; padding: 8px 0;" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}">570,000 đ</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Customer Note -->
+                        <div th:if="${order.customerNote}" style="background-color: #fef3c7; padding: 16px; border-radius: 10px; margin-bottom: 24px; border-left: 4px solid #f59e0b;">
+                            <p style="margin: 0 0 6px; font-weight: 600; color: #92400e;">📝 Ghi chú của bạn:</p>
+                            <p style="margin: 0; color: #a16207; font-size: 14px;" th:text="${order.customerNote}">Ghi chú</p>
+                        </div>
+                        
+                        <!-- CTA Button -->
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td align="center" style="padding: 20px 0;">
+                                    <a th:href="'http://localhost:8080/order-detail/' + ${order.id}" style="display: inline-block; background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 30px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);">
+                                        📦 Xem đơn hàng của tôi
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Support Box -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff7ed; border-radius: 10px; margin: 24px 0; border-left: 4px solid #f97316;">
+                            <tr>
+                                <td style="padding: 16px;">
+                                    <p style="margin: 0 0 6px; font-weight: 600; color: #c2410c;">📞 Cần hỗ trợ?</p>
+                                    <p style="margin: 0; color: #ea580c; font-size: 14px;">Nếu bạn có bất kỳ câu hỏi nào về đơn hàng, vui lòng liên hệ hotline: <strong>1900 123 456</strong></p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <p style="color: #64748b; font-size: 14px; margin: 24px 0 0; line-height: 1.6;">
+                            Chúng tôi sẽ gửi email thông báo khi đơn hàng được giao cho đơn vị vận chuyển.
+                        </p>
+                        
+                        <p style="color: #1e293b; margin: 24px 0 0;">
+                            Trân trọng,<br/>
+                            <strong style="color: #06b6d4;">🛒 Grocery Store Team</strong>
+                        </p>
+                    </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                    <td style="background-color: #f1f5f9; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                        <p style="color: #06b6d4; font-size: 18px; font-weight: 700; margin: 0 0 8px;">🛒 Grocery Store</p>
+                        <p style="color: #64748b; font-size: 13px; margin: 0 0 16px;">Cảm ơn bạn đã tin tưởng và mua sắm cùng chúng tôi!</p>
+                        <p style="color: #94a3b8; font-size: 12px; margin: 0;">Email này được gửi tự động, vui lòng không trả lời trực tiếp.</p>
+                        <p style="color: #94a3b8; font-size: 12px; margin: 8px 0 0;">© 2026 Grocery Store. All rights reserved.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

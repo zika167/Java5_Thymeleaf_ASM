@@ -1,0 +1,445 @@
+/* ========================================
+   AUTH PAGE STYLES - Enhanced UX/UI
+   ======================================== */
+
+/* ========================================
+   AUTH INTRO SECTION
+   ======================================== */
+
+.auth__intro {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 50%, #4ab8c5 100%) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth__intro::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/svg%3E");
+    animation: float 20s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-50px, -50px) rotate(360deg); }
+}
+
+.auth__intro-text {
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth__intro-img {
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.2));
+    animation: bounce 3s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.auth__intro-next {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.auth__intro-next:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.1);
+}
+
+/* ========================================
+   AUTH CONTENT SECTION
+   ======================================== */
+
+.auth__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth__content-inner {
+    padding: 60px 0 !important;
+}
+
+.auth__heading {
+    font-size: 3.2rem !important;
+    font-weight: 700 !important;
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-top: 30px !important;
+}
+
+.auth__desc {
+    color: #888 !important;
+    font-size: 1.5rem;
+    line-height: 1.6;
+}
+
+/* ========================================
+   FORM STYLES
+   ======================================== */
+
+.auth__form {
+    margin-top: 40px !important;
+}
+
+.form__group {
+    margin-bottom: 20px;
+}
+
+.form__text-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 2px solid #e8e8e8;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.form__text-input:hover {
+    border-color: #d0d0d0;
+}
+
+.form__text-input:focus-within {
+    border-color: #77dae6;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(119, 218, 230, 0.15);
+}
+
+.form__input {
+    flex: 1;
+    padding: 16px 20px;
+    padding-left: 50px;
+    font-size: 1.5rem;
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+.form__input::placeholder {
+    color: #aaa;
+}
+
+.form__input-icon {
+    position: absolute;
+    left: 16px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.form__text-input:focus-within .form__input-icon {
+    opacity: 1;
+}
+
+.form__input-icon-error {
+    display: none;
+    position: absolute;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+}
+
+.form__error {
+    display: none;
+    margin-top: 8px;
+    padding-left: 4px;
+    color: #dc3545;
+    font-size: 1.3rem;
+    text-align: left;
+}
+
+.form__group--error .form__text-input {
+    border-color: #dc3545;
+}
+
+.form__group--error .form__input-icon-error {
+    display: block;
+}
+
+.form__group--error .form__error {
+    display: block;
+}
+
+/* ========================================
+   CHECKBOX STYLES
+   ======================================== */
+
+.form__group--inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.form__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.form__checkbox-input {
+    width: 20px;
+    height: 20px;
+    accent-color: #77dae6;
+    cursor: pointer;
+}
+
+.form__checkbox-label {
+    font-size: 1.4rem;
+    color: #666;
+    user-select: none;
+}
+
+.form__pull-right {
+    margin-left: auto;
+}
+
+/* ========================================
+   BUTTON STYLES
+   ======================================== */
+
+.auth__btn-group {
+    margin-top: 30px !important;
+}
+
+.auth__btn.btn--primary {
+    background: linear-gradient(135deg, #77dae6 0%, #5bc7d4 100%) !important;
+    border: none;
+    color: #fff;
+    padding: 16px 32px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(119, 218, 230, 0.35);
+}
+
+.auth__btn.btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(119, 218, 230, 0.45);
+}
+
+.auth__btn.btn--primary:active {
+    transform: translateY(0);
+}
+
+.btn--outline {
+    background: #fff !important;
+    border: 2px solid #e8e8e8 !important;
+    color: #333 !important;
+    padding: 14px 32px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn--outline:hover {
+    border-color: #77dae6 !important;
+    background: rgba(119, 218, 230, 0.05) !important;
+}
+
+.btn-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+/* ========================================
+   ALERT STYLES
+   ======================================== */
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px !important;
+    border-radius: 12px !important;
+    font-size: 1.4rem;
+    font-weight: 500;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert--error {
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%) !important;
+    color: #c53030 !important;
+    border-left: 4px solid #dc3545;
+}
+
+.alert--success {
+    background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%) !important;
+    color: #276749 !important;
+    border-left: 4px solid #28a745;
+}
+
+/* ========================================
+   AUTH LINK & TEXT
+   ======================================== */
+
+.auth__link {
+    color: #77dae6 !important;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.auth__link:hover {
+    color: #5bc7d4 !important;
+    text-decoration: underline;
+}
+
+.auth__text {
+    margin-top: 40px !important;
+    color: #888;
+    font-size: 1.5rem;
+}
+
+/* ========================================
+   DIVIDER
+   ======================================== */
+
+.auth__divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 30px 0;
+    color: #aaa;
+    font-size: 1.3rem;
+}
+
+.auth__divider::before,
+.auth__divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e8e8e8;
+}
+
+/* ========================================
+   LOGO
+   ======================================== */
+
+.auth__content .logo {
+    transition: transform 0.3s ease;
+}
+
+.auth__content .logo:hover {
+    transform: scale(1.05);
+}
+
+/* ========================================
+   PASSWORD TOGGLE
+   ======================================== */
+
+.form__password-toggle {
+    position: absolute;
+    right: 16px;
+    padding: 8px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.form__password-toggle:hover {
+    opacity: 1;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 991.98px) {
+    .auth__intro {
+        display: none;
+    }
+    
+    .auth__content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .auth__content-inner {
+        padding: 40px 20px !important;
+    }
+    
+    .auth__heading {
+        font-size: 2.6rem !important;
+    }
+    
+    .form__input {
+        padding: 14px 16px;
+        padding-left: 46px;
+    }
+    
+    .auth__btn.btn--primary,
+    .btn--outline {
+        padding: 14px 24px;
+    }
+}
+
+/* ========================================
+   DARK MODE SUPPORT
+   ======================================== */
+
+html.dark .form__text-input {
+    background: #2f3441;
+    border-color: #3e4043;
+}
+
+html.dark .form__text-input:focus-within {
+    background: #292e39;
+    border-color: #77dae6;
+}
+
+html.dark .form__input {
+    color: #fff;
+}
+
+html.dark .form__checkbox-label {
+    color: #b9babe;
+}
+
+html.dark .btn--outline {
+    background: #2f3441 !important;
+    border-color: #3e4043 !important;
+    color: #fff !important;
+}
+
+html.dark .auth__text {
+    color: #b9babe;
+}

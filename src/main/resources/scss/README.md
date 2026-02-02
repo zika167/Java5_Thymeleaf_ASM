@@ -12,23 +12,29 @@ npm install
 ## 🚀 Các lệnh compile
 
 ### 1. Compile một lần (production)
+
 ```bash
 npm run sass
 ```
+
 - Output: `../static/assets/css/main.css`
 - Style: compressed (minified)
 
 ### 2. Watch mode (development)
+
 ```bash
 npm run sass:watch
 ```
+
 - Tự động compile khi file `.scss` thay đổi
 - Nhấn `Ctrl+C` để dừng
 
 ### 3. Watch mode với source map
+
 ```bash
 npm run sass:dev
 ```
+
 - Tạo file `.map` để debug trong browser
 - Style: expanded (dễ đọc)
 
@@ -72,6 +78,7 @@ scss/
 ### Ví dụ 1: Đổi màu primary button
 
 Mở file `components/_buttons.scss`:
+
 ```scss
 .btn--primary {
     background: #ffb700;  // Đổi màu này
@@ -82,6 +89,7 @@ Mở file `components/_buttons.scss`:
 ### Ví dụ 2: Đổi font size heading
 
 Mở file `base/_base.scss`:
+
 ```scss
 h1 {
     font-size: 2.4rem;  // Đổi size này
@@ -91,6 +99,7 @@ h1 {
 ### Ví dụ 3: Thêm style mới cho trang
 
 Tạo file mới trong `pages/`, ví dụ `_contact.scss`:
+
 ```scss
 .contact-page {
     padding: 20px;
@@ -103,6 +112,7 @@ Tạo file mới trong `pages/`, ví dụ `_contact.scss`:
 ```
 
 Sau đó import vào `pages/_index.scss`:
+
 ```scss
 @forward "contact";
 ```

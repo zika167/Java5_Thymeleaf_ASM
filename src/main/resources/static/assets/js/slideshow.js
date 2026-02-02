@@ -111,10 +111,7 @@ class Slideshow {
 document.addEventListener("DOMContentLoaded", function () {
     const slideshowContainer = document.querySelector(".slideshow");
     if (slideshowContainer) {
-        console.log("Initializing slideshow...");
         new Slideshow(slideshowContainer);
-    } else {
-        console.log("Slideshow container not found");
     }
 });
 
@@ -122,7 +119,6 @@ document.addEventListener("DOMContentLoaded", function () {
 window.addEventListener("template-loaded", function () {
     const slideshowContainer = document.querySelector(".slideshow");
     if (slideshowContainer && !slideshowContainer.hasAttribute("data-initialized")) {
-        console.log("Initializing slideshow after template load...");
         slideshowContainer.setAttribute("data-initialized", "true");
         new Slideshow(slideshowContainer);
     }

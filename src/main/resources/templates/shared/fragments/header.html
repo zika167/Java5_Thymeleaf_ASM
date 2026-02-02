@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!--
+    Header Fragment - Refactored
+    
+    Cấu trúc file đã được tách nhỏ:
+    - header/logo.html           : Logo component
+    - header/navbar.html         : Navigation bar chính
+    - header/user-actions.html   : User login/logout actions
+    - header/dropdown-departments.html : Departments dropdown menu
+    - header/dropdown-grocery.html     : Grocery dropdown menu  
+    - header/dropdown-beauty.html      : Beauty dropdown menu
+    - header/submenu-savings.html      : Savings submenu
+    - header/submenu-electronics.html  : Electronics submenu
+-->
+
+<header th:fragment="header" class="header">
+    <div class="container">
+        <div class="top-bar">
+            <!-- More button -->
+            <button class="top-bar__more d-none d-lg-block js-toggle" toggle-target="#navbar">
+                <img th:src="@{/assets/icon/more.svg}" alt="" class="icon top-bar__more-icon" />
+            </button>
+
+            <!-- Logo -->
+            <a th:replace="~{shared/fragments/header/logo :: logo}"></a>
+
+            <!-- Navbar -->
+            <nav th:replace="~{shared/fragments/header/navbar :: navbar}"></nav>
+
+            <!-- Navbar overlay -->
+            <div class="navbar__overlay js-toggle" toggle-target="#navbar"></div>
+
+            <!-- User Actions -->
+            <div th:replace="~{shared/fragments/header/user-actions :: userActions}"></div>
+        </div>
+    </div>
+</header>
+
+</html>

@@ -2,28 +2,28 @@
 
 // Breakpoints, dimension, container, row, column, v.v
 $grid-breakpoints: (
-  xxl: 1400px,
-  xl: 1200px,
-  lg: 992px,
-  md: 768px,
-  sm: 576px,
+        xxl: 1400px,
+        xl: 1200px,
+        lg: 992px,
+        md: 768px,
+        sm: 576px,
 );
 $container-max-widths: (
-  sm: 100%,
-  md: 540px,
-  lg: 720px,
-  xl: 960px,
-  xxl: 1140px,
+        sm: 100%,
+        md: 540px,
+        lg: 720px,
+        xl: 960px,
+        xxl: 1140px,
 );
 $grid-columns: 12 !default;
 $grid-gutter-width: 30px !default;
 $gutters: (
-  0: 0,
-  1: 0.25,
-  2: 0.5,
-  3: 1,
-  4: 1.5,
-  5: 3,
+        0: 0,
+        1: 0.25,
+        2: 0.5,
+        3: 1,
+        4: 1.5,
+        5: 3,
 );
 
 %gutter-padding {

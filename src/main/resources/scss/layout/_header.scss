@@ -214,9 +214,7 @@
   &__btn-wrap {
     position: relative;
 
-    &:hover .act-dropdown {
-      display: block;
-    }
+    // Removed hover - use click toggle instead
   }
 
   &__btn {
@@ -241,7 +239,8 @@
   &__user {
     position: relative;
 
-    &:hover .act-dropdown {
+    // Click toggle instead of hover
+    &.show-dropdown .act-dropdown {
       display: block;
     }
   }

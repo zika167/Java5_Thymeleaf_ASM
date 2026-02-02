@@ -1,0 +1,855 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Thanh toán - Grocery Store')}"></head>
+<body>
+<header th:replace="~{shared/fragments/header :: header}"></header>
+
+<style>
+:root {
+    --primary-color: #22d3ee;
+    --primary-dark: #06b6d4;
+    --primary-light: #67e8f9;
+    --primary-bg: #ecfeff;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-page {
+    min-height: 80vh;
+    padding: 20px 0 60px;
+    background: #f8fafc;
+}
+
+/* Progress Steps */
+.checkout-steps {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+.checkout-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.checkout-step__number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--border-color);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+.checkout-step--active .checkout-step__number {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);
+}
+.checkout-step--done .checkout-step__number {
+    background: var(--success-color);
+    color: #fff;
+}
+.checkout-step__text {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.checkout-step--active .checkout-step__text { color: var(--text-dark); }
+.checkout-step__line {
+    width: 80px;
+    height: 3px;
+    background: var(--border-color);
+    margin: 0 16px;
+}
+.checkout-step--done + .checkout-step__line { background: var(--success-color); }
+@media (max-width: 767px) {
+    .checkout-step__text { display: none; }
+    .checkout-step__line { width: 40px; }
+}
+
+/* Layout */
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 30px;
+    align-items: start;
+}
+@media (max-width: 991px) {
+    .checkout-layout { grid-template-columns: 1fr; }
+}
+
+/* Cards */
+.checkout-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+.checkout-card__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background: var(--primary-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+.checkout-card__icon { font-size: 2.4rem; }
+.checkout-card__title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+.checkout-card__body { padding: 24px; }
+</style>
+<style>
+/* Cart Items in Checkout */
+.checkout-items { padding: 0; }
+.checkout-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+}
+.checkout-item:last-child { border-bottom: none; }
+.checkout-item:hover { background: #fafafa; }
+.checkout-item__image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f8fafc;
+    padding: 8px;
+    flex-shrink: 0;
+}
+.checkout-item__info { flex: 1; }
+.checkout-item__name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0 0 8px;
+}
+.checkout-item__name a { color: inherit; text-decoration: none; }
+.checkout-item__name a:hover { color: var(--primary-dark); }
+.checkout-item__price {
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+}
+.checkout-item__subtotal {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-align: right;
+    min-width: 120px;
+}
+
+/* Address Selection */
+.address-select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 1.5rem;
+    background: #fff;
+    color: var(--text-dark);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    margin-bottom: 16px;
+}
+.address-select:focus { outline: none; border-color: var(--primary-color); }
+.address-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-dark);
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+.address-link:hover { text-decoration: underline; }
+</style>
+<style>
+/* Payment Methods */
+.payment-methods { display: flex; flex-direction: column; gap: 12px; }
+.payment-method { cursor: pointer; }
+.payment-method__input { display: none; }
+.payment-method__content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    transition: all 0.3s;
+}
+.payment-method__input:checked + .payment-method__content {
+    border-color: var(--primary-color);
+    background: var(--primary-bg);
+}
+.payment-method__logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.payment-method__logo--cod { background: #dcfce7; }
+.payment-method__logo--vnpay { background: #dbeafe; }
+.payment-method__logo--momo { background: #fce7f3; }
+.payment-method__logo svg, .payment-method__logo img { width: 28px; height: 28px; }
+.payment-method__info { flex: 1; }
+.payment-method__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0 0 4px;
+}
+.payment-method__desc {
+    font-size: 1.3rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+.payment-method__check {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.3s;
+}
+.payment-method__input:checked + .payment-method__content .payment-method__check {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+}
+.payment-method__input:checked + .payment-method__content .payment-method__check::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* Payment Instructions */
+.payment-instruction {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    margin-top: 16px;
+}
+.payment-instruction--cod { border-left-color: var(--success-color); background: #f0fdf4; }
+.payment-instruction--vnpay { border-left-color: #3b82f6; background: #eff6ff; }
+.payment-instruction--momo { border-left-color: #ec4899; background: #fdf2f8; }
+.payment-instruction__icon { font-size: 2.4rem; }
+.payment-instruction__content p {
+    margin: 4px 0;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+.payment-instruction.hide { display: none; }
+
+/* Order Summary */
+.order-summary {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    position: sticky;
+    top: 20px;
+}
+.order-summary__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 1.5rem;
+}
+.order-summary__row span:first-child { color: var(--text-muted); }
+.order-summary__row span:last-child { color: var(--text-dark); font-weight: 500; }
+.order-summary__divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    margin: 20px 0;
+}
+.order-summary__total {
+    font-size: 1.8rem;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px dashed var(--border-color);
+}
+.order-summary__total span:first-child { color: var(--text-dark); font-weight: 600; }
+.order-summary__total span:last-child {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+/* Checkout Button */
+.checkout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 4px 14px rgba(34, 211, 238, 0.4);
+    margin-top: 24px;
+}
+.checkout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 211, 238, 0.5);
+}
+.checkout-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Empty State */
+.checkout-empty {
+    text-align: center;
+    padding: 60px 20px;
+}
+.checkout-empty__icon { font-size: 6rem; margin-bottom: 20px; opacity: 0.5; }
+.checkout-empty__title { font-size: 2rem; color: var(--text-dark); margin-bottom: 12px; }
+.checkout-empty__text { font-size: 1.5rem; color: var(--text-muted); margin-bottom: 24px; }
+
+/* Responsive */
+@media (max-width: 767px) {
+    .checkout-item { flex-wrap: wrap; }
+    .checkout-item__subtotal { min-width: auto; margin-top: 12px; }
+    .order-summary__total span:last-child { font-size: 2.2rem; }
+}
+</style>
+
+<main class="checkout-page">
+    <div class="container">
+        <!-- Progress Steps -->
+        <div class="checkout-steps">
+            <div class="checkout-step checkout-step--done">
+                <div class="checkout-step__number">✓</div>
+                <span class="checkout-step__text">Giỏ hàng</span>
+            </div>
+            <div class="checkout-step__line"></div>
+            <div class="checkout-step checkout-step--active">
+                <div class="checkout-step__number">2</div>
+                <span class="checkout-step__text">Thanh toán</span>
+            </div>
+            <div class="checkout-step__line"></div>
+            <div class="checkout-step">
+                <div class="checkout-step__number">3</div>
+                <span class="checkout-step__text">Hoàn tất</span>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="checkout-empty" class="checkout-empty" style="display: none;">
+            <div class="checkout-empty__icon">🛒</div>
+            <h2 class="checkout-empty__title">Giỏ hàng trống</h2>
+            <p class="checkout-empty__text">Bạn chưa có sản phẩm nào để thanh toán</p>
+            <a th:href="@{/}" class="checkout-btn" style="max-width: 300px; margin: 0 auto;">
+                🛍️ Tiếp tục mua sắm
+            </a>
+        </div>
+
+        <!-- Checkout Content -->
+        <div id="checkout-content" class="checkout-layout" style="display: none;">
+            <!-- Left Column -->
+            <div class="checkout-main">
+                <!-- Cart Items (Read-only) -->
+                <div class="checkout-card">
+                    <div class="checkout-card__header">
+                        <span class="checkout-card__icon">🛒</span>
+                        <h2 class="checkout-card__title">Sản phẩm đặt mua (<span id="item-count">0</span>)</h2>
+                    </div>
+                    <div class="checkout-items" id="checkout-items">
+                        <!-- Items will be rendered here (read-only) -->
+                    </div>
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="checkout-card">
+                    <div class="checkout-card__header">
+                        <span class="checkout-card__icon">📍</span>
+                        <h2 class="checkout-card__title">Địa chỉ giao hàng</h2>
+                    </div>
+                    <div class="checkout-card__body">
+                        <select class="address-select" id="address-select">
+                            <option value="">-- Chọn địa chỉ giao hàng --</option>
+                        </select>
+                        <a th:href="@{/addresses}" class="address-link">
+                            ➕ Thêm địa chỉ mới
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="checkout-card">
+                    <div class="checkout-card__header">
+                        <span class="checkout-card__icon">💳</span>
+                        <h2 class="checkout-card__title">Phương thức thanh toán</h2>
+                    </div>
+                    <div class="checkout-card__body">
+                        <div class="payment-methods">
+                            <!-- COD -->
+                            <label class="payment-method">
+                                <input type="radio" name="payment" value="COD" class="payment-method__input" checked>
+                                <div class="payment-method__content">
+                                    <div class="payment-method__logo payment-method__logo--cod">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+                                            <rect x="1" y="4" width="22" height="16" rx="2"/>
+                                            <line x1="1" y1="10" x2="23" y2="10"/>
+                                        </svg>
+                                    </div>
+                                    <div class="payment-method__info">
+                                        <h4 class="payment-method__title">Thanh toán khi nhận hàng (COD)</h4>
+                                        <p class="payment-method__desc">Thanh toán bằng tiền mặt khi nhận hàng</p>
+                                    </div>
+                                    <div class="payment-method__check"></div>
+                                </div>
+                            </label>
+
+                            <!-- VNPay - Only for Admin -->
+                            <label class="payment-method" id="vnpay-method" style="display: none;">
+                                <input type="radio" name="payment" value="VNPAY" class="payment-method__input">
+                                <div class="payment-method__content">
+                                    <div class="payment-method__logo payment-method__logo--vnpay">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="#3b82f6" stroke-width="2"/>
+                                            <path d="M6 12h4M14 12h4M6 16h12" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
+                                            <circle cx="12" cy="8" r="2" fill="#3b82f6"/>
+                                        </svg>
+                                    </div>
+                                    <div class="payment-method__info">
+                                        <h4 class="payment-method__title">VNPay</h4>
+                                        <p class="payment-method__desc">Thanh toán qua cổng VNPay</p>
+                                    </div>
+                                    <div class="payment-method__check"></div>
+                                </div>
+                            </label>
+
+                            <!-- MoMo - Only for Admin -->
+                            <label class="payment-method" id="momo-method" style="display: none;">
+                                <input type="radio" name="payment" value="MOMO" class="payment-method__input">
+                                <div class="payment-method__content">
+                                    <div class="payment-method__logo payment-method__logo--momo">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="2" y="2" width="20" height="20" rx="4" fill="#a50064"/>
+                                            <text x="12" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="bold">M</text>
+                                        </svg>
+                                    </div>
+                                    <div class="payment-method__info">
+                                        <h4 class="payment-method__title">Ví MoMo</h4>
+                                        <p class="payment-method__desc">Thanh toán qua ví điện tử MoMo</p>
+                                    </div>
+                                    <div class="payment-method__check"></div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Payment Instructions -->
+                        <div id="instruction-cod" class="payment-instruction payment-instruction--cod">
+                            <span class="payment-instruction__icon">💵</span>
+                            <div class="payment-instruction__content">
+                                <p><strong>Thanh toán khi nhận hàng</strong></p>
+                                <p>Bạn sẽ thanh toán bằng tiền mặt cho nhân viên giao hàng khi nhận được đơn hàng.</p>
+                            </div>
+                        </div>
+                        <div id="instruction-vnpay" class="payment-instruction payment-instruction--vnpay hide">
+                            <span class="payment-instruction__icon">🏦</span>
+                            <div class="payment-instruction__content">
+                                <p><strong>Thanh toán qua VNPay</strong></p>
+                                <p>Bạn sẽ được chuyển đến cổng thanh toán VNPay để hoàn tất giao dịch.</p>
+                            </div>
+                        </div>
+                        <div id="instruction-momo" class="payment-instruction payment-instruction--momo hide">
+                            <span class="payment-instruction__icon">📱</span>
+                            <div class="payment-instruction__content">
+                                <p><strong>Thanh toán qua MoMo</strong></p>
+                                <p>Bạn sẽ được chuyển đến ứng dụng MoMo để hoàn tất thanh toán.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column - Order Summary -->
+            <div class="order-summary">
+                <div class="checkout-card__header">
+                    <span class="checkout-card__icon">📋</span>
+                    <h2 class="checkout-card__title">Tổng đơn hàng</h2>
+                </div>
+                <div class="checkout-card__body">
+                    <div class="order-summary__row">
+                        <span>Tạm tính</span>
+                        <span id="summary-subtotal">0đ</span>
+                    </div>
+                    <div class="order-summary__row">
+                        <span>Thuế VAT (10%)</span>
+                        <span id="summary-tax">0đ</span>
+                    </div>
+                    <div class="order-summary__row" id="discount-row" style="display: none;">
+                        <span style="color: var(--success-color);">
+                            🎉 Giảm giá (<span id="promo-code-display"></span>)
+                        </span>
+                        <span id="summary-discount" style="color: var(--success-color); font-weight: 600;">-0đ</span>
+                    </div>
+                    <div class="order-summary__row">
+                        <span>Phí vận chuyển</span>
+                        <span id="summary-shipping" style="color: var(--success-color);">Miễn phí</span>
+                    </div>
+                    <div class="order-summary__divider"></div>
+                    <div class="order-summary__row order-summary__total">
+                        <span>Tổng cộng</span>
+                        <span id="summary-total">0đ</span>
+                    </div>
+
+                    <button class="checkout-btn" id="place-order-btn" onclick="placeOrder()">
+                        🛒 Đặt hàng ngay
+                    </button>
+
+                    <a th:href="@{/cart}" class="checkout-btn" style="background: transparent; color: var(--text-dark); border: 2px solid var(--border-color); box-shadow: none; margin-top: 12px;">
+                        ← Quay lại giỏ hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{shared/fragments/footer :: footer}"></footer>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
+<script th:src="@{/assets/js/notification-modal.js}"></script>
+<script th:src="@{/assets/js/cart-api.js}"></script>
+<script th:src="@{/assets/js/address-api.js}"></script>
+
+<script>
+// Global state
+let cartData = null;
+let selectedAddressId = null;
+
+// Format price to VND
+function formatPrice(price) {
+    let p = parseFloat(price) || 0;
+    if (p > 0 && p < 10000) p = p * 25000;
+    return new Intl.NumberFormat('vi-VN').format(p) + 'đ';
+}
+
+// Load cart data
+async function loadCart() {
+    try {
+        const response = await fetch('/api/cart');
+        cartData = await response.json();
+        
+        if (!cartData.items || cartData.items.length === 0) {
+            document.getElementById('checkout-empty').style.display = 'block';
+            document.getElementById('checkout-content').style.display = 'none';
+            return;
+        }
+        
+        document.getElementById('checkout-empty').style.display = 'none';
+        document.getElementById('checkout-content').style.display = 'grid';
+        
+        renderCartItems(cartData.items);
+        updateSummary();
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        NotificationModal.error('Không thể tải giỏ hàng');
+    }
+}
+
+// Render cart items (read-only, no edit/delete)
+function renderCartItems(items) {
+    const container = document.getElementById('checkout-items');
+    document.getElementById('item-count').textContent = items.length;
+    
+    container.innerHTML = items.map(item => {
+        let price = item.price;
+        let subtotal = item.subtotal;
+        if (price > 0 && price < 10000) { price = price * 25000; subtotal = subtotal * 25000; }
+        
+        return `
+        <div class="checkout-item" data-id="${item.id}">
+            <img src="${item.productImage || '/assets/img/product/default.jpg'}" alt="${item.productName}" class="checkout-item__image">
+            <div class="checkout-item__info">
+                <h3 class="checkout-item__name">
+                    <a href="/product/${item.productId}">${item.productName}</a>
+                </h3>
+                <p class="checkout-item__price">${formatPrice(item.price)} × ${item.quantity}</p>
+            </div>
+            <div class="checkout-item__subtotal">${formatPrice(item.subtotal)}</div>
+        </div>
+        `;
+    }).join('');
+}
+
+// Update order summary
+function updateSummary() {
+    if (!cartData) return;
+    
+    let subtotal = parseFloat(cartData.totalPrice) || 0;
+    if (subtotal > 0 && subtotal < 10000) subtotal = subtotal * 25000;
+    
+    let discount = parseFloat(cartData.discountAmount) || 0;
+    if (discount > 0 && discount < 10000) discount = discount * 25000;
+    
+    let finalPrice = parseFloat(cartData.finalPrice) || (subtotal * 1.1);
+    if (finalPrice > 0 && finalPrice < 10000) finalPrice = finalPrice * 25000;
+    
+    const tax = subtotal * 0.1;
+    
+    document.getElementById('summary-subtotal').textContent = formatPrice(subtotal);
+    document.getElementById('summary-tax').textContent = formatPrice(tax);
+    
+    // Hiển thị giảm giá nếu có
+    const discountRow = document.getElementById('discount-row');
+    if (cartData.promoCode && discount > 0) {
+        discountRow.style.display = 'flex';
+        document.getElementById('promo-code-display').textContent = cartData.promoCode;
+        document.getElementById('summary-discount').textContent = '-' + formatPrice(discount);
+    } else {
+        discountRow.style.display = 'none';
+    }
+    
+    document.getElementById('summary-total').textContent = formatPrice(finalPrice);
+}
+
+// Load addresses
+async function loadAddresses() {
+    try {
+        const addresses = await AddressAPI.getUserAddresses();
+        const select = document.getElementById('address-select');
+        
+        if (addresses && addresses.length > 0) {
+            select.innerHTML = '<option value="">-- Chọn địa chỉ giao hàng --</option>' +
+                addresses.map(addr => {
+                    // Build address string from available fields
+                    const parts = [addr.addressLine1];
+                    if (addr.addressLine2) parts.push(addr.addressLine2);
+                    if (addr.state) parts.push(addr.state);
+                    if (addr.city) parts.push(addr.city);
+                    if (addr.postalCode) parts.push(addr.postalCode);
+                    const addressStr = parts.join(', ');
+                    
+                    return `
+                        <option value="${addr.id}">
+                            ${addr.recipientName || 'N/A'} - ${addr.phone || 'N/A'} - ${addressStr}
+                            ${addr.isDefault ? '(Mặc định)' : ''}
+                        </option>
+                    `;
+                }).join('');
+            
+            // Restore saved address from localStorage, or use default
+            const savedAddressId = localStorage.getItem('checkoutAddressId');
+            if (savedAddressId && addresses.find(a => a.id == savedAddressId)) {
+                select.value = savedAddressId;
+                selectedAddressId = savedAddressId;
+            } else {
+                const defaultAddr = addresses.find(a => a.isDefault);
+                if (defaultAddr) {
+                    selectedAddressId = defaultAddr.id;
+                    select.value = defaultAddr.id;
+                }
+            }
+        } else {
+            select.innerHTML = '<option value="">Chưa có địa chỉ - Vui lòng thêm địa chỉ mới</option>';
+        }
+    } catch (error) {
+        console.error('Error loading addresses:', error);
+    }
+}
+
+// Restore saved selections from localStorage
+function restoreSavedSelections() {
+    // Restore payment method
+    const savedPayment = localStorage.getItem('selectedPaymentMethod');
+    if (savedPayment) {
+        const paymentInput = document.querySelector(`input[name="payment"][value="${savedPayment}"]`);
+        if (paymentInput) {
+            paymentInput.checked = true;
+            // Trigger change to show correct instruction
+            paymentInput.dispatchEvent(new Event('change'));
+        }
+    }
+}
+
+// Handle payment method change
+function handlePaymentChange() {
+    const paymentInputs = document.querySelectorAll('input[name="payment"]');
+    const instructions = {
+        'COD': document.getElementById('instruction-cod'),
+        'VNPAY': document.getElementById('instruction-vnpay'),
+        'MOMO': document.getElementById('instruction-momo')
+    };
+    
+    paymentInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            Object.values(instructions).forEach(el => el.classList.add('hide'));
+            if (instructions[input.value]) {
+                instructions[input.value].classList.remove('hide');
+            }
+        });
+    });
+}
+
+// Place order - redirect to payment page
+async function placeOrder() {
+    const addressSelect = document.getElementById('address-select');
+    const selectedAddress = addressSelect.value;
+    const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+    
+    // Validation
+    if (!selectedAddress) {
+        NotificationModal.warning('Vui lòng chọn địa chỉ giao hàng');
+        addressSelect.focus();
+        return;
+    }
+    
+    if (!cartData || !cartData.items || cartData.items.length === 0) {
+        NotificationModal.warning('Giỏ hàng trống');
+        return;
+    }
+    
+    // Save checkout data to localStorage for payment page
+    localStorage.setItem('checkoutAddressId', selectedAddress);
+    localStorage.setItem('selectedPaymentMethod', paymentMethod);
+    
+    // Redirect to payment page
+    window.location.href = '/payment';
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
+    loadAddresses();
+    restoreSavedSelections();
+    handlePaymentChange();
+    checkUserRoleAndShowPaymentMethods();
+});
+
+// Check user role and show/hide payment methods
+async function checkUserRoleAndShowPaymentMethods() {
+    try {
+        // Get user info from session or API
+        const response = await fetch('/api/user/current', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('API Response Status:', response.status);
+        
+        if (!response.ok) {
+            console.log('User not logged in or error:', response.status);
+            // User not logged in or error - show only COD
+            hideAdminPaymentMethods();
+            return;
+        }
+        
+        const user = await response.json();
+        console.log('Current user data:', user);
+        console.log('User role:', user.role);
+        
+        // Check if user is admin (case-insensitive)
+        const userRole = user.role ? user.role.toUpperCase() : '';
+        console.log('Normalized role:', userRole);
+        
+        if (userRole === 'ADMIN') {
+            console.log('✓ Admin detected - showing all payment methods');
+            // Show all payment methods for admin
+            showAllPaymentMethods();
+        } else {
+            console.log('✗ Regular user detected - showing only COD');
+            // Show only COD for regular users
+            hideAdminPaymentMethods();
+        }
+    } catch (error) {
+        console.error('Error checking user role:', error);
+        // Default: show only COD
+        hideAdminPaymentMethods();
+    }
+}
+
+// Show all payment methods (for admin)
+function showAllPaymentMethods() {
+    const vnpayMethod = document.getElementById('vnpay-method');
+    const momomethod = document.getElementById('momo-method');
+    
+    console.log('Showing payment methods...');
+    console.log('vnpay-method element:', vnpayMethod);
+    console.log('momo-method element:', momomethod);
+    
+    if (vnpayMethod) {
+        vnpayMethod.style.display = 'block';
+        console.log('✓ VNPay method shown');
+    }
+    if (momomethod) {
+        momomethod.style.display = 'block';
+        console.log('✓ MoMo method shown');
+    }
+}
+
+// Hide VNPay and MoMo (for regular users)
+function hideAdminPaymentMethods() {
+    const vnpayMethod = document.getElementById('vnpay-method');
+    const momomethod = document.getElementById('momo-method');
+    
+    console.log('Hiding payment methods...');
+    
+    if (vnpayMethod) {
+        vnpayMethod.style.display = 'none';
+        console.log('✓ VNPay method hidden');
+    }
+    if (momomethod) {
+        momomethod.style.display = 'none';
+        console.log('✓ MoMo method hidden');
+    }
+    
+    // Ensure COD is selected
+    const codInput = document.querySelector('input[name="payment"][value="COD"]');
+    if (codInput) {
+        codInput.checked = true;
+        codInput.dispatchEvent(new Event('change'));
+        console.log('✓ COD selected as default');
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+package poly.edu.java5_asm.module.cart.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import poly.edu.java5_asm.module.user.entity.User;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Entity Giỏ hàng
+ */
+@Entity
+@Table(name = "carts", indexes = {
+    @Index(name = "idx_cart_user", columnList = "user_id"),
+    @Index(name = "idx_cart_session", columnList = "session_id")
+})
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Cart {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "session_id", length = 255)
+    private String sessionId; // Session ID cho guest user
+
+    @Column(name = "promo_code", length = 50)
+    private String promoCode; // Mã giảm giá đã áp dụng
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt; // Ngày tạo
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt; // Ngày cập nhật
+
+    // Quan hệ: Nhiều giỏ hàng thuộc 1 user (nullable cho guest)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // Quan hệ: 1 giỏ hàng có nhiều cart items
+    @Builder.Default
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> items = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+}

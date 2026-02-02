@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{shared/fragments/head :: head('Đơn Hàng Của Tôi | grocerystore')}"></head>
+<body>
+<th:block th:replace="~{shared/fragments/header :: header}"></th:block>
+
+<main class="profile">
+    <div class="container">
+        <div class="profile-container">
+            <div class="row gy-md-3">
+                <!-- Sidebar -->
+                <div class="col-3 col-xl-4 col-lg-5 col-md-12">
+                    <aside class="profile__sidebar">
+                        <div class="profile-user">
+                            <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/assets/img/avatar.jpg'}"
+                                 alt="" class="profile-user__avatar"/>
+                            <h1 class="profile-user__name" th:text="${user.fullName != null ? user.fullName : user.username}">Tên người dùng</h1>
+                            <p class="profile-user__desc" th:text="'@' + ${user.username}">@username</p>
+                        </div>
+
+                        <div class="profile-menu">
+                            <h3 class="profile-menu__title">Quản lý tài khoản</h3>
+                            <ul class="profile-menu__list">
+                                <li>
+                                    <a th:href="@{/profile}" class="profile-menu__link">
+                                        <span class="profile-menu__icon"><img th:src="@{/assets/icon/profile.svg}" alt="" class="icon"/></span>
+                                        Thông tin cá nhân
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/my-orders}" class="profile-menu__link profile-menu__link--active">
+                                        <span class="profile-menu__icon"><img th:src="@{/assets/icon/bag.svg}" alt="" class="icon"/></span>
+                                        Đơn hàng của tôi
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/favourite}" class="profile-menu__link">
+                                        <span class="profile-menu__icon"><img th:src="@{/assets/icon/heart.svg}" alt="" class="icon"/></span>
+                                        Danh sách yêu thích
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/addresses}" class="profile-menu__link">
+                                        <span class="profile-menu__icon"><img th:src="@{/assets/icon/location.svg}" alt="" class="icon"/></span>
+                                        Địa chỉ giao hàng
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-9 col-xl-8 col-lg-7 col-md-12">
+                    <div class="cart-info">
+                        <!-- Page Header -->
+                        <div class="page-header">
+                            <a th:href="@{/profile}" class="page-header__back">
+                                <img th:src="@{/assets/icon/arrow-left.svg}" alt="" class="icon"/>
+                            </a>
+                            <div class="page-header__content">
+                                <h1 class="cart-info__heading" style="margin-bottom: 4px;">Đơn Hàng Của Tôi</h1>
+                                <p class="page-header__subtitle">Quản lý và theo dõi tất cả đơn hàng</p>
+                            </div>
+                        </div>
+
+                        <!-- Filter tabs -->
+                        <div class="order-tabs">
+                            <button class="order-tab active" data-status="all">
+                                <span class="order-tab__text">Tất cả</span>
+                            </button>
+                            <button class="order-tab" data-status="PENDING">
+                                <span class="order-tab__icon">⏳</span>
+                                <span class="order-tab__text">Chờ xác nhận</span>
+                            </button>
+                            <button class="order-tab" data-status="CONFIRMED">
+                                <span class="order-tab__icon">✓</span>
+                                <span class="order-tab__text">Đã xác nhận</span>
+                            </button>
+                            <button class="order-tab" data-status="SHIPPED">
+                                <span class="order-tab__icon">🚚</span>
+                                <span class="order-tab__text">Đang giao</span>
+                            </button>
+                            <button class="order-tab" data-status="DELIVERED">
+                                <span class="order-tab__icon">📦</span>
+                                <span class="order-tab__text">Đã giao</span>
+                            </button>
+                            <button class="order-tab" data-status="CANCELLED">
+                                <span class="order-tab__icon">✕</span>
+                                <span class="order-tab__text">Đã hủy</span>
+                            </button>
+                        </div>
+
+                        <!-- Orders List -->
+                        <div class="orders-list" id="ordersList">
+                            <div class="loading-state" id="loadingState">
+                                <div class="loading-spinner"></div>
+                                <p>Đang tải đơn hàng...</p>
+                            </div>
+
+                            <div class="empty-state" id="emptyState" style="display: none;">
+                                <div class="empty-state__icon-wrap">
+                                    <img th:src="@{/assets/icon/bag.svg}" alt="" class="empty-state__icon"/>
+                                </div>
+                                <h2 class="empty-state__title">Chưa có đơn hàng nào</h2>
+                                <p class="empty-state__desc">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+                                <a th:href="@{/products}" class="btn btn--primary">🛒 Tiếp tục mua sắm</a>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{shared/fragments/footer :: footer}"></th:block>
+<th:block th:replace="~{shared/fragments/notification-modal :: notification-modal}"></th:block>
+<link rel="stylesheet" th:href="@{/assets/css/profile.css}"/>
+<link rel="stylesheet" th:href="@{/assets/css/my-orders.css}"/>
+<script th:src="@{/assets/js/notification-modal.js}"></script>
+
+<script>
+    const ITEMS_PER_PAGE = 3;
+    let currentStatus = 'all';
+    let currentPage = 1;
+    let allOrders = [];
+    let filteredOrders = [];
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadOrders();
+
+        document.querySelectorAll('.order-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentStatus = this.dataset.status;
+                currentPage = 1;
+                filterAndRenderOrders();
+            });
+        });
+    });
+
+    function loadOrders() {
+        const loadingState = document.getElementById('loadingState');
+        const emptyState = document.getElementById('emptyState');
+
+        loadingState.style.display = 'flex';
+        emptyState.style.display = 'none';
+
+        fetch('/api/orders')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load orders');
+                return response.json();
+            })
+            .then(data => {
+                loadingState.style.display = 'none';
+                allOrders = data || [];
+                filterAndRenderOrders();
+            })
+            .catch(error => {
+                console.error('Error loading orders:', error);
+                loadingState.style.display = 'none';
+                emptyState.style.display = 'flex';
+            });
+    }
+
+    function filterAndRenderOrders() {
+        const ordersList = document.getElementById('ordersList');
+        const emptyState = document.getElementById('emptyState');
+        const pagination = document.getElementById('pagination');
+
+        document.querySelectorAll('.order-card').forEach(card => card.remove());
+
+        // Filter orders by status
+        filteredOrders = allOrders;
+        if (currentStatus !== 'all') {
+            filteredOrders = allOrders.filter(order => order.status === currentStatus);
+        }
+
+        if (filteredOrders.length > 0) {
+            emptyState.style.display = 'none';
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+            const ordersToShow = filteredOrders.slice(startIndex, endIndex);
+            
+            // Render orders for current page
+            ordersToShow.forEach(order => renderOrder(order));
+            
+            // Render pagination
+            renderPagination(totalPages);
+        } else {
+            emptyState.style.display = 'flex';
+            pagination.innerHTML = '';
+        }
+    }
+
+    function renderPagination(totalPages) {
+        const pagination = document.getElementById('pagination');
+        
+        if (totalPages <= 1) {
+            pagination.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+        
+        // Previous button
+        html += `<button class="pagination__btn pagination__btn--prev ${currentPage === 1 ? 'disabled' : ''}" 
+                         onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <img src="/assets/icon/arrow-left.svg" alt="" class="icon"/>
+                 </button>`;
+        
+        // Page numbers
+        html += '<div class="pagination__pages">';
+        
+        // Always show first page
+        if (currentPage > 3) {
+            html += `<button class="pagination__page" onclick="goToPage(1)">1</button>`;
+            if (currentPage > 4) {
+                html += `<span class="pagination__dots">...</span>`;
+            }
+        }
+        
+        // Show pages around current page
+        for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+            html += `<button class="pagination__page ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        }
+        
+        // Always show last page
+        if (currentPage < totalPages - 2) {
+            if (currentPage < totalPages - 3) {
+                html += `<span class="pagination__dots">...</span>`;
+            }
+            html += `<button class="pagination__page" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+        }
+        
+        html += '</div>';
+        
+        // Next button
+        html += `<button class="pagination__btn pagination__btn--next ${currentPage === totalPages ? 'disabled' : ''}" 
+                         onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <img src="/assets/icon/arrow-right.svg" alt="" class="icon"/>
+                 </button>`;
+        
+        // Page info
+        const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+        const endItem = Math.min(currentPage * ITEMS_PER_PAGE, filteredOrders.length);
+        html += `<div class="pagination__info">Hiển thị ${startItem}-${endItem} / ${filteredOrders.length} đơn hàng</div>`;
+        
+        pagination.innerHTML = html;
+    }
+
+    function goToPage(page) {
+        const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+        if (page < 1 || page > totalPages) return;
+        
+        currentPage = page;
+        filterAndRenderOrders();
+        
+        // Scroll to top of orders list
+        document.querySelector('.orders-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderOrder(order) {
+        const ordersList = document.getElementById('ordersList');
+        const orderDate = order.orderedAt ? new Date(order.orderedAt).toLocaleDateString('vi-VN') : 'N/A';
+        const totalPrice = new Intl.NumberFormat('vi-VN').format(order.totalAmount) + ' ₫';
+
+        const statusConfig = {
+            'PENDING': { badge: 'badge--warning', text: 'Chờ xác nhận', icon: '⏳' },
+            'CONFIRMED': { badge: 'badge--info', text: 'Đã xác nhận', icon: '✓' },
+            'PROCESSING': { badge: 'badge--info', text: 'Đang xử lý', icon: '⚙️' },
+            'SHIPPED': { badge: 'badge--primary', text: 'Đang giao', icon: '🚚' },
+            'DELIVERED': { badge: 'badge--success', text: 'Đã giao', icon: '📦' },
+            'CANCELLED': { badge: 'badge--danger', text: 'Đã hủy', icon: '✕' }
+        };
+
+        const status = statusConfig[order.status] || { badge: '', text: 'Không xác định', icon: '?' };
+        const items = order.orderItems || [];
+        const itemCount = items.length;
+
+        const orderCard = document.createElement('div');
+        orderCard.className = 'order-card';
+        orderCard.innerHTML = `
+            <div class="order-card__header">
+                <div class="order-card__info">
+                    <span class="order-card__number">#${order.orderNumber}</span>
+                    <span class="order-card__date">${orderDate}</span>
+                </div>
+                <span class="badge ${status.badge}">
+                    <span class="badge__icon">${status.icon}</span>
+                    ${status.text}
+                </span>
+            </div>
+            <div class="order-card__body">
+                <div class="order-card__items">
+                    <div class="order-card__items-preview">
+                        ${items.slice(0, 3).map(item => `
+                            <div class="order-item-mini">
+                                <img src="${item.productImageUrl || '/assets/img/product/item-1.png'}" alt="" class="order-item-mini__img"/>
+                            </div>
+                        `).join('')}
+                        ${itemCount > 3 ? `<div class="order-item-mini order-item-mini--more">+${itemCount - 3}</div>` : ''}
+                    </div>
+                    <div class="order-card__items-info">
+                        <p class="order-card__items-count">${itemCount} sản phẩm</p>
+                        <p class="order-card__items-names">${items.slice(0, 2).map(i => i.productName).join(', ')}${itemCount > 2 ? '...' : ''}</p>
+                    </div>
+                </div>
+                <div class="order-card__total">
+                    <span class="order-card__total-label">Tổng tiền</span>
+                    <span class="order-card__total-amount">${totalPrice}</span>
+                </div>
+            </div>
+            <div class="order-card__footer">
+                <a href="/order-detail/${order.id}" class="btn btn--outline-primary btn--small">Xem chi tiết</a>
+                ${order.status === 'PENDING' ? `<button onclick="cancelOrder(${order.id})" class="btn btn--outline-danger btn--small">Hủy đơn</button>` : ''}
+                ${order.status === 'DELIVERED' ? `<button onclick="reorderItems(${order.id})" class="btn btn--primary btn--small">🛒 Mua lại</button>` : ''}
+            </div>
+        `;
+
+        ordersList.appendChild(orderCard);
+    }
+
+    async function cancelOrder(orderId) {
+        const confirmed = await NotificationModal.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?', 'Xác nhận hủy đơn');
+        if (confirmed) {
+            try {
+                const response = await fetch(`/api/orders/${orderId}/cancel`, { method: 'PUT' });
+                if (!response.ok) throw new Error('Failed to cancel order');
+                NotificationModal.success('Đã hủy đơn hàng thành công');
+                loadOrders();
+            } catch (error) {
+                console.error('Error cancelling order:', error);
+                NotificationModal.error('Có lỗi xảy ra khi hủy đơn hàng');
+            }
+        }
+    }
+
+    async function reorderItems(orderId) {
+        try {
+            // Lấy chi tiết đơn hàng
+            const response = await fetch(`/api/orders/${orderId}`);
+            if (!response.ok) throw new Error('Failed to get order');
+            const order = await response.json();
+
+            let addedCount = 0;
+            let failedCount = 0;
+
+            // Thêm từng sản phẩm vào giỏ hàng
+            for (const item of order.orderItems) {
+                try {
+                    const addResponse = await fetch('/api/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            productId: item.productId,
+                            quantity: item.quantity
+                        })
+                    });
+                    if (addResponse.ok) {
+                        addedCount++;
+                    } else {
+                        failedCount++;
+                    }
+                } catch (e) {
+                    failedCount++;
+                }
+            }
+
+            // Cập nhật badge giỏ hàng
+            if (window.CartAPI && window.CartAPI.getCartItemCount) {
+                const count = await window.CartAPI.getCartItemCount();
+                document.querySelectorAll('.nav-btn__qnt').forEach(el => el.textContent = count);
+            }
+
+            if (failedCount === 0) {
+                NotificationModal.success(`Đã thêm ${addedCount} sản phẩm vào giỏ hàng`);
+            } else {
+                NotificationModal.warning(`Đã thêm ${addedCount} sản phẩm, ${failedCount} sản phẩm không còn khả dụng`);
+            }
+        } catch (error) {
+            console.error('Error reordering:', error);
+            NotificationModal.error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+        }
+    }
+</script>
+</body>
+</html>

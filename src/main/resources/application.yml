@@ -3,6 +3,15 @@ spring:
     name: java5_asm
 
   # ============================================
+  # FILE UPLOAD CONFIGURATION
+  # ============================================
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  # ============================================
   # DATABASE CONFIGURATION
   # ============================================
   # Lấy giá trị từ file .env (KHÔNG commit file .env lên Git)
@@ -11,7 +20,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3307/java5_asm}
     username: ${SPRING_DATASOURCE_USERNAME:java5_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:your-database-password}
+    password: ${SPRING_DATASOURCE_PASSWORD:java5_password}
     driver-class-name: org.mariadb.jdbc.Driver
 
   # ============================================
@@ -46,7 +55,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME:your-email@gmail.com}
+    username: ${MAIL_USERNAME:khoaphan180806@gmail.com}
     password: ${MAIL_PASSWORD:your-app-password}
     from: ${MAIL_FROM:Fat C Grocery Store <noreply@fatcgrocery.com>}
     properties:
@@ -98,6 +107,36 @@ app:
   base-url: ${APP_BASE_URL:http://localhost:8080}
 
 # ============================================
+# VNPAY CONFIGURATION
+# ============================================
+# Đăng ký tài khoản merchant tại: https://sandbox.vnpayment.vn/
+vnpay:
+  merchant:
+    id: ${VNPAY_MERCHANT_ID:DEMO}
+  secret:
+    key: ${VNPAY_SECRET_KEY:DEMOSECRETKEY}
+  return:
+    url: ${VNPAY_RETURN_URL:http://localhost:8080/payment/vnpay/callback}
+  api:
+    url: ${VNPAY_API_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+
+# ============================================
+# MOMO CONFIGURATION
+# ============================================
+# Đăng ký tài khoản merchant tại: https://business.momo.vn/
+momo:
+  partner:
+    code: ${MOMO_PARTNER_CODE:DEMO}
+  access:
+    key: ${MOMO_ACCESS_KEY:DEMO_ACCESS_KEY}
+  secret:
+    key: ${MOMO_SECRET_KEY:DEMO_SECRET_KEY}
+  api:
+    url: ${MOMO_API_URL:https://test-payment.momo.vn/v2/gateway/api/create}
+  return:
+    url: ${MOMO_RETURN_URL:http://localhost:8080/payment/momo/callback}
+
+# ============================================
 # ACTUATOR CONFIGURATION
 # ============================================
 management:
@@ -107,6 +146,22 @@ management:
       # Bật lại (enabled: true) sau khi đã cấu hình email đúng trong .env
       # Kiểm tra: http://localhost:8080/actuator/health
       enabled: false
+
+# ============================================
+# SPRINGDOC/SWAGGER CONFIGURATION
+# ============================================
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+    filter: true
+  show-actuator: false
 
 # ============================================
 # SERVER CONFIGURATION
@@ -119,12 +174,52 @@ server:
 # ============================================
 # LOGGING CONFIGURATION
 # ============================================
+# Default: Production-safe logging levels
+logging:
+  level:
+    root: WARN
+    poly.edu.java5_asm: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+
+---
+# ============================================
+# DEVELOPMENT PROFILE
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+  thymeleaf:
+    cache: false
+
 logging:
   level:
     root: INFO
     poly.edu.java5_asm: DEBUG
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
-    org.springframework.security.oauth2: TRACE  # Chi tiết OAuth2 flow
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+---
+# ============================================
+# PRODUCTION PROFILE
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+  thymeleaf:
+    cache: true
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    poly.edu.java5_asm: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
